@@ -24,6 +24,7 @@ from pages import urls as pages_urls
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.index),
+    # path('pages/', include('pages.urls'))
     re_path(r'index$', views.index, name='index'),
     re_path(r"browse$", views.browse, name='browse'),
     re_path(r"browse_results$", views.browse_results, name='browse_results'),

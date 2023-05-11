@@ -1,0 +1,88 @@
+<div id="layoutSidenav">
+            <div id="layoutSidenav_nav">
+                <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
+                    <div class="sb-sidenav-menu">
+                        <div class="nav">
+
+                            <!-- homepage 菜单项 -->
+                            <div class="sb-sidenav-menu-heading">Core</div>
+                            <a class="nav-link" href="{% url 'index' %}">
+                                <div class="sb-nav-link-icon">
+                                    <i class="fas fa-tachometer-alt"></i>
+                                </div>
+                                    Dashboard
+                            </a>
+
+                            <!-- 网站tools菜单项 -->
+                            <div class="sb-sidenav-menu-heading">Web Tools</div>
+
+                            <!-- browse page 菜单 -->
+                            <a class="nav-link" href="{% url 'browse' %}">
+                                <div class="sb-nav-link-icon">
+                                    <i class="fas fa-tachometer-alt"></i>
+                                </div>
+                                    Browse
+                            </a>
+
+                            <!-- browse 子功能页面入口 -->
+                            <!--
+                            <div class="collapse" id="collapseLayouts" aria-labelledby="headingOne" data-parent="#sidenavAccordion">
+                                <nav class="sb-sidenav-menu-nested nav">
+                                    <a class="nav-link" href="{% url 'browse' %}">By Study</a>
+                                    <a class="nav-link" href="{% url 'browse' %}">By Signaling Pathway</a>
+                                </nav>
+                            </div>
+                            //-->
+
+                            <!-- Search page 菜单 -->
+                            <a class="nav-link" href="{% url 'search' %}">
+                                <div class="sb-nav-link-icon">
+                                    <i class="fas fa-tachometer-alt"></i>
+                                </div>
+                                    Search
+                            </a>
+
+                            <!-- Analysis page 菜单 -->
+                            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseLayouts" aria-expanded="false" aria-controls="collapseLayouts"
+                                ><div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
+                                Analyze
+                                <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                            </a>
+
+                            <!-- analysis 子功能页面入口 -->
+                            <div class="collapse" id="collapseLayouts" aria-labelledby="headingOne" data-parent="#sidenavAccordion">
+                                <nav class="sb-sidenav-menu-nested nav">
+                                    <a class="nav-link" href="{% url 'analyze-gene-expr' %}">gene expression</a>
+                                    <a class="nav-link" href="{% url 'analyze-cell-marker' %}">cell markers</a>
+                                    <a class="nav-link" href="{% url 'analyze-cell-commu' %}">cell communication</a>
+                                </nav>
+                            </div>
+
+                            <!-- Help page 菜单 -->
+                            <a class="nav-link" href="{% url 'help' %}">
+                                <div class="sb-nav-link-icon">
+                                    <i class="fas fa-tachometer-alt"></i>
+                                </div>
+                                    Help
+                            </a>
+
+                            <!-- download page 菜单 -->
+                            <a class="nav-link" href="{% url 'search' %}">
+                                <div class="sb-nav-link-icon">
+                                    <i class="fas fa-tachometer-alt"></i>
+                                </div>
+                                    Download
+                            </a>
+
+                        </div>
+                    </div>
+                    <div class="sb-sidenav-footer">
+                        <div class="small">Logged in as </div>
+                        {% if user.is_authenticated %}
+                        {{ user.username }}
+                        {% else %}
+                        Guest
+                        {% endif %}
+                    </div>
+                </nav>
+            </div>

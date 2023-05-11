@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% block content %}
+{% include "navbar-simple.html" %}
+{% include "sidebar.html" %}
+<div id="layoutSidenav_content">
+<main>
+    <div class="container-fluid">
+
+         <!-- 网站功能summary -->
+        <h1 class="mt-4">Browse</h1>
+        <ol class="breadcrumb mb-4">
+            <li class="breadcrumb-item active"> Browse help manual </li>
+        </ol>
+
+        <!-- dataTable 区域 -->
+        <div class="card mb-4">
+            <div class="card-header"><i class="fas fa-table mr-1"></i>DataTable: Studies </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th>Dataset</th>
+                                <th>Species</th>
+                                <th>Tumor site</th>
+                                <!-- <th>Source</th>  -->
+                                <th>Donor</th>
+                                <th>Sample</th>
+                                <th>Cells</th>
+                                <th>Malignant</th>
+                                <th>Cell sorting</th>
+                                <th>Treatment</th>
+                                <th>External</th>
+                            </tr>
+                        </thead>
+                        <tfoot>
+                            <tr>
+                                <th>Dataset</th>
+                                <th>Species</th>
+                                <th>Tumor site</th>
+                                <!-- <th>Source</th> -->
+                                <th>Donor</th>
+                                <th>Sample</th>
+                                <th>Cells</th>
+                                <th>Malignant</th>
+                                <th>Cell sorting</th>
+                                <th>Treatment</th>
+                                <th>External</th>
+                            </tr>
+                        </tfoot>
+                        <tbody>
+                           {% for study in studies %}
+                            <tr>
+                                <td><a class="nav-link" href="{% url 'browse_results' %}">{{ study.index }}</a></td>
+                                <td>{{ study.species }}</td>
+                                <td>{{ study.tumor_site }}</td>
+                                <!-- <td>{{ study.biosample_source }}</td> -->
+                                <td>{{ study.ndonor }}</td>
+                                <td>{{ study.nsample }}</td>
+                                <td>{{ study.ncell }}</td>
+                                <td>{{ study.nmalignant }}</td>
+                                <td>{{ study.cell_sorting }}</td>
+                                <td>{{ study.treatment }}</td>
+                                <td>{{ study.id }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+{% include "footer.html" %}
+</div>
+</div>
+<script src="https://code.jquery.com/jquery-3.4.1.min.js" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+<script src="static/js/scripts.js"></script>
+
+<!--
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js" crossorigin="anonymous"></script>
+<script src="static/assets/demo/chart-area-demo.js"></script>
+<script src="static/assets/demo/chart-bar-demo.js"></script>
+// -->
+
+<script src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js" crossorigin="anonymous"></script>
+<script src="https://cdn.datatables.net/1.10.20/js/dataTables.bootstrap4.min.js" crossorigin="anonymous"></script>
+<script src="static/assets/demo/datatables-demo-raw.js"></script>
+{% endblock %}

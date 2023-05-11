@@ -1,0 +1,55 @@
+<div id="layoutSidenav">
+            <div id="layoutSidenav_nav">
+                <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
+                    <div class="sb-sidenav-menu">
+                        <div class="nav">
+
+                            <!-- homepage 菜单项 -->
+                            <div class="sb-sidenav-menu-heading">Core</div>
+                            <a class="nav-link" href="{% url 'index' %}">
+                                <div class="sb-nav-link-icon">
+                                    <i class="fas fa-tachometer-alt"></i>
+                                </div>
+                                    Dashboard
+                            </a>
+
+                            <!-- 网站tools菜单项 -->
+                            <div class="sb-sidenav-menu-heading">Web Tools</div>
+
+                            <!-- browse page 菜单 -->
+                            <a class="nav-link collapsed" href="{% url 'browse' %}" data-toggle="collapse" data-target="#collapseLayouts" aria-expanded="false" aria-controls="collapseLayouts"
+                                ><div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
+                                Browse
+                                <!-- <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div> -->
+                            </a>
+
+                            <!-- browse 子功能页面入口 -->
+                            <!--
+                            <div class="collapse" id="collapseLayouts" aria-labelledby="headingOne" data-parent="#sidenavAccordion">
+                                <nav class="sb-sidenav-menu-nested nav">
+                                    <a class="nav-link" href="{% url 'browse' %}">By Study</a>
+                                    <a class="nav-link" href="{% url 'browse' %}">By Signaling Pathway</a>
+                                </nav>
+                            </div>
+                            //-->
+
+                            <!-- Search page 菜单 -->
+                            <a class="nav-link collapsed" href="{% url 'browse' %}" data-toggle="collapse" data-target="#collapsePages" aria-expanded="false" aria-controls="collapsePages"
+                                ><div class="sb-nav-link-icon"><i class="fas fa-book-open"></i></div>
+                                Search
+                                <!-- <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div> -->
+                            </a>
+
+
+                        </div>
+                    </div>
+                    <div class="sb-sidenav-footer">
+                        <div class="small">Logged in as </div>
+                        {% if user.is_authenticated %}
+                        {{ user.username }}
+                        {% else %}
+                        Guest
+                        {% endif %}
+                    </div>
+                </nav>
+            </div>

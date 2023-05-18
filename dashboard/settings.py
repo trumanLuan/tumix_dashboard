@@ -56,7 +56,7 @@ ROOT_URLCONF = 'dashboard.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')], # 修改至新应用pages的templates路径
+        'DIRS': [os.path.join(BASE_DIR, 'pages/templates')], # 修改至新应用pages的templates路径
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

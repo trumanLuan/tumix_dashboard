@@ -62,7 +62,7 @@
                                 <td>{{ study.nmalignant }}</td>
                                 <td>{{ study.cell_sorting }}</td>
                                 <td>{{ study.treatment }}</td>
-                                <td>Check</td>
+                                <td><a class="nav-link" href="{% url 'browse_results' %}">Check</a></td>
                             </tr>
                             {% endfor %}
                         </tbody>
@@ -104,14 +104,18 @@
                 }
             ]
       });
-    
+
       $('#dataTable tbody').on('click','#checkBrowseResButton', function(){
               // 获取行
              var row = $("#dataTable tr").index($(this).closest("tr"));
              // 获取某列（从0列开始计数）的值
              var index = $("#dataTable").find("tr").eq(row).find('td').eq(0).text();
-            // 在此处执行您希望的操作，例如将时间发送到服务器或执行其他逻辑
-            alert("You chose " + index);
+
+            // alert("You chose " + index);
+            // var currentURL = window.location.href;
+
+            window.location.href = '/browse_results?value=' + encodeURIComponent(index);
+            // window.location.href = "/browse_results";
       });
     });
 </script>

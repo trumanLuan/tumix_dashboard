@@ -38,6 +38,12 @@ $(document).ready(function() {
 
      $('#dataTable tbody tr') .live('click', function() {
          var  data = table.row(  this  ).data();
-         alert(  'You clicked on ' + data[0] + '\'s row'  );
+         // alert(  'You clicked on ' + data[0] + '\'s row'  );
+         var currentURL = window.location.href;
+         var studyIndex = data[0];
+
+         // 将值传递给视图函数
+         window.location.href = '/browse_results/?url=' + encodeURIComponent(currentURL) + '&value=' + encodeURIComponent(studyIndex);
+</script>
      } );
 });

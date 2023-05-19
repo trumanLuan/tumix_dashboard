@@ -82,6 +82,7 @@ hr {
 h1, h2, h3, h4, h5, h6 {
   margin-top: 0;
   margin-bottom: 0.5rem;
+  margin-left: 2rem;
 }
 
 p {
@@ -207,6 +208,8 @@ svg {
 
 table {
   border-collapse: collapse;
+  border: 1px solid #ddd; /* 设置边框样式和颜色 */
+  font-size: 1rem;
 }
 
 caption {
@@ -219,6 +222,11 @@ caption {
 
 th {
   text-align: inherit;
+}
+
+td, th {
+  padding: 8px; /* 设置单元格内边距 */
+  font-size: 1rem;
 }
 
 label {
@@ -4357,6 +4365,7 @@ input[type=button].btn-block {
 }
 
 .card-title {
+  margin-right: 2em;
   margin-bottom: 0.75rem;
 }
 
@@ -4366,6 +4375,7 @@ input[type=button].btn-block {
 }
 
 .card-text:last-child {
+  margin-right: 2em;
   margin-bottom: 0;
 }
 
@@ -7574,7 +7584,9 @@ button.bg-dark:focus {
 
 .mt-4,
 .my-4 {
+  margin-right: 0.5rem !important;
   margin-top: 1.5rem !important;
+
 }
 
 .mr-4,
@@ -7585,6 +7597,7 @@ button.bg-dark:focus {
 .mb-4,
 .my-4 {
   margin-bottom: 1.5rem !important;
+  margin-right: 2rem;
 }
 
 .ml-4,
@@ -9911,6 +9924,7 @@ h2,
 h3 {
     orphans: 3;
     widows: 3;
+
   }
 
   h2,
@@ -10211,4 +10225,8 @@ body {
 }
 .sb-sidenav-light .sb-sidenav-footer {
   background-color: #e9ecef;
+}
+
+.table-container {
+    width: 100%;
 }

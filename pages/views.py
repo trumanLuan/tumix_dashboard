@@ -19,8 +19,18 @@ def browse(request):
 
 def browse_results(request):
     value = request.GET.get('value', '')
+    dataset_title = 'Deficiency of ribosomal proteins reshapes the transcriptional and translational landscape in human cells'
+    dataset_organism = "Human"
+    dataset_geo = "hahha"
+    dataset_design = "To be downloaded"
+
     return render(request, "browse_results.html", {
-        'value': value
+        'value': value,
+        'dataset_title': dataset_title,
+        'dataset_organism': dataset_organism,
+        'dataset_geo': dataset_geo,
+        'dataset_design': dataset_design,
+        'studies': Study.objects.all()
     } )
 
 # views for goto search page from the sidebar.

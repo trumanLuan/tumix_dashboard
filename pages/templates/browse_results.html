@@ -5,277 +5,309 @@
 {% include "sidebar.html" %}
 <div id="layoutSidenav_content">
 
-    <h2>Dataset: {{ value }}</h2>
+    <h3>Dataset: {{ value }}</h3>
 
+    <h3 class="mt-4"> Study Meta-info </h3>
     <div class="card mb-4">
-        <!-- <div class="card-header"><i class="fas fa-table mr-1"></i> Browse by Samples </div> -->
-        <h3 class="mt-4"> Browse by Samples </h3>
+        <!-- Study meta-info -->
         <div class="card-body">
-        <main>
-            <!-- 可折叠panel组 -->
-            <div class="panel-group" id="accordion">
-
-                <!-- 可折叠区域1 -->
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h4 class="panel-title">
-                            <a data-toggle="collapse" data-parent="#accordion"
-                            href="#collapse-1">
-                            {{ value }}
-                            </a>
-                        </h4>
-                    </div>
-                    <div id="collapse-1" class="panel-collapse collapse">
-                        <div class="panel-body">
-                            Nihil anim keffiyeh helvetica, craft beer labore wes anderson
-                            cred nesciunt sapiente ea proident. Ad vegan excepteur butcher
-                            vice lomo.
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 可折叠区域2 -->
-                <div class="panel panel-success">
-                    <div class="panel-heading">
-                        <h4 class="panel-title">
-                            <a data-toggle="collapse" data-parent="#accordion"
-                               href="#collapse-2">
-                                点击我进行展开，再次点击我进行折叠。第 2 部分
-                            </a>
-                        </h4>
-                    </div>
-                    <div id="collapse-2" class="panel-collapse collapse">
-                        <div class="panel-body">
-                            Nihil anim keffiyeh helvetica, craft beer labore wes anderson
-                            cred nesciunt sapiente ea proident. Ad vegan excepteur butcher
-                            vice lomo.
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 可折叠区域3 -->
-                <div class="panel panel-info">
-                    <div class="panel-heading">
-                        <h4 class="panel-title">
-                            <a data-toggle="collapse" data-parent="#accordion"
-                               href="#collapseThree">
-                                点击我进行展开，再次点击我进行折叠。第 3 部分
-                            </a>
-                        </h4>
-                    </div>
-                    <div id="collapseThree" class="panel-collapse collapse">
-                        <div class="panel-body">
-                            Nihil anim keffiyeh helvetica, craft beer labore wes anderson
-                            cred nesciunt sapiente ea proident. Ad vegan excepteur butcher
-                            vice lomo.
-                        </div>
-                    </div>
-                </div>
-
-                <!-- panel 4 -->
-                <div class="panel panel-warning">
-                    <div class="panel-heading">
-                        <h4 class="panel-title">
-                            <a data-toggle="collapse" data-parent="#accordion"
-                            href="#collapseFour">
-                            点击我进行展开，再次点击我进行折叠。第 4 部分--options 方法
-                            </a>
-                        </h4>
-                    </div>
-                    <div id="collapseFour" class="panel-collapse collapse">
-                        <div class="panel-body">
-                            Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred
-                            nesciunt sapiente ea proident. Ad vegan excepteur butcher vice
-                            lomo.
-                        </div>
-                    </div>
-                </div>
-
+            <div class="table-container">
+                <!-- meta-info table -->
+                    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                        <tbody>
+                            <tr>
+                                <td class="tab_header">Title</td>
+                                <td colspan="3" id="gse_title" class="tab_dat">{{ dataset_title }}</td>
+                            </tr>
+                            <tr>
+                                <td class="tab_header">Organism</td>
+                                <td id="gse_organism" class="tab_dat">{{ dataset_organism }}</td>
+                                <td colspan="1" class="tab_header">GEO</td>
+                                <td colspan="1" class="tab_dat" id="gse_link"> {{ dataset_geo }}</td>
+                            </tr>
+                            <tr>
+                                <td class="tab_header">Design</td>
+                                <td colspan="3" id="gse_design" class="tab_dat"> {{ dataset_design }} </td>
+                            </tr>
+                        </tbody>
+                    </table>
             </div>
 
-        </main>
         </div>
     </div>
 
-    <!-- 第二个大的区域 -->
-       <div class="card mb-4">
-        <!-- <div class="card-header"><i class="fas fa-table mr-1"></i> Browse by Cell Types </div> -->
-       <h3 class="mt-4"> Browse by Cell Types </h3>
-        <div class="card-body">
-        <main>
-            <!-- 可折叠panel组 -->
-            <div class="panel-group" id="accordion">
+    <!-- Browse-by-sample region -->
+    <h3 class="mt-4"> Browse by Samples </h3>
+    <div class="card mb-4">
+            <div class="card-body">
+                <main>
+                    <div class="panel-group" id="accordion">
 
-                <!-- 可折叠区域1 -->
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h4 class="panel-title">
-                            <a data-toggle="collapse" data-parent="#accordion"
-                            href="#collapse-1">
-                            点击我进行展开，再次点击我进行折叠。第 1 部分--hide 方法
-                            </a>
-                        </h4>
-                    </div>
-                    <div id="collapse-1" class="panel-collapse collapse">
-                        <div class="panel-body">
-                            Nihil anim keffiyeh helvetica, craft beer labore wes anderson
-                            cred nesciunt sapiente ea proident. Ad vegan excepteur butcher
-                            vice lomo.
+                        <!-- 可折叠区域-sampleTable -->
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h4 class="panel-title">
+                                    <a data-toggle="collapse" data-parent="#accordion"
+                                    href="#collapse-sample-table">
+                                    Samples in the dataset ->>
+                                    </a>
+                                </h4>
+                            </div>
+                            <div id="collapse-sample-table" class="panel-collapse collapse">
+                                <div class="panel-body">
+                                    <!-- Table panel -->
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered" id="sampleTable" width="100%" cellspacing="0">
+                                            <thead>
+                                                <tr>
+                                                    <th>Dataset</th>
+                                                    <th>Species</th>
+                                                    <th>Tumor site</th>
+                                                    <th>Donor</th>
+                                                    <th>Sample</th>
+                                                    <th>Cells</th>
+                                                    <th>Malignant</th>
+                                                    <th>Cell sorting</th>
+                                                    <th>Treatment</th>
+                                                </tr>
+                                            </thead>
+                                            <tfoot>
+                                                <tr>
+                                                    <th>Dataset</th>
+                                                    <th>Species</th>
+                                                    <th>Tumor site</th>
+                                                    <th>Donor</th>
+                                                    <th>Sample</th>
+                                                    <th>Cells</th>
+                                                    <th>Malignant</th>
+                                                    <th>Cell sorting</th>
+                                                    <th>Treatment</th>
+                                                </tr>
+                                            </tfoot>
+                                            <tbody>
+                                               {% for study in studies %}
+                                                <tr>
+                                                    <td>{{ study.index }}</td>
+                                                    <td>{{ study.species }}</td>
+                                                    <td>{{ study.tumor_site }}</td>
+                                                    <td>{{ study.ndonor }}</td>
+                                                    <td>{{ study.nsample }}</td>
+                                                    <td>{{ study.ncell }}</td>
+                                                    <td>{{ study.nmalignant }}</td>
+                                                    <td>{{ study.cell_sorting }}</td>
+                                                    <td>{{ study.treatment }}</td>
+                                                </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                </div>
 
-                <!-- 可折叠区域2 -->
-                <div class="panel panel-success">
-                    <div class="panel-heading">
-                        <h4 class="panel-title">
-                            <a data-toggle="collapse" data-parent="#accordion"
-                               href="#collapse-2">
-                                点击我进行展开，再次点击我进行折叠。第 2 部分
-                            </a>
-                        </h4>
-                    </div>
-                    <div id="collapse-2" class="panel-collapse collapse">
-                        <div class="panel-body">
-                            Nihil anim keffiyeh helvetica, craft beer labore wes anderson
-                            cred nesciunt sapiente ea proident. Ad vegan excepteur butcher
-                            vice lomo.
+                        <!-- 可折叠区域-sampleTable -->
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h4 class="panel-title">
+                                    <a data-toggle="collapse" data-parent="#accordion"
+                                    href="#collapse-umi-count">
+                                    UMI Counts by Sample ->>
+                                    </a>
+                                </h4>
+                            </div>
+                            <div id="collapse-umi-count" class="panel-collapse collapse">
+                                <div class="panel-body">
+                                    Nihil anim keffiyeh helvetica, craft beer labore wes anderson
+                                    cred nesciunt sapiente ea proident. Ad vegan excepteur butcher
+                                    vice lomo.
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                </div>
 
-                <!-- 可折叠区域3 -->
-                <div class="panel panel-info">
-                    <div class="panel-heading">
-                        <h4 class="panel-title">
-                            <a data-toggle="collapse" data-parent="#accordion"
-                               href="#collapseThree">
-                                点击我进行展开，再次点击我进行折叠。第 3 部分
-                            </a>
-                        </h4>
-                    </div>
-                    <div id="collapseThree" class="panel-collapse collapse">
-                        <div class="panel-body">
-                            Nihil anim keffiyeh helvetica, craft beer labore wes anderson
-                            cred nesciunt sapiente ea proident. Ad vegan excepteur butcher
-                            vice lomo.
-                        </div>
-                    </div>
-                </div>
 
-                <!-- panel 4 -->
-                <div class="panel panel-warning">
-                    <div class="panel-heading">
-                        <h4 class="panel-title">
-                            <a data-toggle="collapse" data-parent="#accordion"
-                            href="#collapseFour">
-                            点击我进行展开，再次点击我进行折叠。第 4 部分--options 方法
-                            </a>
-                        </h4>
                     </div>
-                    <div id="collapseFour" class="panel-collapse collapse">
-                        <div class="panel-body">
-                            Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred
-                            nesciunt sapiente ea proident. Ad vegan excepteur butcher vice
-                            lomo.
-                        </div>
-                    </div>
-                </div>
+
+
+                </main>
 
             </div>
+        </div>
 
-        </main>
+    <!-- 第二个大的区域 -->
+    <h3 class="mt-4"> Browse by Cell Types </h3>
+   <div class="card mb-4">
+       <div class="card-body">
+            <main>
+                <!-- 可折叠panel组 -->
+                <div class="panel-group" id="accordion">
+
+                    <!-- 可折叠区域1 -->
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                <a data-toggle="collapse" data-parent="#accordion"
+                                href="#collapse-1">
+                                点击我进行展开，再次点击我进行折叠。第 1 部分--hide 方法
+                                </a>
+                            </h4>
+                        </div>
+                        <div id="collapse-1" class="panel-collapse collapse">
+                            <div class="panel-body">
+                                Nihil anim keffiyeh helvetica, craft beer labore wes anderson
+                                cred nesciunt sapiente ea proident. Ad vegan excepteur butcher
+                                vice lomo.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 可折叠区域2 -->
+                    <div class="panel panel-success">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                <a data-toggle="collapse" data-parent="#accordion"
+                                   href="#collapse-2">
+                                    点击我进行展开，再次点击我进行折叠。第 2 部分
+                                </a>
+                            </h4>
+                        </div>
+                        <div id="collapse-2" class="panel-collapse collapse">
+                            <div class="panel-body">
+                                Nihil anim keffiyeh helvetica, craft beer labore wes anderson
+                                cred nesciunt sapiente ea proident. Ad vegan excepteur butcher
+                                vice lomo.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 可折叠区域3 -->
+                    <div class="panel panel-info">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                <a data-toggle="collapse" data-parent="#accordion"
+                                   href="#collapseThree">
+                                    点击我进行展开，再次点击我进行折叠。第 3 部分
+                                </a>
+                            </h4>
+                        </div>
+                        <div id="collapseThree" class="panel-collapse collapse">
+                            <div class="panel-body">
+                                Nihil anim keffiyeh helvetica, craft beer labore wes anderson
+                                cred nesciunt sapiente ea proident. Ad vegan excepteur butcher
+                                vice lomo.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- panel 4 -->
+                    <div class="panel panel-warning">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                <a data-toggle="collapse" data-parent="#accordion"
+                                href="#collapseFour">
+                                点击我进行展开，再次点击我进行折叠。第 4 部分--options 方法
+                                </a>
+                            </h4>
+                        </div>
+                        <div id="collapseFour" class="panel-collapse collapse">
+                            <div class="panel-body">
+                                Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred
+                                nesciunt sapiente ea proident. Ad vegan excepteur butcher vice
+                                lomo.
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </main>
         </div>
     </div>
 
     <!-- 第三个 大的展示区域 -->
+    <h3 class="mt-4"> Browse by Cell-cell Communications </h3>
     <div class="card mb-4">
-       <!-- <div class="card-header"><i class="fas fa-table mr-1"></i> Browse by Cell-cell Communications </div> -->
-        <h3 class="mt-4"> Browse by Cell-cell Communications </h3>
+       <!-- <div class="card-header"><h3> Browse by Cell-cell Communications </h3> </div> -->
         <div class="card-body">
-        <main>
-            <!-- 可折叠panel组 -->
-            <div class="panel-group" id="accordion">
-
-                <!-- 可折叠区域1 -->
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h4 class="panel-title">
-                            <a data-toggle="collapse" data-parent="#accordion"
-                            href="#collapse-1">
-                            点击我进行展开，再次点击我进行折叠。第 1 部分--hide 方法
-                            </a>
-                        </h4>
+            <main>
+                <!-- 可折叠panel组 -->
+                <div class="panel-group" id="accordion">
+                    <!-- 可折叠区域1 -->
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                <a data-toggle="collapse" data-parent="#accordion"
+                                href="#collapse-1">
+                                点击我进行展开，再次点击我进行折叠。第 1 部分--hide 方法
+                                </a>
+                            </h4>
+                        </div>
+                        <div id="collapse-1" class="panel-collapse collapse">
+                            <div class="panel-body">
+                                Nihil anim keffiyeh helvetica, craft beer labore wes anderson
+                                cred nesciunt sapiente ea proident. Ad vegan excepteur butcher
+                                vice lomo.
+                            </div>
+                        </div>
                     </div>
-                    <div id="collapse-1" class="panel-collapse collapse">
-                        <div class="panel-body">
-                            Nihil anim keffiyeh helvetica, craft beer labore wes anderson
-                            cred nesciunt sapiente ea proident. Ad vegan excepteur butcher
-                            vice lomo.
+
+                    <!-- 可折叠区域2 -->
+                    <div class="panel panel-success">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                <a data-toggle="collapse" data-parent="#accordion"
+                                   href="#collapse-2">
+                                    点击我进行展开，再次点击我进行折叠。第 2 部分
+                                </a>
+                            </h4>
+                        </div>
+                        <div id="collapse-2" class="panel-collapse collapse">
+                            <div class="panel-body">
+                                Nihil anim keffiyeh helvetica, craft beer labore wes anderson
+                                cred nesciunt sapiente ea proident. Ad vegan excepteur butcher
+                                vice lomo.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 可折叠区域3 -->
+                    <div class="panel panel-info">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                <a data-toggle="collapse" data-parent="#accordion"
+                                   href="#collapseThree">
+                                    点击我进行展开，再次点击我进行折叠。第 3 部分
+                                </a>
+                            </h4>
+                        </div>
+                        <div id="collapseThree" class="panel-collapse collapse">
+                            <div class="panel-body">
+                                Nihil anim keffiyeh helvetica, craft beer labore wes anderson
+                                cred nesciunt sapiente ea proident. Ad vegan excepteur butcher
+                                vice lomo.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- panel 4 -->
+                    <div class="panel panel-warning">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                <a data-toggle="collapse" data-parent="#accordion"
+                                href="#collapseFour">
+                                点击我进行展开，再次点击我进行折叠。第 4 部分--options 方法
+                                </a>
+                            </h4>
+                        </div>
+                        <div id="collapseFour" class="panel-collapse collapse">
+                            <div class="panel-body">
+                                Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred
+                                nesciunt sapiente ea proident. Ad vegan excepteur butcher vice
+                                lomo.
+                            </div>
                         </div>
                     </div>
                 </div>
-
-                <!-- 可折叠区域2 -->
-                <div class="panel panel-success">
-                    <div class="panel-heading">
-                        <h4 class="panel-title">
-                            <a data-toggle="collapse" data-parent="#accordion"
-                               href="#collapse-2">
-                                点击我进行展开，再次点击我进行折叠。第 2 部分
-                            </a>
-                        </h4>
-                    </div>
-                    <div id="collapse-2" class="panel-collapse collapse">
-                        <div class="panel-body">
-                            Nihil anim keffiyeh helvetica, craft beer labore wes anderson
-                            cred nesciunt sapiente ea proident. Ad vegan excepteur butcher
-                            vice lomo.
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 可折叠区域3 -->
-                <div class="panel panel-info">
-                    <div class="panel-heading">
-                        <h4 class="panel-title">
-                            <a data-toggle="collapse" data-parent="#accordion"
-                               href="#collapseThree">
-                                点击我进行展开，再次点击我进行折叠。第 3 部分
-                            </a>
-                        </h4>
-                    </div>
-                    <div id="collapseThree" class="panel-collapse collapse">
-                        <div class="panel-body">
-                            Nihil anim keffiyeh helvetica, craft beer labore wes anderson
-                            cred nesciunt sapiente ea proident. Ad vegan excepteur butcher
-                            vice lomo.
-                        </div>
-                    </div>
-                </div>
-
-                <!-- panel 4 -->
-                <div class="panel panel-warning">
-                    <div class="panel-heading">
-                        <h4 class="panel-title">
-                            <a data-toggle="collapse" data-parent="#accordion"
-                            href="#collapseFour">
-                            点击我进行展开，再次点击我进行折叠。第 4 部分--options 方法
-                            </a>
-                        </h4>
-                    </div>
-                    <div id="collapseFour" class="panel-collapse collapse">
-                        <div class="panel-body">
-                            Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred
-                            nesciunt sapiente ea proident. Ad vegan excepteur butcher vice
-                            lomo.
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-
-        </main>
+            </main>
         </div>
     </div>
 
@@ -288,20 +320,23 @@
 $(function () { $('#collapseFour').collapse({
         toggle: false
     })});
-    $(function () { $('#collapse-2').collapse('show')});
-    $(function () { $('#collapseThree').collapse('toggle')});
-    $(function () { $('#collapse-1').collapse('hide')});
+    $(function () { $('#collapse-umi-count').collapse('toggle')});
+    $(function () { $('#collapse-sample-table').collapse('toggle')});
 </script>
 
 
-<!--
 <script src="https://code.jquery.com/jquery-3.4.1.min.js" crossorigin="anonymous"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
-<script src="static/js/scripts.js"></script> -->
+<script src="../static/js/scripts.js"></script>
 
+<script src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js" crossorigin="anonymous"></script>
+<script src="https://cdn.datatables.net/1.10.20/js/dataTables.bootstrap4.min.js" crossorigin="anonymous"></script>
 
-<link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
-<script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>
-<script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<!-- for #dataTable -->
+<script type="text/javascript">
+       $(document).ready(function() {
+          $('#sampleTable').dataTable();
+    });
+</script>
 
 {% endblock %}

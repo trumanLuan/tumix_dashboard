@@ -5,12 +5,7 @@
 {% include "sidebar.html" %}
 <div id="layoutSidenav_content">
 
-    <div style="color:#0000FF">
-        <h4> Quick start manual </h4>
-        <p> Quick start manual </p>
-    </div>
-
-    <h2>Value: {{ value }}</h2>
+    <h2>Dataset: {{ value }}</h2>
 
     <div class="card mb-4">
         <!-- <div class="card-header"><i class="fas fa-table mr-1"></i> Browse by Samples </div> -->
@@ -26,7 +21,7 @@
                         <h4 class="panel-title">
                             <a data-toggle="collapse" data-parent="#accordion"
                             href="#collapse-1">
-                            {{ dataset }}
+                            {{ value }}
                             </a>
                         </h4>
                     </div>

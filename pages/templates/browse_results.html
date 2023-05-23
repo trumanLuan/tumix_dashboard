@@ -57,7 +57,7 @@
                                 <div class="panel-body">
                                     <!-- Table panel -->
                                     <div class="table-responsive">
-                                        <table class="table table-bordered" id="sampleTable" width="100%" cellspacing="0">
+                                        <table class="table table-bordered" id="dataTable-sample" width="100%" cellspacing="0">
                                             <thead>
                                                 <tr>
                                                     <th>Dataset</th>
@@ -300,9 +300,51 @@
                             </div>
                             <div id="collapse-diff-genes-by-subcluster" class="panel-collapse collapse">
                                 <div class="panel-body">
-                                    Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred
-                                    nesciunt sapiente ea proident. Ad vegan excepteur butcher vice
-                                    lomo.
+                                    <div class="card-body">
+                                        <div class="card-header"><i class="fas fa-table mr-1"></i>DataTable: Gene Markers of Cell Sub-clusters </div>
+                                        <div class="table-responsive">
+                                            <table class="table table-bordered" id="dataTable-subcluster-marker" width="100%" cellspacing="0">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Dataset</th>
+                                                        <th>Cell Cluster</th>
+                                                        <th>Gene</th>
+                                                        <th>Avg_log2FC</th>
+                                                        <th>Pct1</th>
+                                                        <th>Pct2</th>
+                                                        <th>P-value</th>
+                                                        <th>Adjusted P</th>
+                                                    </tr>
+                                                </thead>
+                                                <tfoot>
+                                                    <tr>
+                                                        <th>Dataset</th>
+                                                        <th>Cell Cluster</th>
+                                                        <th>Gene</th>
+                                                        <th>Avg_log2FC</th>
+                                                        <th>Pct1</th>
+                                                        <th>Pct2</th>
+                                                        <th>P-value</th>
+                                                        <th>Adjusted P</th>
+                                                    </tr>
+                                                </tfoot>
+                                                <tbody>
+                                                   {% for row in row_subcluster_marker %}
+                                                    <tr>
+                                                        <td>{{ row.dataset }}</td>
+                                                        <td>{{ row.cluster }}</td>
+                                                        <td>{{ row.gene }}</td>
+                                                        <td>{{ row.avg_log2fc }}</td>
+                                                        <td>{{ row.pct1 }}</td>
+                                                        <td>{{ row.pct2 }}</td>
+                                                        <td>{{ row.p_val }}</td>
+                                                        <td>{{ row.p_val_adj }}</td>
+                                                    </tr>
+                                                    {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -404,7 +446,8 @@
 <!-- for #dataTable functions-->
 <script type="text/javascript">
        $(document).ready(function() {
-          $('#sampleTable').dataTable();
+          $('#dataTable-subcluster-marker').dataTable();
+          $('#dataTable-sample').dataTable();
     });
 </script>
 

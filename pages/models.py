@@ -3,6 +3,7 @@ from django.db import models
 # Create your models here.
 # model used in demo.
 class Employee(models.Model):
+    id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=150)
     position = models.CharField(max_length=150)
     office = models.CharField(max_length=150)
@@ -16,7 +17,8 @@ class Employee(models.Model):
 
 # model for study meta-table.
 class Study(models.Model):
-    index = models.CharField(max_length=150)
+    id = models.AutoField(primary_key=True)
+    dataset = models.CharField(max_length=150)
     species = models.CharField(max_length=150)
     tumor_site = models.CharField(max_length=150)
     biosample_source = models.CharField(max_length=150)
@@ -26,6 +28,9 @@ class Study(models.Model):
     nmalignant = models.IntegerField()
     cell_sorting = models.CharField(max_length=150)
     treatment = models.CharField(max_length=150)
+    study_title = models.CharField(max_length=1500, default="Default")
+    study_geo = models.CharField(max_length=150, default="Default")
+    study_pmid = models.CharField(max_length=20, default="Default")
 
     def __str__(self):
         return self.index
@@ -35,6 +40,7 @@ class Study(models.Model):
 
 # model for SingleCell.
 class SingleCell(models.Model):
+    id = models.AutoField(primary_key=True)
     dataset = models.CharField(max_length=150)
     donor = models.CharField(max_length=150)
     sample = models.CharField(max_length=150)
@@ -51,6 +57,7 @@ class SingleCell(models.Model):
 
 # model for Diff_marker_subcluster table.
 class Marker_Subcluster(models.Model):
+    id = models.AutoField(primary_key=True)
     dataset = models.CharField(max_length=150)
     cluster = models.CharField(max_length=150)
     gene = models.CharField(max_length=150)
@@ -65,6 +72,7 @@ class Marker_Subcluster(models.Model):
 
 # model for Diff_marker_celltype table.
 class Marker_Celltype(models.Model):
+    id = models.AutoField(primary_key=True)
     dataset = models.CharField(max_length=150)
     cluster = models.CharField(max_length=150)
     gene = models.CharField(max_length=150)
@@ -79,6 +87,7 @@ class Marker_Celltype(models.Model):
 
 # model for LRpairs.
 class LRpairs(models.Model):
+    id = models.AutoField(primary_key=True)
     dataset = models.CharField(max_length=200)
     source = models.CharField(max_length=200)
     target = models.CharField(max_length=200)
@@ -94,6 +103,7 @@ class LRpairs(models.Model):
 
 # model for SignalPathway.
 class SignalPathway(models.Model):
+    id = models.AutoField(primary_key=True)
     dataset = models.CharField(max_length=200)
     source = models.CharField(max_length=200)
     target = models.CharField(max_length=200)

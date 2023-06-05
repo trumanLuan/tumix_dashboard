@@ -5,7 +5,7 @@
 {% include "sidebar.html" %}
 <div id="layoutSidenav_content">
 
-    <h3>Dataset: {{ value }}</h3>
+    <h3>Dataset: {{ dataset_name }}</h3>
 
     <h3 class="mt-4"> Study Meta-info </h3>
     <div class="card mb-4">
@@ -16,18 +16,12 @@
                     <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                         <tbody>
                             <tr>
-                                <td class="tab_header">Title</td>
-                                <td colspan="3" id="gse_title" class="tab_dat">{{ dataset_title }}</td>
+                                <td >Title: {{ dataset_row.study_title }}</td>
                             </tr>
                             <tr>
-                                <td class="tab_header">Organism</td>
-                                <td id="gse_organism" class="tab_dat">{{ dataset_organism }}</td>
-                                <td colspan="1" class="tab_header">GEO</td>
-                                <td colspan="1" class="tab_dat" id="gse_link"> {{ dataset_geo }}</td>
-                            </tr>
-                            <tr>
-                                <td class="tab_header">Design</td>
-                                <td colspan="3" id="gse_design" class="tab_dat"> {{ dataset_design }} </td>
+                                <td >Organism: {{ dataset_row.species }}</td>
+                                <td >GEO: {{ dataset_row.study_geo }}</td>
+                                <td >Publication: {{ dataset_row.study_pmid }}</td>
                             </tr>
                         </tbody>
                     </table>
@@ -281,9 +275,51 @@
                             </div>
                             <div id="collapse-diff-genes-by-celltype" class="panel-collapse collapse">
                                 <div class="panel-body">
-                                    Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred
-                                    nesciunt sapiente ea proident. Ad vegan excepteur butcher vice
-                                    lomo.
+                                    <div class="card-body">
+                                        <div class="card-header"><i class="fas fa-table mr-1"></i>DataTable: Gene Markers of Major Cell Types </div>
+                                        <div class="table-responsive">
+                                            <table class="table table-bordered" id="dataTable-celltype-marker" width="100%" cellspacing="0">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Dataset</th>
+                                                        <th>Cell Type</th>
+                                                        <th>Gene</th>
+                                                        <th>Avg_log2FC</th>
+                                                        <th>Pct1</th>
+                                                        <th>Pct2</th>
+                                                        <th>P-value</th>
+                                                        <th>Adjusted P</th>
+                                                    </tr>
+                                                </thead>
+                                                <tfoot>
+                                                    <tr>
+                                                        <th>Dataset</th>
+                                                        <th>Cell Type</th>
+                                                        <th>Gene</th>
+                                                        <th>Avg_log2FC</th>
+                                                        <th>Pct1</th>
+                                                        <th>Pct2</th>
+                                                        <th>P-value</th>
+                                                        <th>Adjusted P</th>
+                                                    </tr>
+                                                </tfoot>
+                                                <tbody>
+                                                   {% for row in row_celltype_marker %}
+                                                    <tr>
+                                                        <td>{{ row.dataset }}</td>
+                                                        <td>{{ row.cluster }}</td>
+                                                        <td>{{ row.gene }}</td>
+                                                        <td>{{ row.avg_log2fc }}</td>
+                                                        <td>{{ row.pct1 }}</td>
+                                                        <td>{{ row.pct2 }}</td>
+                                                        <td>{{ row.p_val }}</td>
+                                                        <td>{{ row.p_val_adj }}</td>
+                                                    </tr>
+                                                    {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -393,9 +429,54 @@
                         </div>
                         <div id="collapse-LR-between-celltypes" class="panel-collapse collapse">
                             <div class="panel-body">
-                                Nihil anim keffiyeh helvetica, craft beer labore wes anderson
-                                cred nesciunt sapiente ea proident. Ad vegan excepteur butcher
-                                vice lomo.
+                                <div class="card-body">
+                                        <div class="card-header"><i class="fas fa-table mr-1"></i>DataTable: Ligand-receptor Probability between Cell Subtypes </div>
+                                        <div class="table-responsive">
+                                            <table class="table table-bordered" id="dataTable-LRprob" width="100%" cellspacing="0">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Dataset</th>
+                                                        <th>Source</th>
+                                                        <th>Target</th>
+                                                        <th>Pathway</th>
+                                                        <th>Ligand</th>
+                                                        <th>Receptor</th>
+                                                        <th>Prob</th>
+                                                        <th>P-value</th>
+                                                        <th>External</th>
+                                                    </tr>
+                                                </thead>
+                                                <tfoot>
+                                                    <tr>
+                                                        <th>Dataset</th>
+                                                        <th>Source</th>
+                                                        <th>Target</th>
+                                                        <th>Pathway</th>
+                                                        <th>Ligand</th>
+                                                        <th>Receptor</th>
+                                                        <th>Prob</th>
+                                                        <th>P-value</th>
+                                                        <th>External</th>
+                                                    </tr>
+                                                </tfoot>
+                                                <tbody>
+                                                   {% for row in row_LRprob %}
+                                                    <tr>
+                                                        <td>{{ row.dataset }}</td>
+                                                        <td>{{ row.source }}</td>
+                                                        <td>{{ row.target }}</td>
+                                                        <td>{{ row.pathway }}</td>
+                                                        <td>{{ row.ligand }}</td>
+                                                        <td>{{ row.receptor }}</td>
+                                                        <td>{{ row.prob }}</td>
+                                                        <td>{{ row.pval }}</td>
+                                                        <td>{{ row.evidence }}</td>
+                                                    </tr>
+                                                    {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -412,9 +493,45 @@
                         </div>
                         <div id="collapse-signal-path-between-celltypes" class="panel-collapse collapse">
                             <div class="panel-body">
-                                Nihil anim keffiyeh helvetica, craft beer labore wes anderson
-                                cred nesciunt sapiente ea proident. Ad vegan excepteur butcher
-                                vice lomo.
+                                <div class="card-body">
+                                        <div class="card-header"><i class="fas fa-table mr-1"></i>DataTable: Significant Signaling Pathways between Cell Subtypes </div>
+                                        <div class="table-responsive">
+                                            <table class="table table-bordered" id="dataTable-signalpathway" width="100%" cellspacing="0">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Dataset</th>
+                                                        <th>Source</th>
+                                                        <th>Target</th>
+                                                        <th>Pathway</th>
+                                                        <th>Prob</th>
+                                                        <th>P-value</th>
+                                                    </tr>
+                                                </thead>
+                                                <tfoot>
+                                                    <tr>
+                                                        <th>Dataset</th>
+                                                        <th>Source</th>
+                                                        <th>Target</th>
+                                                        <th>Pathway</th>
+                                                        <th>Prob</th>
+                                                        <th>P-value</th>
+                                                    </tr>
+                                                </tfoot>
+                                                <tbody>
+                                                   {% for row in row_signalpathway %}
+                                                    <tr>
+                                                        <td>{{ row.dataset }}</td>
+                                                        <td>{{ row.source }}</td>
+                                                        <td>{{ row.target }}</td>
+                                                        <td>{{ row.pathway }}</td>
+                                                        <td>{{ row.prob }}</td>
+                                                        <td>{{ row.pval }}</td>
+                                                    </tr>
+                                                    {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -446,6 +563,9 @@
 <!-- for #dataTable functions-->
 <script type="text/javascript">
        $(document).ready(function() {
+          $('#dataTable-LRprob').dataTable();
+          $('#dataTable-signalpathway').dataTable();
+          $('#dataTable-celltype-marker').dataTable();
           $('#dataTable-subcluster-marker').dataTable();
           $('#dataTable-sample').dataTable();
     });

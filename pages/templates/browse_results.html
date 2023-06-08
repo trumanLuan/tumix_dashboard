@@ -6,29 +6,15 @@
 <div id="layoutSidenav_content">
 
     <h3>Dataset: {{ dataset_name }}</h3>
+    <h4>Title: {{ dataset_row.study_title }}</h4>
+    <h5>
+        <p>
+            <a href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc={{ dataset_row.study_geo }}">GEO link </a>
+            <span> | </span>
+            <a href="https://pubmed.ncbi.nlm.nih.gov/{{ dataset_row.study_pmid }}/">Publication link </a>
+        </p>
+    </h5>
 
-    <h3 class="mt-4"> Study Meta-info </h3>
-    <div class="card mb-4">
-        <!-- Study meta-info -->
-        <div class="card-body">
-            <div class="table-container">
-                <!-- meta-info table -->
-                    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                        <tbody>
-                            <tr>
-                                <td >Title: {{ dataset_row.study_title }}</td>
-                            </tr>
-                            <tr>
-                                <td >Organism: {{ dataset_row.species }}</td>
-                                <td >GEO: {{ dataset_row.study_geo }}</td>
-                                <td >Publication: {{ dataset_row.study_pmid }}</td>
-                            </tr>
-                        </tbody>
-                    </table>
-            </div>
-
-        </div>
-    </div>
 
     <!-- Browse-by-sample region -->
     <h3 class="mt-4"> Browse by Samples </h3>

@@ -30,7 +30,9 @@ def browse_results(request):
 
     ## dataset meta-information.
     dataset_row = get_object_or_404(Study, dataset=get_datasetindex)
-    # print("current row is :", dataset_row.study_title)
+
+    ## brow_by_sample, UMI counts of single cells.
+    
 
     # subset rows from Marker_Subcluster table.
     try:

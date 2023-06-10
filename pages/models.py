@@ -36,7 +36,9 @@ class Study(models.Model):
         return self.index
 
 # # model for Sample table.
-# class Sample(models.Model):
+class Sample(models.Model):
+    id = models.AutoField(primary_key=True)
+
 
 # model for SingleCell.
 class SingleCell(models.Model):

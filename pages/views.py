@@ -32,6 +32,7 @@ def browse_results(request):
     dataset_row = get_object_or_404(Study, dataset=get_datasetindex)
 
     ## brow_by_sample, UMI counts of single cells.
+    umi_count_by_sample_svg_path = 'static/assets/img/browse_results/' + get_datasetindex + "_umi_count_by_sample.svg"
 
     # subset rows from pages_marker_celltype table.
     try:
@@ -63,7 +64,8 @@ def browse_results(request):
         'row_subcluster_marker': row_subcluster_marker,
         'row_celltype_marker': row_celltype_marker,
         'row_LRpairs': row_LRpairs,
-        'row_signalpathway': row_signalpathway
+        'row_signalpathway': row_signalpathway,
+        'umi_count_by_sample_svg_path': umi_count_by_sample_svg_path
     })
 
 # views for goto search page from the sidebar.

@@ -3,6 +3,7 @@
 {% block content %}
 {% include "navbar-simple.html" %}
 {% include "sidebar.html" %}
+
 <div id="layoutSidenav_content">
 
     <h3>Dataset: {{ dataset_name }}</h3>
@@ -96,10 +97,11 @@
                                 </h4>
                             </div>
                             <div id="collapse-umi-count" class="panel-collapse collapse">
-                                <div class="panel-body">
-                                    Nihil anim keffiyeh helvetica, craft beer labore wes anderson
-                                    cred nesciunt sapiente ea proident. Ad vegan excepteur butcher
-                                    vice lomo.
+                                <div class="card mb-4">
+                                    <div class="card-header"><i class="fas fa-chart-area mr-1"></i>UMI counts by sample</div>
+                                    <div class="card-body">
+                                         <img src="{{ umi_count_by_sample_svg_path }}" alt="umi_count_by_sample" >
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -115,10 +117,11 @@
                                 </h4>
                             </div>
                             <div id="collapse-feature-count" class="panel-collapse collapse">
-                                <div class="panel-body">
-                                    Nihil anim keffiyeh helvetica, craft beer labore wes anderson
-                                    cred nesciunt sapiente ea proident. Ad vegan excepteur butcher
-                                    vice lomo.
+                                <div class="card mb-4">
+                                    <div class="card-header"><i class="fas fa-chart-area mr-1"></i>Feature counts by sample</div>
+                                    <div class="card-body">
+                                         <img src="{{ feature_count_by_sample_svg_path }}" alt="feature_count_by_sample">
+                                    </div>
                                 </div>
                             </div>
                         </div>

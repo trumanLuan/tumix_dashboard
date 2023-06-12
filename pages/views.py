@@ -32,21 +32,38 @@ def browse_results(request):
     dataset_row = get_object_or_404(Study, dataset=get_datasetindex)
 
     ## brow_by_sample, UMI counts of single cells.
-    
 
-    # subset rows from Marker_Subcluster table.
+    # subset rows from pages_marker_celltype table.
+    try:
+        row_celltype_marker = Marker_Celltype.objects.filter(dataset=get_datasetindex)
+    except Marker_Celltype.DoesNotExist:
+        row_celltype_marker = None
+
+    # subset rows from pages_marker_subcluster table.
     try:
         row_subcluster_marker = Marker_Subcluster.objects.filter(dataset=get_datasetindex)
     except Marker_Subcluster.DoesNotExist:
         row_subcluster_marker = None
 
+    # subset rows from pages_lrpairs table.
+    try:
+        row_LRpairs = LRpairs.objects.filter(dataset=get_datasetindex)
+    except LRpairs.DoesNotExist:
+        row_LRpairs = None
+
+    # subset rows from pages_signalpathway table.
+    try:
+        row_signalpathway = SignalPathway.objects.filter(dataset=get_datasetindex)
+    except SignalPathway.DoesNotExist:
+        row_signalpathway = None
+
     return render(request, "browse_results.html", {
         'dataset_name': get_datasetindex,
         'dataset_row': dataset_row,
         'row_subcluster_marker': row_subcluster_marker,
-        'major_celltype_marker': Marker_Celltype.objects.all(),
-        'LRpairs': LRpairs.objects.all(),
-        'signal_pathway': SignalPathway.objects.all()
+        'row_celltype_marker': row_celltype_marker,
+        'row_LRpairs': row_LRpairs,
+        'row_signalpathway': row_signalpathway
     })
 
 # views for goto search page from the sidebar.

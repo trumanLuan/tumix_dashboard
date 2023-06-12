@@ -295,11 +295,11 @@
                                                         <td>{{ row.dataset }}</td>
                                                         <td>{{ row.cluster }}</td>
                                                         <td>{{ row.gene }}</td>
-                                                        <td>{{ row.avg_log2fc }}</td>
+                                                        <td>{{ row.avg_log2FC }}</td>
                                                         <td>{{ row.pct1 }}</td>
                                                         <td>{{ row.pct2 }}</td>
-                                                        <td>{{ row.p_val }}</td>
-                                                        <td>{{ row.p_val_adj }}</td>
+                                                        <td>{{ row.pval }}</td>
+                                                        <td>{{ row.padj }}</td>
                                                     </tr>
                                                     {% endfor %}
                                                 </tbody>
@@ -356,11 +356,11 @@
                                                         <td>{{ row.dataset }}</td>
                                                         <td>{{ row.cluster }}</td>
                                                         <td>{{ row.gene }}</td>
-                                                        <td>{{ row.avg_log2fc }}</td>
+                                                        <td>{{ row.avg_log2FC }}</td>
                                                         <td>{{ row.pct1 }}</td>
                                                         <td>{{ row.pct2 }}</td>
-                                                        <td>{{ row.p_val }}</td>
-                                                        <td>{{ row.p_val_adj }}</td>
+                                                        <td>{{ row.pval }}</td>
+                                                        <td>{{ row.padj }}</td>
                                                     </tr>
                                                     {% endfor %}
                                                 </tbody>
@@ -446,7 +446,7 @@
                                                     </tr>
                                                 </tfoot>
                                                 <tbody>
-                                                   {% for row in row_LRprob %}
+                                                   {% for row in row_LRpairs %}
                                                     <tr>
                                                         <td>{{ row.dataset }}</td>
                                                         <td>{{ row.source }}</td>

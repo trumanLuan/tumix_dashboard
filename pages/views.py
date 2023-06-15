@@ -34,6 +34,12 @@ def browse_results(request):
     ## brow_by_sample, UMI counts of single cells.
     umi_count_by_sample_svg_path = 'static/assets/img/browse_results/' + get_datasetindex + "_umi_count_by_sample.svg"
 
+    ## brow_by_sample, feature counts of single cells.
+    feature_count_by_sample_svg_path = 'static/assets/img/browse_results/' + get_datasetindex + "_feature_count_by_sample.svg"
+
+    ## brow_by_sample,singlecell counts by samples.
+    singlecell_count_by_sample_svg_path = 'static/assets/img/browse_results/' + get_datasetindex + "_singlecell_count_by_samples.svg"
+
     # subset rows from pages_marker_celltype table.
     try:
         row_celltype_marker = Marker_Celltype.objects.filter(dataset=get_datasetindex)
@@ -65,7 +71,9 @@ def browse_results(request):
         'row_celltype_marker': row_celltype_marker,
         'row_LRpairs': row_LRpairs,
         'row_signalpathway': row_signalpathway,
-        'umi_count_by_sample_svg_path': umi_count_by_sample_svg_path
+        'umi_count_by_sample_svg_path': umi_count_by_sample_svg_path,
+        'feature_count_by_sample_svg_path': feature_count_by_sample_svg_path,
+        'singlecell_count_by_sample_svg_path': singlecell_count_by_sample_svg_path
     })
 
 # views for goto search page from the sidebar.

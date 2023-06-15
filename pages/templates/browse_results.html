@@ -126,21 +126,22 @@
                             </div>
                         </div>
 
-                        <!-- 可折叠区域-cell type count by sample -->
+                        <!-- 可折叠区域-single cell count by sample -->
                         <div class="panel panel-default">
                             <div class="panel-heading">
                                 <h4 class="panel-title">
                                     <a data-toggle="collapse" data-parent="#accordion"
                                     href="#collapse-cellType-count">
-                                    Statistics of Single Cells by Cell Type ->>
+                                    Statistics of Single Cells by Sample ->>
                                     </a>
                                 </h4>
                             </div>
                             <div id="collapse-cellType-count" class="panel-collapse collapse">
-                                <div class="panel-body">
-                                    Nihil anim keffiyeh helvetica, craft beer labore wes anderson
-                                    cred nesciunt sapiente ea proident. Ad vegan excepteur butcher
-                                    vice lomo.
+                                <div class="card mb-4">
+                                    <div class="card-header"><i class="fas fa-chart-area mr-1"></i>Feature counts by sample</div>
+                                    <div class="card-body">
+                                         <img src="{{ singlecell_count_by_sample_svg_path }}" alt="singlecell_count_by_sample">
+                                    </div>
                                 </div>
                             </div>
                         </div>

@@ -38,7 +38,19 @@ def browse_results(request):
     feature_count_by_sample_svg_path = 'static/assets/img/browse_results/' + get_datasetindex + "_feature_count_by_sample.svg"
 
     ## brow_by_sample,singlecell counts by samples.
-    singlecell_count_by_sample_svg_path = 'static/assets/img/browse_results/' + get_datasetindex + "_singlecell_count_by_samples.svg"
+    singlecell_count_by_sample_svg_path = 'static/assets/img/browse_results/' + get_datasetindex + "_singlecell_count_by_sample.svg"
+
+    ## brow_by_sample, cell clustering results by sample.
+
+
+
+    ## brow_by_celltype, cell stat by cell types.
+
+
+    ## brow_by_celltype, cell clustering results by cell type.
+
+
+
 
     # subset rows from pages_marker_celltype table.
     try:

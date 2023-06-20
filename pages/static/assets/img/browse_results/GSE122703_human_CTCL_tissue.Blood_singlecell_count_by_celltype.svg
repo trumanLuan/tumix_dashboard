@@ -1,0 +1,68 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' class='svglite' width='252.00pt' height='216.00pt' viewBox='0 0 252.00 216.00'>
+<defs>
+  <style type='text/css'><![CDATA[
+    .svglite line, .svglite polyline, .svglite polygon, .svglite path, .svglite rect, .svglite circle {
+      fill: none;
+      stroke: #000000;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      stroke-miterlimit: 10.00;
+    }
+    .svglite text {
+      white-space: pre;
+    }
+  ]]></style>
+</defs>
+<rect width='100%' height='100%' style='stroke: none; fill: #FFFFFF;'/>
+<defs>
+  <clipPath id='cpMC4wMHwyNTIuMDB8MC4wMHwyMTYuMDA='>
+    <rect x='0.00' y='0.00' width='252.00' height='216.00' />
+  </clipPath>
+</defs>
+<g clip-path='url(#cpMC4wMHwyNTIuMDB8MC4wMHwyMTYuMDA=)'>
+<rect x='0.00' y='0.00' width='252.00' height='216.00' style='stroke-width: 1.07; stroke: #FFFFFF; fill: #FFFFFF;' />
+</g>
+<defs>
+  <clipPath id='cpMjkuOTl8MjQ2LjUyfDUuNDh8MTI2Ljc2'>
+    <rect x='29.99' y='5.48' width='216.53' height='121.28' />
+  </clipPath>
+</defs>
+<g clip-path='url(#cpMjkuOTl8MjQ2LjUyfDUuNDh8MTI2Ljc2)'>
+<rect x='29.99' y='5.48' width='216.53' height='121.28' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
+<rect x='40.40' y='119.71' width='29.15' height='1.54' style='stroke-width: 1.07; stroke: none; stroke-linecap: butt; stroke-linejoin: miter; fill: #F8766D;' />
+<rect x='206.96' y='113.86' width='29.15' height='7.39' style='stroke-width: 1.07; stroke: none; stroke-linecap: butt; stroke-linejoin: miter; fill: #E76BF3;' />
+<rect x='165.32' y='102.27' width='29.15' height='18.98' style='stroke-width: 1.07; stroke: none; stroke-linecap: butt; stroke-linejoin: miter; fill: #00B0F6;' />
+<rect x='82.04' y='64.00' width='29.15' height='57.25' style='stroke-width: 1.07; stroke: none; stroke-linecap: butt; stroke-linejoin: miter; fill: #A3A500;' />
+<rect x='123.68' y='10.99' width='29.15' height='110.26' style='stroke-width: 1.07; stroke: none; stroke-linecap: butt; stroke-linejoin: miter; fill: #00BF7D;' />
+<text x='54.98' y='131.12' text-anchor='middle' style='font-size: 9.96px;fill: #FFFFFF; font-family: "Arial";' textLength='19.38px' lengthAdjust='spacingAndGlyphs'>0.79</text>
+<text x='221.54' y='125.26' text-anchor='middle' style='font-size: 9.96px;fill: #FFFFFF; font-family: "Arial";' textLength='19.38px' lengthAdjust='spacingAndGlyphs'>3.78</text>
+<text x='179.90' y='113.68' text-anchor='middle' style='font-size: 9.96px;fill: #FFFFFF; font-family: "Arial";' textLength='19.38px' lengthAdjust='spacingAndGlyphs'>9.71</text>
+<text x='96.62' y='75.40' text-anchor='middle' style='font-size: 9.96px;fill: #FFFFFF; font-family: "Arial";' textLength='19.38px' lengthAdjust='spacingAndGlyphs'>29.3</text>
+<text x='138.26' y='22.40' text-anchor='middle' style='font-size: 9.96px;fill: #FFFFFF; font-family: "Arial";' textLength='24.91px' lengthAdjust='spacingAndGlyphs'>56.42</text>
+</g>
+<g clip-path='url(#cpMC4wMHwyNTIuMDB8MC4wMHwyMTYuMDA=)'>
+<polyline points='29.99,126.76 29.99,5.48 ' style='stroke-width: 1.07; stroke-linecap: butt;' />
+<text x='25.06' y='124.40' text-anchor='end' style='font-size: 8.80px;fill: #4D4D4D; font-family: "Arial";' textLength='4.90px' lengthAdjust='spacingAndGlyphs'>0</text>
+<text x='25.06' y='100.01' text-anchor='end' style='font-size: 8.80px;fill: #4D4D4D; font-family: "Arial";' textLength='19.58px' lengthAdjust='spacingAndGlyphs'>1000</text>
+<text x='25.06' y='75.61' text-anchor='end' style='font-size: 8.80px;fill: #4D4D4D; font-family: "Arial";' textLength='19.58px' lengthAdjust='spacingAndGlyphs'>2000</text>
+<text x='25.06' y='51.22' text-anchor='end' style='font-size: 8.80px;fill: #4D4D4D; font-family: "Arial";' textLength='19.58px' lengthAdjust='spacingAndGlyphs'>3000</text>
+<text x='25.06' y='26.83' text-anchor='end' style='font-size: 8.80px;fill: #4D4D4D; font-family: "Arial";' textLength='19.58px' lengthAdjust='spacingAndGlyphs'>4000</text>
+<polyline points='27.26,121.25 29.99,121.25 ' style='stroke-width: 1.07; stroke: #333333; stroke-linecap: butt;' />
+<polyline points='27.26,96.86 29.99,96.86 ' style='stroke-width: 1.07; stroke: #333333; stroke-linecap: butt;' />
+<polyline points='27.26,72.46 29.99,72.46 ' style='stroke-width: 1.07; stroke: #333333; stroke-linecap: butt;' />
+<polyline points='27.26,48.07 29.99,48.07 ' style='stroke-width: 1.07; stroke: #333333; stroke-linecap: butt;' />
+<polyline points='27.26,23.68 29.99,23.68 ' style='stroke-width: 1.07; stroke: #333333; stroke-linecap: butt;' />
+<polyline points='29.99,126.76 246.52,126.76 ' style='stroke-width: 1.07; stroke-linecap: butt;' />
+<polyline points='54.98,129.50 54.98,126.76 ' style='stroke-width: 1.07; stroke: #333333; stroke-linecap: butt;' />
+<polyline points='96.62,129.50 96.62,126.76 ' style='stroke-width: 1.07; stroke: #333333; stroke-linecap: butt;' />
+<polyline points='138.26,129.50 138.26,126.76 ' style='stroke-width: 1.07; stroke: #333333; stroke-linecap: butt;' />
+<polyline points='179.90,129.50 179.90,126.76 ' style='stroke-width: 1.07; stroke: #333333; stroke-linecap: butt;' />
+<polyline points='221.54,129.50 221.54,126.76 ' style='stroke-width: 1.07; stroke: #333333; stroke-linecap: butt;' />
+<text transform='translate(58.13,131.69) rotate(-90)' text-anchor='end' style='font-size: 8.80px;fill: #4D4D4D; font-family: "Arial";' textLength='42.56px' lengthAdjust='spacingAndGlyphs'>Monocytes</text>
+<text transform='translate(99.77,131.69) rotate(-90)' text-anchor='end' style='font-size: 8.80px;fill: #4D4D4D; font-family: "Arial";' textLength='78.83px' lengthAdjust='spacingAndGlyphs'>T cells, CD4+, naive</text>
+<text transform='translate(141.41,131.69) rotate(-90)' text-anchor='end' style='font-size: 8.80px;fill: #4D4D4D; font-family: "Arial";' textLength='73.76px' lengthAdjust='spacingAndGlyphs'>T cells, CD4+, Tcm</text>
+<text transform='translate(183.05,131.69) rotate(-90)' text-anchor='end' style='font-size: 8.80px;fill: #4D4D4D; font-family: "Arial";' textLength='74.25px' lengthAdjust='spacingAndGlyphs'>T cells, CD4+, Tem</text>
+<text transform='translate(224.69,131.69) rotate(-90)' text-anchor='end' style='font-size: 8.80px;fill: #4D4D4D; font-family: "Arial";' textLength='74.25px' lengthAdjust='spacingAndGlyphs'>T cells, CD8+, Tem</text>
+</g>
+</svg>

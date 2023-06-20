@@ -157,10 +157,11 @@
                                 </h4>
                             </div>
                             <div id="collapse-vis-cellcluster" class="panel-collapse collapse">
-                                <div class="panel-body">
-                                    Nihil anim keffiyeh helvetica, craft beer labore wes anderson
-                                    cred nesciunt sapiente ea proident. Ad vegan excepteur butcher
-                                    vice lomo.
+                                <div class="card mb-4">
+                                    <div class="card-header"><i class="fas fa-chart-area mr-1"></i>Cell Clustering by sample</div>
+                                    <div class="card-body">
+                                         <img src="{{ cell_clust_vis_by_sample }}" alt="cell_clust_vis_by_sample">
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -177,7 +178,7 @@
                 <main>
                     <div class="panel-group" id="accordion">
 
-                        <!-- 可折叠区域 total-cell-stat by combining all samples -->
+                        <!-- 可折叠区域 total-cell-stat by major celltype. -->
                         <div class="panel panel-default">
                             <div class="panel-heading">
                                 <h4 class="panel-title">
@@ -188,10 +189,11 @@
                                 </h4>
                             </div>
                             <div id="collapse-total-cell-stat" class="panel-collapse collapse">
-                                <div class="panel-body">
-                                    Nihil anim keffiyeh helvetica, craft beer labore wes anderson
-                                    cred nesciunt sapiente ea proident. Ad vegan excepteur butcher
-                                    vice lomo.
+                                <div class="card mb-4">
+                                    <div class="card-header"><i class="fas fa-chart-area mr-1"></i>Single Cell Statistic by Major Cell Type</div>
+                                    <div class="card-body">
+                                         <img src="{{ singlecell_count_by_celltype_svg }}" alt="singlecell_count_by_celltype">
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -207,15 +209,14 @@
                                 </h4>
                             </div>
                             <div id="collapse-vis-cellcluster-by-celltype" class="panel-collapse collapse">
-                                <div class="panel-body">
-                                    Nihil anim keffiyeh helvetica, craft beer labore wes anderson
-                                    cred nesciunt sapiente ea proident. Ad vegan excepteur butcher
-                                    vice lomo.
+                                <div class="card mb-4">
+                                    <div class="card-header"><i class="fas fa-chart-area mr-1"></i>Cell Clustering by Major Cell Type</div>
+                                    <div class="card-body">
+                                         <img src="{{ cell_clust_vis_by_celltype }}" alt="cell_clust_vis_by_celltype">
+                                    </div>
                                 </div>
                             </div>
                         </div>
-
-
 
 
                         <!-- 可折叠区域 diff-genes-by-celltype -->
@@ -365,9 +366,10 @@
                         </div>
                         <div id="collapse-vis-aggregated-cci" class="panel-collapse collapse">
                             <div class="panel-body">
-                                Nihil anim keffiyeh helvetica, craft beer labore wes anderson
-                                cred nesciunt sapiente ea proident. Ad vegan excepteur butcher
-                                vice lomo.
+                               <div class="card-header"><i class="fas fa-chart-area mr-1"></i>Cell communication network - weighted</div>
+                                <div class="card-body">
+                                     <img src="{{ cell_commu_vis_svg_path }}" alt="ccc-vis">
+                                </div>
                             </div>
                         </div>
                     </div>

@@ -41,15 +41,17 @@ def browse_results(request):
     singlecell_count_by_sample_svg_path = 'static/assets/img/browse_results/' + get_datasetindex + "_singlecell_count_by_sample.svg"
 
     ## brow_by_sample, cell clustering results by sample.
-
+    cell_clust_vis_by_sample = 'static/assets/img/browse_results/' + get_datasetindex + "_vis_tsne_by_sample.svg"
 
 
     ## brow_by_celltype, cell stat by cell types.
-
+    singlecell_count_by_celltype_svg = 'static/assets/img/browse_results/' + get_datasetindex + "_singlecell_count_by_celltype.svg"
 
     ## brow_by_celltype, cell clustering results by cell type.
+    cell_clust_vis_by_celltype = 'static/assets/img/browse_results/' + get_datasetindex + "_vis_tsne_by_celltype.svg"
 
-
+    ## brow_by_ccc, cell_commu_vis.
+    cell_commu_vis_svg_path = 'static/assets/img/browse_results/' + get_datasetindex + "_ccc_network_weighted.svg"
 
 
     # subset rows from pages_marker_celltype table.
@@ -85,7 +87,11 @@ def browse_results(request):
         'row_signalpathway': row_signalpathway,
         'umi_count_by_sample_svg_path': umi_count_by_sample_svg_path,
         'feature_count_by_sample_svg_path': feature_count_by_sample_svg_path,
-        'singlecell_count_by_sample_svg_path': singlecell_count_by_sample_svg_path
+        'singlecell_count_by_sample_svg_path': singlecell_count_by_sample_svg_path,
+        'cell_commu_vis_svg_path': cell_commu_vis_svg_path,
+        'cell_clust_vis_by_sample': cell_clust_vis_by_sample,
+        'cell_clust_vis_by_celltype': cell_clust_vis_by_celltype,
+        'singlecell_count_by_celltype_svg': singlecell_count_by_celltype_svg
     })
 
 # views for goto search page from the sidebar.

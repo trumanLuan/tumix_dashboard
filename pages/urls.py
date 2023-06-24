@@ -7,6 +7,6 @@ urlpatterns = [
     re_path(r"index$", views.home, name='index'),
     re_path(r"browse$", views.browse, name='browse'),
     re_path(r"browse_results$", views.browse_results, name='browse'),
-    re_path(r"search$", views.search, name='search'),
+    re_path(r"search$", views.process_search_forms, name='search'),
     re_path(r"help$", views.help, name='help')
 ]

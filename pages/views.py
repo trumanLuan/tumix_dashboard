@@ -8,6 +8,7 @@ from .models import Marker_Celltype
 from .models import LRpairs
 from .models import SingleCell
 from .models import SignalPathway
+from .forms import CelltypeGeneMarkerForm, CellsubclusterGeneMarkerForm
 
 
 # Create your views here.
@@ -95,8 +96,29 @@ def browse_results(request):
     })
 
 # views for goto search page from the sidebar.
-def search(request):
-    return render(request, 'search.html')
+def process_search_forms(request):
+    form1 = CelltypeGeneMarkerForm(request.POST or None)
+    form2 = CellsubclusterGeneMarkerForm(request.POST or None)
+    results1 = []
+    results2 = []
+
+    if form1.is_valid():
+        # 处理表单1提交的逻辑
+        # 从数据库中检索结果
+        results1 = Marker_Celltype.objects.filter(...)  # 根据表单1的数据过滤结果
+
+    if form2.is_valid():
+        # 处理表单2提交的逻辑
+        # 从数据库中检索结果
+        results2 = Marker_Subcluster.objects.filter(...)  # 根据表单2的数据过滤结果
+
+    return render(request, 'search.html', {
+        'form1': form1,
+        'form2': form2,
+        'results1': results1,
+        'results2': results2
+    })
+
 
 # views for goto help page from the sidebar.
 def help(request):

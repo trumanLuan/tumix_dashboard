@@ -8,8 +8,7 @@ from .models import Marker_Celltype
 from .models import LRpairs
 from .models import SingleCell
 from .models import SignalPathway
-from .forms import CelltypeGeneMarkerForm, CellsubclusterGeneMarkerForm
-from .forms import testForm
+from .forms import sampleForm, geneMarkerForm, geneExprForm, cellCommuForm
 
 
 # Create your views here.
@@ -18,9 +17,6 @@ def index(request):
 
 def home(request):
     return render(request, 'index.html')
-
-# views for search function in the homepage.
-
 
 # views for goto browse page from the sidebar.
 def browse(request):
@@ -98,19 +94,24 @@ def browse_results(request):
 
 # views for goto search page from the sidebar.
 def process_search_forms(request):
+    search_sample_form = sampleForm()
+    search_gene_marker_form = geneMarkerForm()
+    search_gene_expr_form = geneExprForm()
+    search_cell_commu_form = cellCommuForm()
+
     if request.method == 'POST':
-        form1 = testForm(request.POST)
-        form2 = CelltypeGeneMarkerForm(request.POST)
-        # if form1.is_valid():
-        #     return HttpResponseRedirect('/search/')
-        # if form2.is_valid():
-        #     return HttpResponseRedirect('/search/')
-    else:
-        form1 = testForm()
-        form2 = CelltypeGeneMarkerForm()
+        if 'genemarker_tab_submit' in request.POST:
+            search_gene_marker_form = geneMarkerForm(request.POST)
+            if search_gene_marker_form.is_valid():
+                field_value_dataset = search_gene_marker_form.cleaned_data['dataset']
+                field_value_
+
+
     return render(request, 'search.html', {
-        'form1': form1,
-        'form2': form2
+        'search_sample_form': search_sample_form,
+        'search_gene_marker_form': search_gene_marker_form,
+        'search_gene_expr_form': search_gene_expr_form,
+        'search_cell_commu_form': search_cell_commu_form
     })
 
 

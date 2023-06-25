@@ -12,32 +12,46 @@
             <a class="nav-link active" id="search-sample-tab" data-toggle="tab" href="#search-sample" role="tab" aria-controls="search-sample" aria-selected="true">Sample Meta</a>
           </li>
           <li class="nav-item">
+            <a class="nav-link" id="search-gene-marker-tab" data-toggle="tab" href="#search-gene-marker" role="tab" aria-controls="search-gene-marker" aria-selected="false">Gene Markers</a>
+          </li>
+          <li class="nav-item">
             <a class="nav-link" id="search-gene-expr-tab" data-toggle="tab" href="#search-gene-expr" role="tab" aria-controls="search-gene-expr" aria-selected="false">Gene Expression</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" id="search-gene-corr-tab" data-toggle="tab" href="#search-gene-corr" role="tab" aria-controls="search-gene-corr" aria-selected="false">Gene Correlation</a>
+            <a class="nav-link" id="search-cell-commu-tab" data-toggle="tab" href="#search-cell-commu" role="tab" aria-controls="search-cell-commu" aria-selected="false">Cell Communication</a>
           </li>
       <!-- 添加其他选项卡... -->
     </ul>
 
     <div class="tab-content" id="myTabContent">
           <div class="tab-pane fade show active" id="search-sample" role="tabpanel" aria-labelledby="search-sample-tab">
-            <!-- Home选项卡的内容 -->
-               <form method="post" >
-                    {% csrf_token %}
-                    {{ form1.as_p }}
-                    <button type="submit">提交表单1</button>
-                </form>
+            <!-- search-sample 选项卡的页面内容 -->
+              <div class="panel-body">
+                  <div class="card-body">
+                          <form method="post" >
+                                {% csrf_token %}
+                                {{ form1.as_p }}
+                                <button type="submit" id="sample_tab_submit">Submit</button>
+                          </form>
+                  </div>
+              </div>
+          </div>
 
-                <form method="post" >
-                    {% csrf_token %}
-                    {{ form2.as_p }}
-                    <button type="submit">提交表单2</button>
-                </form>
+          <div class="tab-pane fade" id="search-gene-marker" role="tabpanel" aria-labelledby="search-gene-marker-tab">
+                <!-- search-gene-marker 选项卡的页面内容 -->
+              <div class="panel-body">
+                  <div class="card-body">
+                      <form method="post" >
+                            {% csrf_token %}
+                            {{ form2.as_p }}
+                            <button type="submit" id="genemarker_tab_submit">Submit</button>
+                      </form>
+                  </div>
+              </div>
           </div>
 
           <div class="tab-pane fade" id="search-gene-expr" role="tabpanel" aria-labelledby="search-gene-expr-tab">
-            <!-- About选项卡的内容 -->
+            <!-- search-gene-expr 选项卡的页面内容 -->
                <div class="form_div">
                     <form id="user-info" class="form" action="{% url 'form' %}" method="post">
                         <div class="input-group">
@@ -49,15 +63,15 @@
                             <input type="email" id="user-email" name="user-email" required/>
                         </div>
                         <div class="input-group">
-                            <button type="submit" id="submit">Submit</button>
+                            <button type="submit" id="geneexpr_tab_submit">Submit</button>
                         </div>
                     </form>
                  </div>
           </div>
           <!-- 添加其他选项卡对应的内容... -->
 
-         <div class="tab-pane fade" id="search-gene-corr" role="tabpanel" aria-labelledby="search-gene-corr-tab">
-            <!-- About选项卡的内容 -->
+         <div class="tab-pane fade" id="search-cell-commu" role="tabpanel" aria-labelledby="search-cell-commu-tab">
+            <!-- search-cell-commu 选项卡的页面内容 -->
                <div class="form_div">
                     <form id="user-info" class="form" action="{% url 'form' %}" method="post">
                         <div class="input-group">
@@ -69,7 +83,7 @@
                             <input type="email" id="user-email" name="user-email" required/>
                         </div>
                         <div class="input-group">
-                            <button type="submit" id="submit">Submit</button>
+                            <button type="submit" id="cellcommu_tab_submit">Submit</button>
                         </div>
                     </form>
                  </div>

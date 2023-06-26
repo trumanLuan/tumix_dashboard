@@ -92,27 +92,32 @@ def browse_results(request):
         'singlecell_count_by_celltype_svg': singlecell_count_by_celltype_svg
     })
 
-# views for goto search page from the sidebar.
 def process_search_forms(request):
-    search_sample_form = sampleForm()
-    search_gene_marker_form = geneMarkerForm()
-    search_gene_expr_form = geneExprForm()
-    search_cell_commu_form = cellCommuForm()
-
     if request.method == 'POST':
-        if 'genemarker_tab_submit' in request.POST:
-            search_gene_marker_form = geneMarkerForm(request.POST)
-            if search_gene_marker_form.is_valid():
-                field_value_dataset = search_gene_marker_form.cleaned_data['dataset']
-                field_value_
+        field1_checkbox = request.POST.get('field1_checkbox')
+        field1_condition = request.POST.get('field1_condition')
+        field1_value = request.POST.get('field1_value')
 
+        field2_checkbox = request.POST.get('field2_checkbox')
+        field2_condition = request.POST.get('field2_condition')
+        field2_value = request.POST.get('field2_value')
 
-    return render(request, 'search.html', {
-        'search_sample_form': search_sample_form,
-        'search_gene_marker_form': search_gene_marker_form,
-        'search_gene_expr_form': search_gene_expr_form,
-        'search_cell_commu_form': search_cell_commu_form
-    })
+        # 构建查询条件
+        filters = {}
+        if field1_checkbox:
+            field1_filter = f'dataset__{field1_condition}'
+            filters[field1_filter] = field1_value
+
+        if field2_checkbox:
+            field2_filter = f'cluster__{field2_condition}'
+            filters[field2_filter] = field2_value
+
+        # 执行数据库查询
+        results = Marker_Celltype.objects.filter(**filters)
+
+        return render(request, 'search.html', {'results': results})
+
+    return render(request, 'search.html')
 
 
 # views for goto help page from the sidebar.

@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% block content %}
+{% include "navbar-simple.html" %}
+{% include "sidebar.html" %}
+<div id="layoutSidenav_content">
+<main>
+
+    <!-- 选项卡 定义和初始化. -->
+    <ul class="nav nav-tabs" id="searchTabs" role="tablist">
+          <li class="nav-item">
+            <a class="nav-link active" id="search-sample-tab" data-toggle="tab" href="#search-sample" role="tab" aria-controls="search-sample" aria-selected="true">Sample Meta</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" id="search-gene-marker-tab" data-toggle="tab" href="#search-gene-marker" role="tab" aria-controls="search-gene-marker" aria-selected="false">Gene Markers</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" id="search-gene-expr-tab" data-toggle="tab" href="#search-gene-expr" role="tab" aria-controls="search-gene-expr" aria-selected="false">Gene Expression</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" id="search-cell-commu-tab" data-toggle="tab" href="#search-cell-commu" role="tab" aria-controls="search-cell-commu" aria-selected="false">Cell Communication</a>
+          </li>
+      <!-- 添加其他选项卡... -->
+    </ul>
+
+    <div class="tab-content" id="myTabContent">
+          <div class="tab-pane fade show active" id="search-sample" role="tabpanel" aria-labelledby="search-sample-tab">
+            <!-- search-sample 选项卡的页面内容 -->
+              <div class="panel-body">
+                  <div class="card-body">
+                          <form method="post" action="{% url 'search' %}" >
+                                {% csrf_token %}
+                                {{ search_sample_form.as_p }}
+                                <button type="submit" id="sample_tab_submit">Submit</button>
+                          </form>
+                  </div>
+              </div>
+          </div>
+
+          <div class="tab-pane fade" id="search-gene-marker" role="tabpanel" aria-labelledby="search-gene-marker-tab">
+                <!-- search-gene-marker 选项卡的页面内容 -->
+              <div class="panel-body">
+                  <div class="card-body">
+                      <form method="POST" action="{% url 'search' %}"  >
+                        {% csrf_token %}
+                        {{ search_gene_marker_form.as_p }}
+                        <button type="submit" id="genemarker_tab_submit">Submit</button>
+                      </form>
+
+                      {% if gene_markers_tab_results %}
+                          <h2>Search Results</h2>
+                          <ul>
+                            {% for result in gene_markers_tab_results %}
+                              <li>{{ result.field1 }} - {{ result.field2 }}</li>
+                            {% endfor %}
+                          </ul>
+                      {% else %}
+                          <h2>Search Results</h2>
+                          <p>No results found.</p>
+                      {% endif %}
+              </div>
+          </div>
+
+          <div class="tab-pane fade" id="search-gene-expr" role="tabpanel" aria-labelledby="search-gene-expr-tab">
+            <!-- search-gene-expr 选项卡的页面内容 -->
+               <div class="form_div">
+                    <form id="user-info" class="form" action="{% url 'form' %}" method="post">
+                        <div class="input-group">
+                            <label for="user-name">user name:</label>
+                            <input type="text" id="user-name" name="user-name" required/>
+                        </div>
+                        <div class="input-group">
+                            <label for="user-email">user email:</label>
+                            <input type="email" id="user-email" name="user-email" required/>
+                        </div>
+                        <div class="input-group">
+                            <button type="submit" id="geneexpr_tab_submit">Submit</button>
+                        </div>
+                    </form>
+                 </div>
+          </div>
+          <!-- 添加其他选项卡对应的内容... -->
+
+         <div class="tab-pane fade" id="search-cell-commu" role="tabpanel" aria-labelledby="search-cell-commu-tab">
+            <!-- search-cell-commu 选项卡的页面内容 -->
+               <div class="form_div">
+                    <form id="user-info" class="form" action="{% url 'form' %}" method="post">
+                        <div class="input-group">
+                            <label for="user-name">user name:</label>
+                            <input type="text" id="user-name" name="user-name" required/>
+                        </div>
+                        <div class="input-group">
+                            <label for="user-email">user email:</label>
+                            <input type="email" id="user-email" name="user-email" required/>
+                        </div>
+                        <div class="input-group">
+                            <button type="submit" id="cellcommu_tab_submit">Submit</button>
+                        </div>
+                    </form>
+                 </div>
+          </div>
+
+    </div>
+
+</main>
+{% include "footer.html" %}
+</div>
+</div>
+
+<!--<script type="text/javascript">-->
+<!--    $(document).ready(function() {-->
+<!--      $('#searchTabs a').click(function(e) {-->
+<!--        e.preventDefault();-->
+<!--        $(this).tab('show');-->
+<!--      });-->
+<!--    });-->
+<!--</script>-->
+
+<script src="https://code.jquery.com/jquery-3.4.1.min.js" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+<script src="../static/js/scripts.js"></script>
+
+<script src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js" crossorigin="anonymous"></script>
+<script src="https://cdn.datatables.net/1.10.20/js/dataTables.bootstrap4.min.js" crossorigin="anonymous"></script>
+<script src="../static/assets/demo/datatables-demo.js"></script>
+{% endblock %}

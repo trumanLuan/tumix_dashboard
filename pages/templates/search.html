@@ -4,106 +4,284 @@
 {% include "navbar-simple.html" %}
 {% include "sidebar.html" %}
 <div id="layoutSidenav_content">
-<main>
-
-    <!-- 选项卡 定义和初始化. -->
-    <ul class="nav nav-tabs" id="searchTabs" role="tablist">
-          <li class="nav-item">
-            <a class="nav-link active" id="search-sample-tab" data-toggle="tab" href="#search-sample" role="tab" aria-controls="search-sample" aria-selected="true">Sample Meta</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" id="search-gene-marker-tab" data-toggle="tab" href="#search-gene-marker" role="tab" aria-controls="search-gene-marker" aria-selected="false">Gene Markers</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" id="search-gene-expr-tab" data-toggle="tab" href="#search-gene-expr" role="tab" aria-controls="search-gene-expr" aria-selected="false">Gene Expression</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" id="search-cell-commu-tab" data-toggle="tab" href="#search-cell-commu" role="tab" aria-controls="search-cell-commu" aria-selected="false">Cell Communication</a>
-          </li>
-      <!-- 添加其他选项卡... -->
-    </ul>
-
-    <div class="tab-content" id="myTabContent">
-          <div class="tab-pane fade show active" id="search-sample" role="tabpanel" aria-labelledby="search-sample-tab">
-            <!-- search-sample 选项卡的页面内容 -->
-              <div class="panel-body">
-                  <div class="card-body">
-                          <form method="post" >
-                                {% csrf_token %}
-                                {{ form1.as_p }}
-                                <button type="submit" id="sample_tab_submit">Submit</button>
-                          </form>
-                  </div>
-              </div>
-          </div>
-
-          <div class="tab-pane fade" id="search-gene-marker" role="tabpanel" aria-labelledby="search-gene-marker-tab">
-                <!-- search-gene-marker 选项卡的页面内容 -->
-              <div class="panel-body">
-                  <div class="card-body">
-                      <form method="post" >
-                            {% csrf_token %}
-                            {{ form2.as_p }}
-                            <button type="submit" id="genemarker_tab_submit">Submit</button>
-                      </form>
-                  </div>
-              </div>
-          </div>
-
-          <div class="tab-pane fade" id="search-gene-expr" role="tabpanel" aria-labelledby="search-gene-expr-tab">
-            <!-- search-gene-expr 选项卡的页面内容 -->
-               <div class="form_div">
-                    <form id="user-info" class="form" action="{% url 'form' %}" method="post">
-                        <div class="input-group">
-                            <label for="user-name">user name:</label>
-                            <input type="text" id="user-name" name="user-name" required/>
+    <main>
+        <div class="card mb-4">
+            <div class="card-header"><i class="fas fa-table mr-1"></i> Dynamic Filter Combinations </div>
+            <div class="card-body">
+                <div class="panel-group" id="accordion">
+                    <!-- 可折叠区域 filters of sample-meta table. -->
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                <a data-toggle="collapse" data-parent="#accordion"
+                                href="#collapse-total-cell-stat">
+                                Search by Samples ->>
+                                </a>
+                            </h4>
                         </div>
-                        <div class="input-group">
-                            <label for="user-email">user email:</label>
-                            <input type="email" id="user-email" name="user-email" required/>
-                        </div>
-                        <div class="input-group">
-                            <button type="submit" id="geneexpr_tab_submit">Submit</button>
-                        </div>
-                    </form>
-                 </div>
-          </div>
-          <!-- 添加其他选项卡对应的内容... -->
+                        <div id="collapse-total-cell-stat" class="panel-collapse collapse show">
+                            <div class="card mb-4">
+                                <div class="card-header"><i class="fas fa-chart-area mr-1"></i> Filters </div>
+                                <div class="card-body">
+                                     <form method="POST" id="filter-sample-form">
+                                          {% csrf_token %}
+                                          <label for="field1">Field 1</label>
+                                          <input type="checkbox" id="field1" name="field1_checkbox">
+                                          <select name="field1_condition">
+                                                <option value="gt">Greater than</option>
+                                                <option value="lt">Less than</option>
+                                                <option value="eq">Equal to</option>
+                                                <option value="contains">Contains</option>
+                                          </select>
+                                          <input type="text" name="field1_value">
+                                          <br>
+                                          <label for="field2">Field 2</label>
+                                          <input type="checkbox" id="field2" name="field2_checkbox">
+                                          <select name="field2_condition">
+                                                <option value="gt">Greater than</option>
+                                                <option value="lt">Less than</option>
+                                                <option value="eq">Equal to</option>
+                                                <option value="contains">Contains</option>
+                                          </select>
+                                          <input type="text" name="field2_value">
+                                          <br>
+                                          <!-- 其他字段的复选框和查询条件 -->
+                                          <input type="submit" value="Submit">
+                                     </form>
+                                </div>
 
-         <div class="tab-pane fade" id="search-cell-commu" role="tabpanel" aria-labelledby="search-cell-commu-tab">
-            <!-- search-cell-commu 选项卡的页面内容 -->
-               <div class="form_div">
-                    <form id="user-info" class="form" action="{% url 'form' %}" method="post">
-                        <div class="input-group">
-                            <label for="user-name">user name:</label>
-                            <input type="text" id="user-name" name="user-name" required/>
-                        </div>
-                        <div class="input-group">
-                            <label for="user-email">user email:</label>
-                            <input type="email" id="user-email" name="user-email" required/>
-                        </div>
-                        <div class="input-group">
-                            <button type="submit" id="cellcommu_tab_submit">Submit</button>
-                        </div>
-                    </form>
-                 </div>
-          </div>
+                                <div class="card-header"><i class="fas fa-chart-area mr-1"></i> Filter Results </div>
+                                <div class="card-body" id="filter-sample-form-results-container">
+                                     <div class="table-responsive">
+                                        <table class="table table-bordered" id="dataTable-gene-marker_filter" width="100%" cellspacing="0">
+                                            <thead>
+                                                <tr>
+                                                    <th>Dataset</th>
+                                                    <th>Cell Type</th>
+                                                    <th>Gene</th>
+                                                    <th>Avg_log2FC</th>
+                                                    <th>Pct1</th>
+                                                    <th>Pct2</th>
+                                                    <th>P-value</th>
+                                                    <th>Adjusted P</th>
+                                                </tr>
+                                            </thead>
+                                            <tfoot>
+                                                <tr>
+                                                    <th>Dataset</th>
+                                                    <th>Cell Type</th>
+                                                    <th>Gene</th>
+                                                    <th>Avg_log2FC</th>
+                                                    <th>Pct1</th>
+                                                    <th>Pct2</th>
+                                                    <th>P-value</th>
+                                                    <th>Adjusted P</th>
+                                                </tr>
+                                            </tfoot>
+                                            <tbody>
+                                               {% for row in results %}
+                                                <tr>
+                                                    <td>{{ row.dataset }}</td>
+                                                    <td>{{ row.cluster }}</td>
+                                                    <td>{{ row.gene }}</td>
+                                                    <td>{{ row.avg_log2FC }}</td>
+                                                    <td>{{ row.pct1 }}</td>
+                                                    <td>{{ row.pct2 }}</td>
+                                                    <td>{{ row.pval }}</td>
+                                                    <td>{{ row.padj }}</td>
+                                                </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                     </div>
+                                </div>
 
-    </div>
+                                <!-- 实时显示查询结果而不重新刷新当前页面. -->
+                                <script>
+                                  // 使用jQuery发送异步请求
+                                  $(document).ready(function() {
+                                    $('#filter-sample-form').submit(function(e) {
+                                      e.preventDefault();
+                                      var formData = $(this).serialize();
+                                      $.ajax({
+                                        type: 'POST',
+                                        url: '{% url 'search' %}',  // 替换为你的视图函数对应的URL
+                                        data: formData,
+                                        success: function(response) {
+                                          $('#filter-sample-form-results-container').html(response);
+                                        },
+                                        error: function(xhr, textStatus, error) {
+                                          console.log(error);
+                                        }
+                                      });
+                                    });
+                                  });
+                                </script>
 
-</main>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 可折叠区域 filters of gene-marker-filter -->
+                    <div class="panel panel-success">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                <a data-toggle="collapse" data-parent="#accordion"
+                                   href="#collapse-vis-cellcluster-by-celltype">
+                                    Search by gene markers ->>
+                                </a>
+                            </h4>
+                        </div>
+                        <div id="collapse-vis-cellcluster-by-celltype" class="panel-collapse collapse show">
+                            <div class="card mb-4">
+                                <div class="card-header"><i class="fas fa-chart-area mr-1"></i> Filters </div>
+                                <div class="card-body">
+                                     <form method="POST">
+                                          {% csrf_token %}
+                                          {{ form.as_ul }}
+                                          <input type="submit" value="Submit">
+                                     </form>
+                                </div>
+
+                                <div class="card-header"><i class="fas fa-chart-area mr-1"></i> Filter Results </div>
+                                <div class="card-body">
+                                     <div class="table-responsive">
+                                        <table class="table table-bordered" id="dataTable-celltype-marker" width="100%" cellspacing="0">
+                                            <thead>
+                                                <tr>
+                                                    <th>Dataset</th>
+                                                    <th>Cell Type</th>
+                                                    <th>Gene</th>
+                                                    <th>Avg_log2FC</th>
+                                                    <th>Pct1</th>
+                                                    <th>Pct2</th>
+                                                    <th>P-value</th>
+                                                    <th>Adjusted P</th>
+                                                </tr>
+                                            </thead>
+                                            <tfoot>
+                                                <tr>
+                                                    <th>Dataset</th>
+                                                    <th>Cell Type</th>
+                                                    <th>Gene</th>
+                                                    <th>Avg_log2FC</th>
+                                                    <th>Pct1</th>
+                                                    <th>Pct2</th>
+                                                    <th>P-value</th>
+                                                    <th>Adjusted P</th>
+                                                </tr>
+                                            </tfoot>
+                                            <tbody>
+                                               {% for row in results %}
+                                                <tr>
+                                                    <td>{{ row.dataset }}</td>
+                                                    <td>{{ row.cluster }}</td>
+                                                    <td>{{ row.gene }}</td>
+                                                    <td>{{ row.avg_log2FC }}</td>
+                                                    <td>{{ row.pct1 }}</td>
+                                                    <td>{{ row.pct2 }}</td>
+                                                    <td>{{ row.pval }}</td>
+                                                    <td>{{ row.padj }}</td>
+                                                </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                     </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 可折叠区域 filters of gene-expr. -->
+                    <div class="panel panel-warning">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                <a data-toggle="collapse" data-parent="#accordion"
+                                href="#collapse-diff-genes-by-celltype">
+                                Differential Genes for Each Cell Type ->>
+                                </a>
+                            </h4>
+                        </div>
+                        <div id="collapse-diff-genes-by-celltype" class="panel-collapse collapse">
+                            <div class="panel-body">
+                                <div class="card-body">
+                                    <div class="card-header"><i class="fas fa-table mr-1"></i>DataTable: Gene Markers of Major Cell Types </div>
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered" id="dataTable-celltype-marker" width="100%" cellspacing="0">
+                                            <thead>
+                                                <tr>
+                                                    <th>Dataset</th>
+                                                    <th>Cell Type</th>
+                                                    <th>Gene</th>
+                                                    <th>Avg_log2FC</th>
+                                                    <th>Pct1</th>
+                                                    <th>Pct2</th>
+                                                    <th>P-value</th>
+                                                    <th>Adjusted P</th>
+                                                </tr>
+                                            </thead>
+                                            <tfoot>
+                                                <tr>
+                                                    <th>Dataset</th>
+                                                    <th>Cell Type</th>
+                                                    <th>Gene</th>
+                                                    <th>Avg_log2FC</th>
+                                                    <th>Pct1</th>
+                                                    <th>Pct2</th>
+                                                    <th>P-value</th>
+                                                    <th>Adjusted P</th>
+                                                </tr>
+                                            </tfoot>
+                                            <tbody>
+                                               {% for row in row_celltype_marker %}
+                                                <tr>
+                                                    <td>{{ row.dataset }}</td>
+                                                    <td>{{ row.cluster }}</td>
+                                                    <td>{{ row.gene }}</td>
+                                                    <td>{{ row.avg_log2FC }}</td>
+                                                    <td>{{ row.pct1 }}</td>
+                                                    <td>{{ row.pct2 }}</td>
+                                                    <td>{{ row.pval }}</td>
+                                                    <td>{{ row.padj }}</td>
+                                                </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 可折叠区域 filters of cell-commu-filter -->
+                    <div class="panel panel-success">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                <a data-toggle="collapse" data-parent="#accordion"
+                                   href="#collapse-vis-cellcluster-by-celltype">
+                                    Cell Clustering Visualization by Cell Type ->>
+                                </a>
+                            </h4>
+                        </div>
+                        <div id="collapse-vis-cellcluster-by-celltype" class="panel-collapse collapse">
+                            <div class="card mb-4">
+                                <div class="card-header"><i class="fas fa-chart-area mr-1"></i>Cell Clustering by Major Cell Type</div>
+                                <div class="card-body">
+                                     <img src="{{ cell_clust_vis_by_celltype }}" alt="cell_clust_vis_by_celltype">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </main>
+
 {% include "footer.html" %}
 </div>
 </div>
 
-<!--<script type="text/javascript">-->
-<!--    $(document).ready(function() {-->
-<!--      $('#searchTabs a').click(function(e) {-->
-<!--        e.preventDefault();-->
-<!--        $(this).tab('show');-->
-<!--      });-->
-<!--    });-->
-<!--</script>-->
 
 <script src="https://code.jquery.com/jquery-3.4.1.min.js" crossorigin="anonymous"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
@@ -112,4 +290,15 @@
 <script src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js" crossorigin="anonymous"></script>
 <script src="https://cdn.datatables.net/1.10.20/js/dataTables.bootstrap4.min.js" crossorigin="anonymous"></script>
 <script src="../static/assets/demo/datatables-demo.js"></script>
+
+
+<!-- for #dataTable functions-->
+<script type="text/javascript">
+       $(document).ready(function() {
+          $('#dataTable-gene-marker_filter').dataTable();
+    });
+</script>
+
+
+
 {% endblock %}

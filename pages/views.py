@@ -115,7 +115,13 @@ def process_search_forms(request):
         # 执行数据库查询
         results = Marker_Celltype.objects.filter(**filters)
 
-        return render(request, 'search.html', {'results': results})
+        # 将查询条件传递给模板进行渲染
+        context = {
+            'results': results,
+            'filters': filters,
+        }
+
+        return render(request, 'search.html', context)
 
     return render(request, 'search.html')
 

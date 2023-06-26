@@ -9,23 +9,23 @@
             <div class="card-header"><i class="fas fa-table mr-1"></i> Dynamic Filter Combinations </div>
             <div class="card-body">
                 <div class="panel-group" id="accordion">
-                    <!-- 可折叠区域 filters of sample-meta table. -->
+                    <!-- 可折叠区域 filters of sample table. -->
                     <div class="panel panel-default">
                         <div class="panel-heading">
                             <h4 class="panel-title">
                                 <a data-toggle="collapse" data-parent="#accordion"
-                                href="#collapse-total-cell-stat">
+                                href="#collapse-filter-sample">
                                 Search by Samples ->>
                                 </a>
                             </h4>
                         </div>
-                        <div id="collapse-total-cell-stat" class="panel-collapse collapse show">
+                        <div id="collapse-filter-sample" class="panel-collapse collapse show">
                             <div class="card mb-4">
                                 <div class="card-header"><i class="fas fa-chart-area mr-1"></i> Filters </div>
                                 <div class="card-body">
-                                     <form method="POST" id="filter-sample-form">
+                                     <form method="POST" id="filter-sample-form"> <!-- 这里需要定义 form id -->
                                           {% csrf_token %}
-                                          <label for="field1">Field 1</label>
+                                          <label for="field1">Dataset</label>
                                           <input type="checkbox" id="field1" name="field1_checkbox">
                                           <select name="field1_condition">
                                                 <option value="gt">Greater than</option>
@@ -70,7 +70,7 @@
                                 <div class="card-header"><i class="fas fa-chart-area mr-1"></i> Filter Results </div>
                                 <div class="card-body" id="filter-sample-form-results-container">
                                      <div class="table-responsive">
-                                        <table class="table table-bordered" id="dataTable-gene-marker_filter" width="100%" cellspacing="0">
+                                        <table class="table table-bordered" id="dataTable-sample-filter" width="100%" cellspacing="0">
                                             <thead>
                                                 <tr>
                                                     <th>Dataset</th>
@@ -143,26 +143,63 @@
                         <div class="panel-heading">
                             <h4 class="panel-title">
                                 <a data-toggle="collapse" data-parent="#accordion"
-                                   href="#collapse-vis-cellcluster-by-celltype">
+                                   href="#collapse-filter-gene-markers">
                                     Search by gene markers ->>
                                 </a>
                             </h4>
                         </div>
-                        <div id="collapse-vis-cellcluster-by-celltype" class="panel-collapse collapse show">
+                        <div id="collapse-filter-gene-markers" class="panel-collapse collapse show">
                             <div class="card mb-4">
                                 <div class="card-header"><i class="fas fa-chart-area mr-1"></i> Filters </div>
                                 <div class="card-body">
-                                     <form method="POST">
+                                     <form method="POST" id="filter-gene-marker-form"> <!-- 这里需要定义 form id -->
                                           {% csrf_token %}
-                                          {{ form.as_ul }}
+                                          <label for="field1">Dataset</label>
+                                          <input type="checkbox" id="field1" name="field1_checkbox">
+                                          <select name="field1_condition">
+                                                <option value="gt">Greater than</option>
+                                                <option value="lt">Less than</option>
+                                                <option value="eq">Equal to</option>
+                                                <option value="contains">Contains</option>
+                                          </select>
+                                          <input type="text" name="field1_value">
+                                          <br>
+                                          <label for="field2">Field 2</label>
+                                          <input type="checkbox" id="field2" name="field2_checkbox">
+                                          <select name="field2_condition">
+                                                <option value="gt">Greater than</option>
+                                                <option value="lt">Less than</option>
+                                                <option value="eq">Equal to</option>
+                                                <option value="contains">Contains</option>
+                                          </select>
+                                          <input type="text" name="field2_value">
+                                          <br>
+                                          <!-- 其他字段的复选框和查询条件 -->
                                           <input type="submit" value="Submit">
                                      </form>
                                 </div>
+                            </div>
 
-                                <div class="card-header"><i class="fas fa-chart-area mr-1"></i> Filter Results </div>
+                            <!-- 显示user提交的form查询条件 -->
+                            <!-- 其他HTML内容 -->
+                            <div class="card mb-4">
+                                <div class="card-header"><i class="fas fa-chart-area mr-1"></i> Current inputs </div>
                                 <div class="card-body">
+                                    {% if filters %}
+                                      <ul>
+                                        {% for key, value in filters.items %}
+                                          <li>{{ key }}: {{ value }}</li>
+                                        {% endfor %}
+                                      </ul>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div class="card mb-4">
+                                <div class="card-header"><i class="fas fa-chart-area mr-1"></i> Filter Results </div>
+                                <div class="card-body" id="filter-gene-marker-results-container">
                                      <div class="table-responsive">
-                                        <table class="table table-bordered" id="dataTable-celltype-marker" width="100%" cellspacing="0">
+                                        <table class="table table-bordered" id="dataTable-gene-marker-filter" width="100%" cellspacing="0">
                                             <thead>
                                                 <tr>
                                                     <th>Dataset</th>
@@ -204,26 +241,93 @@
                                         </table>
                                      </div>
                                 </div>
+
+                                <!-- 在当前区域实时显示查询结果而不重新刷新当前页面. -->
+                                <script>
+                                  // 使用jQuery发送异步请求
+                                  $(document).ready(function() {
+                                    $('#filter-gene-marker-form').submit(function(e) {
+                                      e.preventDefault();
+                                      var formData = $(this).serialize();
+                                      $.ajax({
+                                        type: 'POST',
+                                        url: '{% url 'search' %}',  // 替换为你的视图函数对应的URL
+                                        data: formData,
+                                        success: function(response) {
+                                          $('#filter-gene-marker-results-container').html(response);
+                                        },
+                                        error: function(xhr, textStatus, error) {
+                                          console.log(error);
+                                        }
+                                      });
+                                    });
+                                  });
+                                </script>
                             </div>
                         </div>
                     </div>
 
-                    <!-- 可折叠区域 filters of gene-expr. -->
+                    <!-- 可折叠区域 filters of gene-expr-corr. -->
                     <div class="panel panel-warning">
                         <div class="panel-heading">
                             <h4 class="panel-title">
                                 <a data-toggle="collapse" data-parent="#accordion"
-                                href="#collapse-diff-genes-by-celltype">
-                                Differential Genes for Each Cell Type ->>
+                                href="#collapse-filter-gene-corr"> <!-- 这里需要定义 href, 即指定哪个div的折叠动作 -->
+                                Search by gene correlations ->>
                                 </a>
                             </h4>
                         </div>
-                        <div id="collapse-diff-genes-by-celltype" class="panel-collapse collapse">
-                            <div class="panel-body">
+                        <div id="collapse-filter-gene-corr" class="panel-collapse collapse show"> <!-- 这里需要定义 div id, 即指定哪个div的折叠动作 -->
+                            <div class="card mb-4">
+                                <div class="card-header"><i class="fas fa-chart-area mr-1"></i> Filters </div>
                                 <div class="card-body">
-                                    <div class="card-header"><i class="fas fa-table mr-1"></i>DataTable: Gene Markers of Major Cell Types </div>
-                                    <div class="table-responsive">
-                                        <table class="table table-bordered" id="dataTable-celltype-marker" width="100%" cellspacing="0">
+                                     <form method="POST" id="filter-gene-corr-form"> <!-- 这里需要定义 form id -->
+                                          {% csrf_token %}
+                                          <label for="field1">Dataset</label>
+                                          <input type="checkbox" id="field1" name="field1_checkbox">
+                                          <select name="field1_condition">
+                                                <option value="gt">Greater than</option>
+                                                <option value="lt">Less than</option>
+                                                <option value="eq">Equal to</option>
+                                                <option value="contains">Contains</option>
+                                          </select>
+                                          <input type="text" name="field1_value">
+                                          <br>
+                                          <label for="field2">Field 2</label>
+                                          <input type="checkbox" id="field2" name="field2_checkbox">
+                                          <select name="field2_condition">
+                                                <option value="gt">Greater than</option>
+                                                <option value="lt">Less than</option>
+                                                <option value="eq">Equal to</option>
+                                                <option value="contains">Contains</option>
+                                          </select>
+                                          <input type="text" name="field2_value">
+                                          <br>
+                                          <!-- 其他字段的复选框和查询条件 -->
+                                          <input type="submit" value="Submit">
+                                     </form>
+                                </div>
+                            </div>
+
+                            <!-- 显示user提交的form查询条件 -->
+                            <div class="card mb-4">
+                                <div class="card-header"><i class="fas fa-chart-area mr-1"></i> Current inputs </div>
+                                <div class="card-body">
+                                    {% if filters %}
+                                      <ul>
+                                        {% for key, value in filters.items %}
+                                          <li>{{ key }}: {{ value }}</li>
+                                        {% endfor %}
+                                      </ul>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div class="card mb-4">
+                                <div class="card-header"><i class="fas fa-chart-area mr-1"></i> Filter Results </div>
+                                <div class="card-body" id="filter-gene-corr-results-container"> <!-- 这里需要定义 div id, 以对应js函数 -->
+                                     <div class="table-responsive">
+                                        <table class="table table-bordered" id="dataTable-gene-corr-filter" width="100%" cellspacing="0"> <!-- 这里需要定义 div id, 以对应js函数 -->
                                             <thead>
                                                 <tr>
                                                     <th>Dataset</th>
@@ -249,7 +353,7 @@
                                                 </tr>
                                             </tfoot>
                                             <tbody>
-                                               {% for row in row_celltype_marker %}
+                                               {% for row in results %}
                                                 <tr>
                                                     <td>{{ row.dataset }}</td>
                                                     <td>{{ row.cluster }}</td>
@@ -263,8 +367,30 @@
                                                 {% endfor %}
                                             </tbody>
                                         </table>
-                                    </div>
+                                     </div>
                                 </div>
+
+                                <!-- 在当前区域实时显示查询结果而不重新刷新当前页面. -->
+                                <script>
+                                  // 使用jQuery发送异步请求
+                                  $(document).ready(function() {
+                                    $('#filter-gene-corr-form').submit(function(e) {
+                                      e.preventDefault();
+                                      var formData = $(this).serialize();
+                                      $.ajax({
+                                        type: 'POST',
+                                        url: '{% url 'search' %}',  // 替换为你的视图函数对应的URL
+                                        data: formData,
+                                        success: function(response) {
+                                          $('#filter-gene-corr-results-container').html(response);
+                                        },
+                                        error: function(xhr, textStatus, error) {
+                                          console.log(error);
+                                        }
+                                      });
+                                    });
+                                  });
+                                </script>
                             </div>
                         </div>
                     </div>
@@ -274,17 +400,125 @@
                         <div class="panel-heading">
                             <h4 class="panel-title">
                                 <a data-toggle="collapse" data-parent="#accordion"
-                                   href="#collapse-vis-cellcluster-by-celltype">
-                                    Cell Clustering Visualization by Cell Type ->>
+                                   href="#collapse-filter-cell-commu">
+                                    Search by cell-cell communications ->>
                                 </a>
                             </h4>
                         </div>
-                        <div id="collapse-vis-cellcluster-by-celltype" class="panel-collapse collapse">
+                        <div id="collapse-filter-cell-commu" class="panel-collapse collapse show">
                             <div class="card mb-4">
-                                <div class="card-header"><i class="fas fa-chart-area mr-1"></i>Cell Clustering by Major Cell Type</div>
+                                <div class="card-header"><i class="fas fa-chart-area mr-1"></i> Filters </div>
                                 <div class="card-body">
-                                     <img src="{{ cell_clust_vis_by_celltype }}" alt="cell_clust_vis_by_celltype">
+                                     <form method="POST" id="filter-cell-commu-form"> <!-- 这里需要定义 form id -->
+                                          {% csrf_token %}
+                                          <label for="field1">Dataset</label>
+                                          <input type="checkbox" id="field1" name="field1_checkbox">
+                                          <select name="field1_condition">
+                                                <option value="gt">Greater than</option>
+                                                <option value="lt">Less than</option>
+                                                <option value="eq">Equal to</option>
+                                                <option value="contains">Contains</option>
+                                          </select>
+                                          <input type="text" name="field1_value">
+                                          <br>
+                                          <label for="field2">Field 2</label>
+                                          <input type="checkbox" id="field2" name="field2_checkbox">
+                                          <select name="field2_condition">
+                                                <option value="gt">Greater than</option>
+                                                <option value="lt">Less than</option>
+                                                <option value="eq">Equal to</option>
+                                                <option value="contains">Contains</option>
+                                          </select>
+                                          <input type="text" name="field2_value">
+                                          <br>
+                                          <!-- 其他字段的复选框和查询条件 -->
+                                          <input type="submit" value="Submit">
+                                     </form>
                                 </div>
+                            </div>
+
+                            <!-- 显示user提交的form查询条件 -->
+                            <div class="card mb-4">
+                                <div class="card-header"><i class="fas fa-chart-area mr-1"></i> Current inputs </div>
+                                <div class="card-body">
+                                    {% if filters %}
+                                      <ul>
+                                        {% for key, value in filters.items %}
+                                          <li>{{ key }}: {{ value }}</li>
+                                        {% endfor %}
+                                      </ul>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div class="card mb-4">
+                                <div class="card-header"><i class="fas fa-chart-area mr-1"></i> Filter Results </div>
+                                <div class="card-body" id="filter-cell-commu-results-container"> <!-- 这里需要定义 div id, 以对应js函数 -->
+                                     <div class="table-responsive">
+                                        <table class="table table-bordered" id="dataTable-cell-commu-filter" width="100%" cellspacing="0"> <!-- 这里需要定义 div id, 以对应js函数 -->
+                                            <thead>
+                                                <tr>
+                                                    <th>Dataset</th>
+                                                    <th>Cell Type</th>
+                                                    <th>Gene</th>
+                                                    <th>Avg_log2FC</th>
+                                                    <th>Pct1</th>
+                                                    <th>Pct2</th>
+                                                    <th>P-value</th>
+                                                    <th>Adjusted P</th>
+                                                </tr>
+                                            </thead>
+                                            <tfoot>
+                                                <tr>
+                                                    <th>Dataset</th>
+                                                    <th>Cell Type</th>
+                                                    <th>Gene</th>
+                                                    <th>Avg_log2FC</th>
+                                                    <th>Pct1</th>
+                                                    <th>Pct2</th>
+                                                    <th>P-value</th>
+                                                    <th>Adjusted P</th>
+                                                </tr>
+                                            </tfoot>
+                                            <tbody>
+                                               {% for row in results %}
+                                                <tr>
+                                                    <td>{{ row.dataset }}</td>
+                                                    <td>{{ row.cluster }}</td>
+                                                    <td>{{ row.gene }}</td>
+                                                    <td>{{ row.avg_log2FC }}</td>
+                                                    <td>{{ row.pct1 }}</td>
+                                                    <td>{{ row.pct2 }}</td>
+                                                    <td>{{ row.pval }}</td>
+                                                    <td>{{ row.padj }}</td>
+                                                </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                     </div>
+                                </div>
+
+                                <!-- 在当前区域实时显示查询结果而不重新刷新当前页面. -->
+                                <script>
+                                  // 使用jQuery发送异步请求
+                                  $(document).ready(function() {
+                                    $('#filter-cell-commu-form').submit(function(e) {
+                                      e.preventDefault();
+                                      var formData = $(this).serialize();
+                                      $.ajax({
+                                        type: 'POST',
+                                        url: '{% url 'search' %}',  // 替换为你的视图函数对应的URL
+                                        data: formData,
+                                        success: function(response) {
+                                          $('#filter-cell-commu-results-container').html(response);
+                                        },
+                                        error: function(xhr, textStatus, error) {
+                                          console.log(error);
+                                        }
+                                      });
+                                    });
+                                  });
+                                </script>
                             </div>
                         </div>
                     </div>
@@ -310,8 +544,13 @@
 
 <!-- for #dataTable functions-->
 <script type="text/javascript">
+    // 用来优化网页表格的显示
        $(document).ready(function() {
-          $('#dataTable-gene-marker_filter').dataTable();
+          $('#dataTable-sample-filter').dataTable();
+          $('#dataTable-gene-marker-filter').dataTable();
+          // $('#dataTable-gene-expr-filter').dataTable();
+          $('#dataTable-gene-corr-filter').dataTable();
+          $('#dataTable-cell-commu-filter').dataTable();
     });
 </script>
 

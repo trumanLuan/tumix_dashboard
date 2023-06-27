@@ -115,3 +115,18 @@ class SignalPathway(models.Model):
 
     def __str__(self):
         return self.dataset
+
+
+class GeneExprCorr(models.Model):
+    id = models.AutoField(primary_key=True)
+    dataset = models.CharField(max_length=200)
+    gene1 = models.CharField(max_length=200)
+    gene2 = models.CharField(max_length=200)
+    gene1_expr = models.DecimalField(max_digits=100, decimal_places=4)
+    gene2_expr = models.DecimalField(max_digits=100, decimal_places=4)
+    corr = models.DecimalField(max_digits=100, decimal_places=4)
+    pval = models.DecimalField(max_digits=100, decimal_places=4)
+    padj = models.DecimalField(max_digits=100, decimal_places=4)
+
+    def __str__(self):
+        return self.dataset

@@ -94,35 +94,259 @@ def browse_results(request):
 
 def process_search_forms(request):
     if request.method == 'POST':
-        field1_checkbox = request.POST.get('field1_checkbox')
-        field1_condition = request.POST.get('field1_condition')
-        field1_value = request.POST.get('field1_value')
+        ## 初始化 variables for render.
 
-        field2_checkbox = request.POST.get('field2_checkbox')
-        field2_condition = request.POST.get('field2_condition')
-        field2_value = request.POST.get('field2_value')
+        ## STEP 1. get form values input by users.
+        ## form values of filter-smaple.
+        form_sample_field_dataset_checkbox = request.POST.get('form_sample_field_dataset_checkbox')
+        form_sample_field_dataset_condition = request.POST.get('form_sample_field_dataset_condition')
+        form_sample_field_dataset_value = request.POST.get('form_sample_field_dataset_value')
 
-        # 构建查询条件
-        filters = {}
-        if field1_checkbox:
-            field1_filter = f'dataset__{field1_condition}'
-            filters[field1_filter] = field1_value
+        form_sample_field_species_checkbox = request.POST.get('form_sample_field_species_checkbox')
+        form_sample_field_species_condition = request.POST.get('form_sample_field_species_condition')
+        form_sample_field_species_value = request.POST.get('form_sample_field_species_value')
 
-        if field2_checkbox:
-            field2_filter = f'cluster__{field2_condition}'
-            filters[field2_filter] = field2_value
+        form_sample_field_sampleSource_checkbox = request.POST.get('form_sample_field_sampleSource_checkbox')
+        form_sample_field_sampleSource_condition = request.POST.get('form_sample_field_sampleSource_condition')
+        form_sample_field_sampleSource_value = request.POST.get('form_sample_field_sampleSource_value')
 
-        # 执行数据库查询
-        results = Marker_Celltype.objects.filter(**filters)
+        form_sample_field_treatment_checkbox = request.POST.get('form_sample_field_treatment_checkbox')
+        form_sample_field_treatment_condition = request.POST.get('form_sample_field_treatment_condition')
+        form_sample_field_treatment_value = request.POST.get('form_sample_field_treatment_value')
 
-        # 将查询条件传递给模板进行渲染
-        context = {
-            'results': results,
-            'filters': filters,
-        }
 
-        return render(request, 'search.html', context)
+        ## form values of filter-gene-marker.
+        form_gene_marker_field_dataset_checkbox = request.POST.get('form_gene_marker_field_dataset_checkbox')
+        form_gene_marker_field_dataset_condition = request.POST.get('form_gene_marker_field_dataset_condition')
+        form_gene_marker_field_dataset_value = request.POST.get('form_gene_marker_field_dataset_value')
 
+        form_gene_marker_field_cluster_checkbox = request.POST.get('form_gene_marker_field_cluster_checkbox')
+        form_gene_marker_field_cluster_condition = request.POST.get('form_gene_marker_field_cluster_condition')
+        form_gene_marker_field_cluster_value = request.POST.get('form_gene_marker_field_cluster_value')
+
+        form_gene_marker_field_gene_checkbox = request.POST.get('form_gene_marker_field_gene_checkbox')
+        form_gene_marker_field_gene_condition = request.POST.get('form_gene_marker_field_gene_condition')
+        form_gene_marker_field_gene_value = request.POST.get('form_gene_marker_field_gene_value')
+
+        form_gene_marker_field_log2fc_checkbox = request.POST.get('form_gene_marker_field_log2fc_checkbox')
+        form_gene_marker_field_log2fc_condition = request.POST.get('form_gene_marker_field_log2fc_condition')
+        form_gene_marker_field_log2fc_value = request.POST.get('form_gene_marker_field_log2fc_value')
+
+        form_gene_marker_field_pct1_checkbox = request.POST.get('form_gene_marker_field_pct1_checkbox')
+        form_gene_marker_field_pct1_condition = request.POST.get('form_gene_marker_field_pct1_condition')
+        form_gene_marker_field_pct1_value = request.POST.get('form_gene_marker_field_pct1_value')
+
+        form_gene_marker_field_pct2_checkbox = request.POST.get('form_gene_marker_field_pct2_checkbox')
+        form_gene_marker_field_pct2_condition = request.POST.get('form_gene_marker_field_pct2_condition')
+        form_gene_marker_field_pct2_value = request.POST.get('form_gene_marker_field_pct2_value')
+
+        form_gene_marker_field_padj_checkbox = request.POST.get('form_gene_marker_field_padj_checkbox')
+        form_gene_marker_field_padj_condition = request.POST.get('form_gene_marker_field_padj_condition')
+        form_gene_marker_field_padj_value = request.POST.get('form_gene_marker_field_padj_value')
+
+        ## form values of filter-gene-corr.
+        form_gene_corr_field_dataset_checkbox = request.POST.get('form_gene_corr_field_dataset_checkbox')
+        form_gene_corr_field_dataset_condition = request.POST.get('form_gene_corr_field_dataset_condition')
+        form_gene_corr_field_dataset_value = request.POST.get('form_gene_corr_field_dataset_value')
+
+        form_gene_corr_field_gene1_checkbox = request.POST.get('form_gene_corr_field_gene1_checkbox')
+        form_gene_corr_field_gene1_condition = request.POST.get('form_gene_corr_field_gene1_condition')
+        form_gene_corr_field_gene1_value = request.POST.get('form_gene_corr_field_gene1_value')
+
+        form_gene_corr_field_gene2_checkbox = request.POST.get('form_gene_corr_field_gene2_checkbox')
+        form_gene_corr_field_gene2_condition = request.POST.get('form_gene_corr_field_gene2_condition')
+        form_gene_corr_field_gene2_value = request.POST.get('form_gene_corr_field_gene2_value')
+
+        form_gene_corr_field_corr_checkbox = request.POST.get('form_gene_corr_field_corr_checkbox')
+        form_gene_corr_field_corr_condition = request.POST.get('form_gene_corr_field_corr_condition')
+        form_gene_corr_field_corr_value = request.POST.get('form_gene_corr_field_corr_value')
+
+        form_gene_corr_field_padj_checkbox = request.POST.get('form_gene_corr_field_padj_checkbox')
+        form_gene_corr_field_padj_condition = request.POST.get('form_gene_corr_field_padj_condition')
+        form_gene_corr_field_padj_value = request.POST.get('form_gene_corr_field_padj_value')
+
+
+        ## form values of filter-cell-commu (corresponding to ligand-receptor table).
+        form_cell_commu_field_dataset_checkbox = request.POST.get('form_cell_commu_field_dataset_checkbox')
+        form_cell_commu_field_dataset_condition = request.POST.get('form_cell_commu_field_dataset_condition')
+        form_cell_commu_field_dataset_value = request.POST.get('form_cell_commu_field_dataset_value')
+
+        form_cell_commu_field_source_checkbox = request.POST.get('form_cell_commu_field_source_checkbox')
+        form_cell_commu_field_source_condition = request.POST.get('form_cell_commu_field_source_condition')
+        form_cell_commu_field_source_value = request.POST.get('form_cell_commu_field_source_value')
+
+        form_cell_commu_field_target_checkbox = request.POST.get('form_cell_commu_field_target_checkbox')
+        form_cell_commu_field_target_condition = request.POST.get('form_cell_commu_field_target_condition')
+        form_cell_commu_field_target_value = request.POST.get('form_cell_commu_field_target_value')
+
+        form_cell_commu_field_pathway_checkbox = request.POST.get('form_cell_commu_field_pathway_checkbox')
+        form_cell_commu_field_pathway_condition = request.POST.get('form_cell_commu_field_pathway_condition')
+        form_cell_commu_field_pathway_value = request.POST.get('form_cell_commu_field_pathway_value')
+
+        form_cell_commu_field_ligand_checkbox = request.POST.get('form_cell_commu_field_ligand_checkbox')
+        form_cell_commu_field_ligand_condition = request.POST.get('form_cell_commu_field_ligand_condition')
+        form_cell_commu_field_ligand_value = request.POST.get('form_cell_commu_field_ligand_value')
+
+        form_cell_commu_field_receptor_checkbox = request.POST.get('form_cell_commu_field_receptor_checkbox')
+        form_cell_commu_field_receptor_condition = request.POST.get('form_cell_commu_field_receptor_condition')
+        form_cell_commu_field_receptor_value = request.POST.get('form_cell_commu_field_receptor_value')
+
+        form_cell_commu_field_pval_checkbox = request.POST.get('form_cell_commu_field_pval_checkbox')
+        form_cell_commu_field_pval_condition = request.POST.get('form_cell_commu_field_pval_condition')
+        form_cell_commu_field_pval_value = request.POST.get('form_cell_commu_field_pval_value')
+
+        # STEP 2. 构建查询条件
+        ## for form_sample.
+        if form_sample_field_dataset_checkbox or form_sample_field_species_checkbox or form_sample_field_sampleSource_checkbox or form_sample_field_treatment_checkbox:
+            form_sample_filters = {}
+            if form_sample_field_dataset_checkbox:
+                form_sample_field_dataset_filter = f'dataset__{form_sample_field_dataset_condition}'
+                form_sample_filters[form_sample_field_dataset_filter] = form_sample_field_dataset_value
+
+            if form_sample_field_species_checkbox:
+                form_sample_field_species_filter = f'species__{form_sample_field_species_condition}'
+                form_sample_filters[form_sample_field_species_filter] = form_sample_field_species_value
+
+            if form_sample_field_sampleSource_checkbox:
+                form_sample_field_sampleSource_filter = f'biosample_source__{form_sample_field_sampleSource_condition}'
+                form_sample_filters[form_sample_field_sampleSource_filter] = form_sample_field_sampleSource_value
+
+            if form_sample_field_treatment_checkbox:
+                form_sample_field_treatment_filter = f'treatment__{form_sample_field_treatment_condition}'
+                form_sample_filters[form_sample_field_treatment_filter] = form_sample_field_treatment_value
+
+            # 执行数据库查询
+            form_sample_results = Sample.objects.filter(**form_sample_filters)
+
+            # 将查询条件传递给模板进行渲染
+            form_sample_context = { 'form_sample_results': form_sample_results, 'form_sample_filters': form_sample_filters }
+            return render(request, 'search.html', form_sample_context)
+
+        ## for form_sample.
+        elif form_gene_marker_field_dataset_checkbox or form_gene_marker_field_cluster_checkbox or form_gene_marker_field_gene_checkbox or form_gene_marker_field_log2fc_checkbox or \
+                form_gene_marker_field_pct1_checkbox or form_gene_marker_field_pct2_checkbox or form_gene_marker_field_padj_checkbox:
+            form_gene_marker_filters = {}
+            if form_gene_marker_field_dataset_checkbox:
+                form_gene_marker_field_dataset_filter = f'dataset__{form_gene_marker_field_dataset_condition}'
+                form_gene_marker_filters[form_gene_marker_field_dataset_filter] = form_gene_marker_field_dataset_value
+
+            if form_gene_marker_field_cluster_checkbox:
+                form_gene_marker_field_cluster_filter = f'cluster__{form_gene_marker_field_cluster_condition}'
+                form_gene_marker_filters[form_gene_marker_field_cluster_filter] = form_gene_marker_field_cluster_value
+
+            if form_gene_marker_field_gene_checkbox:
+                form_gene_marker_field_gene_filter = f'gene__{form_gene_marker_field_gene_condition}'
+                form_gene_marker_filters[form_gene_marker_field_gene_filter] = form_gene_marker_field_gene_value
+
+            if form_gene_marker_field_log2fc_checkbox:
+                form_gene_marker_field_log2fc_filter = f'avg_log2FC__{form_gene_marker_field_log2fc_condition}'
+                form_gene_marker_filters[form_gene_marker_field_log2fc_filter] = form_gene_marker_field_log2fc_value
+
+            if form_gene_marker_field_pct1_checkbox:
+                form_gene_marker_field_pct1_filter = f'pct1__{form_gene_marker_field_pct1_condition}'
+                form_gene_marker_filters[form_gene_marker_field_pct1_filter] = form_gene_marker_field_pct1_value
+
+            if form_gene_marker_field_pct2_checkbox:
+                form_gene_marker_field_pct2_filter = f'pct2__{form_gene_marker_field_pct2_condition}'
+                form_gene_marker_filters[form_gene_marker_field_pct2_filter] = form_gene_marker_field_pct2_value
+
+            if form_gene_marker_field_padj_checkbox:
+                form_gene_marker_field_padj_filter = f'padj__{form_gene_marker_field_padj_condition}'
+                form_gene_marker_filters[form_gene_marker_field_padj_filter] = form_gene_marker_field_padj_value
+
+            # 执行数据库查询 and render.
+            form_gene_marker_results = Marker_Celltype.objects.filter(**form_gene_marker_filters)
+            form_gene_marker_context = {'form_gene_marker_results': form_gene_marker_results, 'form_gene_marker_filters': form_gene_marker_filters}
+            return render(request, 'search.html', form_gene_marker_context)
+
+        ## for form_gene_corr.
+        elif form_gene_corr_field_dataset_checkbox or form_gene_corr_field_gene1_checkbox or form_gene_corr_field_gene2_checkbox or \
+            form_gene_corr_field_corr_checkbox or form_gene_corr_field_padj_checkbox:
+            form_gene_corr_filters = {}
+            if form_gene_marker_field_dataset_checkbox:
+                form_gene_corr_field_dataset_filter = f'dataset__{form_gene_corr_field_dataset_condition}'
+                form_gene_corr_filters[form_gene_corr_field_dataset_filter] = form_gene_corr_field_dataset_value
+
+            if form_gene_corr_field_gene1_checkbox:
+                form_gene_corr_field_gene1_filter = f'gene1__{form_gene_corr_field_gene1_condition}'
+                form_gene_corr_filters[form_gene_corr_field_gene1_filter] = form_gene_corr_field_gene1_value
+
+            if form_gene_corr_field_gene2_checkbox:
+                form_gene_corr_field_gene2_filter = f'gene2__{form_gene_corr_field_gene2_condition}'
+                form_gene_corr_filters[form_gene_corr_field_gene2_filter] = form_gene_corr_field_gene2_value
+
+            if form_gene_corr_field_corr_checkbox:
+                form_gene_corr_field_corr_filter = f'corr__{form_gene_corr_field_corr_condition}'
+                form_gene_corr_filters[form_gene_corr_field_corr_filter] = form_gene_corr_field_corr_value
+
+            if form_gene_corr_field_padj_checkbox:
+                form_gene_corr_field_padj_filter = f'padj__{form_gene_corr_field_padj_condition}'
+                form_gene_corr_filters[form_gene_corr_field_padj_filter] = form_gene_corr_field_padj_value
+
+            # 执行数据库查询 and render.
+            form_gene_corr_results = GeneExprCorr.objects.filter(**form_gene_corr_filters)
+            form_gene_corr_context = {'form_gene_corr_results': form_gene_corr_results,
+                                        'form_gene_corr_filters': form_gene_corr_filters}
+            return render(request, 'search.html', form_gene_corr_context)
+
+        ## for form_cell_Commu.
+        elif form_cell_commu_field_dataset_checkbox or form_cell_commu_field_source_checkbox or form_cell_commu_field_target_checkbox or \
+                form_cell_commu_field_pathway_checkbox or form_cell_commu_field_ligand_checkbox or form_cell_commu_field_receptor_checkbox or \
+                form_cell_commu_field_pval_checkbox:
+            form_cell_commu_filters = {}
+            if form_cell_commu_field_dataset_checkbox:
+                form_cell_commu_field_dataset_filter = f'dataset__{form_cell_commu_field_dataset_condition}'
+                form_cell_commu_filters[form_cell_commu_field_dataset_filter] = form_cell_commu_field_dataset_value
+
+            if form_cell_commu_field_source_checkbox:
+                form_cell_commu_field_source_filter = f'source__{form_cell_commu_field_source_condition}'
+                form_cell_commu_filters[form_cell_commu_field_source_filter] = form_cell_commu_field_source_value
+
+            if form_cell_commu_field_target_checkbox:
+                form_cell_commu_field_target_filter = f'target__{form_cell_commu_field_target_condition}'
+                form_cell_commu_filters[form_cell_commu_field_target_filter] = form_cell_commu_field_target_value
+
+            if form_cell_commu_field_pathway_checkbox:
+                form_cell_commu_field_pathway_filter = f'pathway__{form_cell_commu_field_pathway_condition}'
+                form_cell_commu_filters[form_cell_commu_field_pathway_filter] = form_cell_commu_field_pathway_value
+
+            if form_cell_commu_field_ligand_checkbox:
+                form_cell_commu_field_ligand_filter = f'ligand__{form_cell_commu_field_ligand_condition}'
+                form_cell_commu_filters[form_cell_commu_field_ligand_filter] = form_cell_commu_field_ligand_value
+
+            if form_cell_commu_field_receptor_checkbox:
+                form_cell_commu_field_receptor_filter = f'receptor__{form_cell_commu_field_receptor_condition}'
+                form_cell_commu_filters[form_cell_commu_field_receptor_filter] = form_cell_commu_field_receptor_value
+
+            if form_cell_commu_field_pval_checkbox:
+                form_cell_commu_field_pval_filter = f'pval__{form_cell_commu_field_pval_condition}'
+                form_cell_commu_filters[form_cell_commu_field_pval_filter] = form_cell_commu_field_pval_value
+
+            # 执行数据库查询 and render.
+            form_cell_commu_results = LRpairs.objects.filter(**form_cell_commu_filters)
+            form_cell_commu_context = {'form_cell_commu_results': form_cell_commu_results,
+                                      'form_cell_commu_filters': form_cell_commu_filters}
+            return render(request, 'search.html', form_cell_commu_context)
+
+        else:
+            form_sample_filters = None
+            form_sample_results = None
+            form_gene_marker_filters = None
+            form_gene_marker_results = None
+            form_gene_corr_filters = None
+            form_gene_corr_results = None
+            form_cell_commu_filters = None
+            form_cell_commu_results = None
+            return render(request, 'search.html', {
+                'form_sample_filters': form_sample_filters,
+                'form_sample_results': form_sample_results,
+                'form_gene_marker_filters': form_gene_marker_filters,
+                'form_gene_marker_results': form_gene_marker_results,
+                'form_gene_corr_filters': form_gene_corr_filters,
+                'form_gene_corr_results':form_gene_corr_results,
+                'form_cell_commu_filters': form_cell_commu_filters,
+                'form_cell_commu_results': form_cell_commu_results
+            })
     return render(request, 'search.html')
 
 

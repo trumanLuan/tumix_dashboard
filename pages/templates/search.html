@@ -10,7 +10,7 @@
             <div class="card-body">
                 <div class="panel-group" id="accordion">
                     <!-- 可折叠区域 filters of sample table. -->
-                    <div class="panel panel-default">
+                    <div class="panel panel-filter-sample">
                         <div class="panel-heading">
                             <h4 class="panel-title">
                                 <a data-toggle="collapse" data-parent="#accordion"
@@ -25,26 +25,50 @@
                                 <div class="card-body">
                                      <form method="POST" id="filter-sample-form"> <!-- 这里需要定义 form id -->
                                           {% csrf_token %}
-                                          <label for="field1">Dataset</label>
-                                          <input type="checkbox" id="field1" name="field1_checkbox">
-                                          <select name="field1_condition">
+                                          <label for="form_sample_field_dataset">Dataset</label>
+                                          <input type="checkbox" id="form_sample_field_dataset" name="form_sample_field_dataset_checkbox">
+                                          <select name="form_sample_field_dataset_condition">
                                                 <option value="gt">Greater than</option>
                                                 <option value="lt">Less than</option>
                                                 <option value="eq">Equal to</option>
-                                                <option value="contains">Contains</option>
+                                                <option value="contains" selected>Contains</option>
                                           </select>
-                                          <input type="text" name="field1_value">
+                                          <input type="text" name="form_sample_field_dataset_value">
                                           <br>
-                                          <label for="field2">Field 2</label>
-                                          <input type="checkbox" id="field2" name="field2_checkbox">
-                                          <select name="field2_condition">
+
+                                          <label for="form_sample_field_species">Species</label>
+                                          <input type="checkbox" id="form_sample_field_species" name="form_sample_field_species_checkbox">
+                                          <select name="form_sample_field_species_condition">
                                                 <option value="gt">Greater than</option>
                                                 <option value="lt">Less than</option>
                                                 <option value="eq">Equal to</option>
-                                                <option value="contains">Contains</option>
+                                                <option value="contains" selected>Contains</option>
                                           </select>
-                                          <input type="text" name="field2_value">
+                                          <input type="text" name="form_sample_field_species_value">
                                           <br>
+
+                                          <label for="form_sample_field_sampleSource">Biosample Source</label>
+                                          <input type="checkbox" id="form_sample_field_sampleSource" name="form_sample_field_sampleSource_checkbox">
+                                          <select name="form_sample_field_sampleSource_condition">
+                                                <option value="gt">Greater than</option>
+                                                <option value="lt">Less than</option>
+                                                <option value="eq">Equal to</option>
+                                                <option value="contains" selected>Contains</option>
+                                          </select>
+                                          <input type="text" name="form_sample_field_sampleSource_value">
+                                          <br>
+
+                                          <label for="form_sample_field_treatment">Treatment</label>
+                                          <input type="checkbox" id="form_sample_field_treatment" name="form_sample_field_treatment_checkbox">
+                                          <select name="form_sample_field_treatment_condition">
+                                                <option value="gt">Greater than</option>
+                                                <option value="lt">Less than</option>
+                                                <option value="eq">Equal to</option>
+                                                <option value="contains" selected>Contains</option>
+                                          </select>
+                                          <input type="text" name="form_sample_field_treatment_value">
+                                          <br>
+
                                           <!-- 其他字段的复选框和查询条件 -->
                                           <input type="submit" value="Submit">
                                      </form>
@@ -56,9 +80,9 @@
                             <div class="card mb-4">
                                 <div class="card-header"><i class="fas fa-chart-area mr-1"></i> Current inputs </div>
                                 <div class="card-body">
-                                    {% if filters %}
+                                    {% if form_sample_filters %}
                                       <ul>
-                                        {% for key, value in filters.items %}
+                                        {% for key, value in form_sample_filters.items %}
                                           <li>{{ key }}: {{ value }}</li>
                                         {% endfor %}
                                       </ul>
@@ -96,7 +120,7 @@
                                                 </tr>
                                             </tfoot>
                                             <tbody>
-                                               {% for row in results %}
+                                               {% for row in form_sample_results %}
                                                 <tr>
                                                     <td>{{ row.dataset }}</td>
                                                     <td>{{ row.cluster }}</td>
@@ -139,7 +163,7 @@
                     </div>
 
                     <!-- 可折叠区域 filters of gene-marker-filter -->
-                    <div class="panel panel-success">
+                    <div class="panel panel-filter-gene-markers">
                         <div class="panel-heading">
                             <h4 class="panel-title">
                                 <a data-toggle="collapse" data-parent="#accordion"
@@ -154,26 +178,85 @@
                                 <div class="card-body">
                                      <form method="POST" id="filter-gene-marker-form"> <!-- 这里需要定义 form id -->
                                           {% csrf_token %}
-                                          <label for="field1">Dataset</label>
-                                          <input type="checkbox" id="field1" name="field1_checkbox">
-                                          <select name="field1_condition">
+
+                                          <label for="form_gene_marker_field_dataset">Dataset</label>  <!-- 需要定义 关键变量标签 for -->
+                                          <input type="checkbox" id="form_gene_marker_field_dataset" name="form_gene_marker_field_dataset_checkbox"> <!-- 需要定义 id和name，id同上一行for -->
+                                          <select name="form_gene_marker_field_dataset_condition"> <!-- 需要定义 name -->
+                                                <option value="gt"> Greater than </option>
+                                                <option value="lt"> Less than </option>
+                                                <option value="eq"> Equal to </option>
+                                                <option value="contains" selected> Contains </option>
+                                          </select>
+                                          <input type="text" name="form_gene_marker_field_dataset_value">
+                                          <br>
+
+                                          <label for="form_gene_marker_field_cluster">Cell Cluster</label>
+                                          <input type="checkbox" id="form_gene_marker_field_cluster" name="form_gene_marker_field_cluster_checkbox">
+                                          <select name="form_gene_marker_field_cluster_condition">
+                                                <option value="gt">Greater than</option>
+                                                <option value="lt">Less than</option>
+                                                <option value="eq">Equal to</option>
+                                                <option value="contains" selected>Contains</option>
+                                          </select>
+                                          <input type="text" name="form_gene_marker_field_cluster_value">
+                                          <br>
+
+                                          <label for="form_gene_marker_field_gene">Gene</label>
+                                          <input type="checkbox" id="form_gene_marker_field_gene" name="form_gene_marker_field_gene_checkbox">
+                                          <select name="form_gene_marker_field_gene_condition">
+                                                <option value="gt">Greater than</option>
+                                                <option value="lt">Less than</option>
+                                                <option value="eq">Equal to</option>
+                                                <option value="contains" selected>Contains</option>
+                                          </select>
+                                          <input type="text" name="form_gene_marker_field_gene_value">
+                                          <br>
+
+                                          <label for="form_gene_marker_field_log2fc">Average Log2FC</label>
+                                          <input type="checkbox" id="form_gene_marker_field_log2fc" name="form_gene_marker_field_log2fc_checkbox">
+                                          <select name="form_gene_marker_field_log2fc_condition">
                                                 <option value="gt">Greater than</option>
                                                 <option value="lt">Less than</option>
                                                 <option value="eq">Equal to</option>
                                                 <option value="contains">Contains</option>
                                           </select>
-                                          <input type="text" name="field1_value">
+                                          <input type="text" name="form_gene_marker_field_log2fc_value">
                                           <br>
-                                          <label for="field2">Field 2</label>
-                                          <input type="checkbox" id="field2" name="field2_checkbox">
-                                          <select name="field2_condition">
-                                                <option value="gt">Greater than</option>
+
+                                          <label for="form_gene_marker_field_pct1">Percent 1</label>
+                                          <input type="checkbox" id="form_gene_marker_field_pct1" name="form_gene_marker_field_pct1_checkbox">
+                                          <select name="form_gene_marker_field_pct1_condition">
+                                                <option value="gt" selected>Greater than</option>
                                                 <option value="lt">Less than</option>
                                                 <option value="eq">Equal to</option>
                                                 <option value="contains">Contains</option>
                                           </select>
-                                          <input type="text" name="field2_value">
+                                          <input type="text" name="form_gene_marker_field_pct1_value">
                                           <br>
+
+                                          <label for="form_gene_marker_field_pct2">Percent 2</label>
+                                          <input type="checkbox" id="form_gene_marker_field_pct2" name="form_gene_marker_field_pct2_checkbox">
+                                          <select name="form_gene_marker_field_pct2_condition">
+                                                <option value="gt" selected>Greater than</option>
+                                                <option value="lt">Less than</option>
+                                                <option value="eq">Equal to</option>
+                                                <option value="contains">Contains</option>
+                                          </select>
+                                          <input type="text" name="form_gene_marker_field_pct2_value">
+                                          <br>
+
+                                          <label for="form_gene_marker_field_padj">Adjusted P </label>
+                                          <input type="checkbox" id="form_gene_marker_field_padj" name="form_gene_marker_field_padj_checkbox">
+                                          <select name="form_gene_marker_field_padj_condition">
+                                                <option value="gt">Greater than</option>
+                                                <option value="lt" selected>Less than</option>
+                                                <option value="eq">Equal to</option>
+                                                <option value="contains">Contains</option>
+                                          </select>
+                                          <input type="text" name="form_gene_marker_field_padj_value">
+                                          <br>
+
+
                                           <!-- 其他字段的复选框和查询条件 -->
                                           <input type="submit" value="Submit">
                                      </form>
@@ -185,9 +268,9 @@
                             <div class="card mb-4">
                                 <div class="card-header"><i class="fas fa-chart-area mr-1"></i> Current inputs </div>
                                 <div class="card-body">
-                                    {% if filters %}
+                                    {% if form_gene_marker_filters %}
                                       <ul>
-                                        {% for key, value in filters.items %}
+                                        {% for key, value in form_gene_marker_filters.items %}
                                           <li>{{ key }}: {{ value }}</li>
                                         {% endfor %}
                                       </ul>
@@ -225,7 +308,7 @@
                                                 </tr>
                                             </tfoot>
                                             <tbody>
-                                               {% for row in results %}
+                                               {% for row in form_gene_marker_results %}
                                                 <tr>
                                                     <td>{{ row.dataset }}</td>
                                                     <td>{{ row.cluster }}</td>
@@ -268,7 +351,7 @@
                     </div>
 
                     <!-- 可折叠区域 filters of gene-expr-corr. -->
-                    <div class="panel panel-warning">
+                    <div class="panel panel-filter-gene-corr">
                         <div class="panel-heading">
                             <h4 class="panel-title">
                                 <a data-toggle="collapse" data-parent="#accordion"
@@ -283,26 +366,61 @@
                                 <div class="card-body">
                                      <form method="POST" id="filter-gene-corr-form"> <!-- 这里需要定义 form id -->
                                           {% csrf_token %}
-                                          <label for="field1">Dataset</label>
-                                          <input type="checkbox" id="field1" name="field1_checkbox">
-                                          <select name="field1_condition">
+                                          <label for="form_gene_corr_field_dataset">Dataset</label>
+                                          <input type="checkbox" id="form_gene_corr_field_dataset" name="form_gene_corr_field_dataset_checkbox">
+                                          <select name="form_gene_corr_field_dataset_condition">
                                                 <option value="gt">Greater than</option>
+                                                <option value="lt">Less than</option>
+                                                <option value="eq">Equal to</option>
+                                                <option value="contains" selected>Contains</option>
+                                          </select>
+                                          <input type="text" name="form_gene_corr_field_dataset_value">
+                                          <br>
+
+                                          <label for="form_gene_corr_field_gene1">Gene 1</label>
+                                          <input type="checkbox" id="form_gene_corr_field_gene1" name="form_gene_corr_field_gene1_checkbox">
+                                          <select name="form_gene_corr_field_gene1_condition">
+                                                <option value="gt">Greater than</option>
+                                                <option value="lt">Less than</option>
+                                                <option value="eq">Equal to</option>
+                                                <option value="contains" selected>Contains</option>
+                                          </select>
+                                          <input type="text" name="form_gene_corr_field_gene1_value">
+                                          <br>
+
+                                          <label for="form_gene_corr_field_gene2">Gene 2</label>
+                                          <input type="checkbox" id="form_gene_corr_field_gene2" name="form_gene_corr_field_gene2_checkbox">
+                                          <select name="form_gene_corr_field_gene2_condition">
+                                                <option value="gt">Greater than</option>
+                                                <option value="lt">Less than</option>
+                                                <option value="eq">Equal to</option>
+                                                <option value="contains" selected>Contains</option>
+                                          </select>
+                                          <input type="text" name="form_gene_corr_field_gene2_value">
+                                          <br>
+
+                                          <label for="form_gene_corr_field_corr">Correlation</label>
+                                          <input type="checkbox" id="form_gene_corr_field_corr" name="form_gene_corr_field_corr_checkbox">
+                                          <select name="form_gene_corr_field_corr_condition">
+                                                <option value="gt" selected>Greater than</option>
                                                 <option value="lt">Less than</option>
                                                 <option value="eq">Equal to</option>
                                                 <option value="contains">Contains</option>
                                           </select>
-                                          <input type="text" name="field1_value">
+                                          <input type="text" name="form_gene_corr_field_corr_value">
                                           <br>
-                                          <label for="field2">Field 2</label>
-                                          <input type="checkbox" id="field2" name="field2_checkbox">
-                                          <select name="field2_condition">
+
+                                          <label for="form_gene_corr_field_padj">Adjusted P</label>
+                                          <input type="checkbox" id="form_gene_corr_field_padj" name="form_gene_corr_field_padj_checkbox">
+                                          <select name="form_gene_corr_field_padj_condition">
                                                 <option value="gt">Greater than</option>
-                                                <option value="lt">Less than</option>
+                                                <option value="lt" selected>Less than</option>
                                                 <option value="eq">Equal to</option>
                                                 <option value="contains">Contains</option>
                                           </select>
-                                          <input type="text" name="field2_value">
+                                          <input type="text" name="form_gene_corr_field_padj_value">
                                           <br>
+
                                           <!-- 其他字段的复选框和查询条件 -->
                                           <input type="submit" value="Submit">
                                      </form>
@@ -313,9 +431,9 @@
                             <div class="card mb-4">
                                 <div class="card-header"><i class="fas fa-chart-area mr-1"></i> Current inputs </div>
                                 <div class="card-body">
-                                    {% if filters %}
+                                    {% if form_gene_corr_filters %}
                                       <ul>
-                                        {% for key, value in filters.items %}
+                                        {% for key, value in form_gene_corr_filters.items %}
                                           <li>{{ key }}: {{ value }}</li>
                                         {% endfor %}
                                       </ul>
@@ -331,11 +449,11 @@
                                             <thead>
                                                 <tr>
                                                     <th>Dataset</th>
-                                                    <th>Cell Type</th>
-                                                    <th>Gene</th>
-                                                    <th>Avg_log2FC</th>
-                                                    <th>Pct1</th>
-                                                    <th>Pct2</th>
+                                                    <th>Gene 1</th>
+                                                    <th>Gene 2</th>
+                                                    <th>Gene1 Expr</th>
+                                                    <th>Gene2 Expr</th>
+                                                    <th>Correlation</th>
                                                     <th>P-value</th>
                                                     <th>Adjusted P</th>
                                                 </tr>
@@ -343,24 +461,24 @@
                                             <tfoot>
                                                 <tr>
                                                     <th>Dataset</th>
-                                                    <th>Cell Type</th>
-                                                    <th>Gene</th>
-                                                    <th>Avg_log2FC</th>
-                                                    <th>Pct1</th>
-                                                    <th>Pct2</th>
+                                                    <th>Gene 1</th>
+                                                    <th>Gene 2</th>
+                                                    <th>Gene1 Expr</th>
+                                                    <th>Gene2 Expr</th>
+                                                    <th>Correlation</th>
                                                     <th>P-value</th>
                                                     <th>Adjusted P</th>
                                                 </tr>
                                             </tfoot>
                                             <tbody>
-                                               {% for row in results %}
+                                               {% for row in form_gene_corr_results %}
                                                 <tr>
                                                     <td>{{ row.dataset }}</td>
-                                                    <td>{{ row.cluster }}</td>
-                                                    <td>{{ row.gene }}</td>
-                                                    <td>{{ row.avg_log2FC }}</td>
-                                                    <td>{{ row.pct1 }}</td>
-                                                    <td>{{ row.pct2 }}</td>
+                                                    <td>{{ row.gene1 }}</td>
+                                                    <td>{{ row.gene2 }}</td>
+                                                    <td>{{ row.expr_gene1 }}</td>
+                                                    <td>{{ row.expr_gene2 }}</td>
+                                                    <td>{{ row.corr }}</td>
                                                     <td>{{ row.pval }}</td>
                                                     <td>{{ row.padj }}</td>
                                                 </tr>
@@ -396,7 +514,7 @@
                     </div>
 
                     <!-- 可折叠区域 filters of cell-commu-filter -->
-                    <div class="panel panel-success">
+                    <div class="panel panel-filter-cell-commu-ligand-receptor">
                         <div class="panel-heading">
                             <h4 class="panel-title">
                                 <a data-toggle="collapse" data-parent="#accordion"
@@ -411,26 +529,83 @@
                                 <div class="card-body">
                                      <form method="POST" id="filter-cell-commu-form"> <!-- 这里需要定义 form id -->
                                           {% csrf_token %}
-                                          <label for="field1">Dataset</label>
-                                          <input type="checkbox" id="field1" name="field1_checkbox">
-                                          <select name="field1_condition">
+                                          <label for="form_cell_commu_field_dataset">Dataset</label>
+                                          <input type="checkbox" id="form_cell_commu_field_dataset" name="form_cell_commu_field_dataset_checkbox">
+                                          <select name="form_cell_commu_field_dataset_condition">
                                                 <option value="gt">Greater than</option>
                                                 <option value="lt">Less than</option>
                                                 <option value="eq">Equal to</option>
-                                                <option value="contains">Contains</option>
+                                                <option value="contains" selected>Contains</option>
                                           </select>
-                                          <input type="text" name="field1_value">
+                                          <input type="text" name="form_cell_commu_field_dataset_value">
                                           <br>
-                                          <label for="field2">Field 2</label>
-                                          <input type="checkbox" id="field2" name="field2_checkbox">
-                                          <select name="field2_condition">
+
+                                          <label for="form_cell_commu_field_source">Source Cell</label>
+                                          <input type="checkbox" id="form_cell_commu_field_source" name="form_cell_commu_field_source_checkbox">
+                                          <select name="form_cell_commu_field_source_condition">
                                                 <option value="gt">Greater than</option>
                                                 <option value="lt">Less than</option>
                                                 <option value="eq">Equal to</option>
+                                                <option value="contains" selected>Contains</option>
+                                          </select>
+                                          <input type="text" name="form_cell_commu_field_source_value">
+                                          <br>
+
+                                          <label for="form_cell_commu_field_target">Target Cell</label>
+                                          <input type="checkbox" id="form_cell_commu_field_target" name="form_cell_commu_field_target_checkbox">
+                                          <select name="form_cell_commu_field_target_condition">
+                                                <option value="gt">Greater than</option>
+                                                <option value="lt">Less than</option>
+                                                <option value="eq">Equal to</option>
+                                                <option value="contains" selected>Contains</option>
+                                          </select>
+                                          <input type="text" name="form_cell_commu_field_target_value">
+                                          <br>
+
+                                          <label for="form_cell_commu_field_pathway">Signal Pathway</label>
+                                          <input type="checkbox" id="form_cell_commu_field_pathway" name="form_cell_commu_field_pathway_checkbox">
+                                          <select name="form_cell_commu_field_pathway_condition">
+                                                <option value="gt">Greater than</option>
+                                                <option value="lt">Less than</option>
+                                                <option value="eq">Equal to</option>
+                                                <option value="contains" selected>Contains</option>
+                                          </select>
+                                          <input type="text" name="form_cell_commu_field_pathway_value">
+                                          <br>
+
+                                          <label for="form_cell_commu_field_ligand">Ligand</label>
+                                          <input type="checkbox" id="form_cell_commu_field_ligand" name="form_cell_commu_field_ligand_checkbox">
+                                          <select name="form_cell_commu_field_ligand_condition">
+                                                <option value="gt">Greater than</option>
+                                                <option value="lt">Less than</option>
+                                                <option value="eq">Equal to</option>
+                                                <option value="contains" selected>Contains</option>
+                                          </select>
+                                          <input type="text" name="form_cell_commu_field_ligand_value">
+                                          <br>
+
+                                          <label for="form_cell_commu_field_receptor">Receptor</label>
+                                          <input type="checkbox" id="form_cell_commu_field_receptor" name="form_cell_commu_field_receptor_checkbox">
+                                          <select name="form_cell_commu_field_receptor_condition">
+                                                <option value="gt">Greater than</option>
+                                                <option value="lt">Less than</option>
+                                                <option value="eq">Equal to</option>
+                                                <option value="contains" selected>Contains</option>
+                                          </select>
+                                          <input type="text" name="form_cell_commu_field_receptor_value">
+                                          <br>
+
+                                          <label for="form_cell_commu_field_pval">P value</label>
+                                          <input type="checkbox" id="form_cell_commu_field_pval" name="form_cell_commu_field_pval_checkbox">
+                                          <select name="form_cell_commu_field_pval_condition">
+                                                <option value="gt">Greater than</option>
+                                                <option value="lt" selected>Less than</option>
+                                                <option value="eq">Equal to</option>
                                                 <option value="contains">Contains</option>
                                           </select>
-                                          <input type="text" name="field2_value">
+                                          <input type="text" name="form_cell_commu_field_pval_value">
                                           <br>
+
                                           <!-- 其他字段的复选框和查询条件 -->
                                           <input type="submit" value="Submit">
                                      </form>
@@ -441,9 +616,9 @@
                             <div class="card mb-4">
                                 <div class="card-header"><i class="fas fa-chart-area mr-1"></i> Current inputs </div>
                                 <div class="card-body">
-                                    {% if filters %}
+                                    {% if form_celll_filters %}
                                       <ul>
-                                        {% for key, value in filters.items %}
+                                        {% for key, value in form_celll_filters.items %}
                                           <li>{{ key }}: {{ value }}</li>
                                         {% endfor %}
                                       </ul>
@@ -455,46 +630,49 @@
                                 <div class="card-header"><i class="fas fa-chart-area mr-1"></i> Filter Results </div>
                                 <div class="card-body" id="filter-cell-commu-results-container"> <!-- 这里需要定义 div id, 以对应js函数 -->
                                      <div class="table-responsive">
-                                        <table class="table table-bordered" id="dataTable-cell-commu-filter" width="100%" cellspacing="0"> <!-- 这里需要定义 div id, 以对应js函数 -->
-                                            <thead>
-                                                <tr>
-                                                    <th>Dataset</th>
-                                                    <th>Cell Type</th>
-                                                    <th>Gene</th>
-                                                    <th>Avg_log2FC</th>
-                                                    <th>Pct1</th>
-                                                    <th>Pct2</th>
-                                                    <th>P-value</th>
-                                                    <th>Adjusted P</th>
-                                                </tr>
-                                            </thead>
-                                            <tfoot>
-                                                <tr>
-                                                    <th>Dataset</th>
-                                                    <th>Cell Type</th>
-                                                    <th>Gene</th>
-                                                    <th>Avg_log2FC</th>
-                                                    <th>Pct1</th>
-                                                    <th>Pct2</th>
-                                                    <th>P-value</th>
-                                                    <th>Adjusted P</th>
-                                                </tr>
-                                            </tfoot>
-                                            <tbody>
-                                               {% for row in results %}
-                                                <tr>
-                                                    <td>{{ row.dataset }}</td>
-                                                    <td>{{ row.cluster }}</td>
-                                                    <td>{{ row.gene }}</td>
-                                                    <td>{{ row.avg_log2FC }}</td>
-                                                    <td>{{ row.pct1 }}</td>
-                                                    <td>{{ row.pct2 }}</td>
-                                                    <td>{{ row.pval }}</td>
-                                                    <td>{{ row.padj }}</td>
-                                                </tr>
-                                                {% endfor %}
-                                            </tbody>
-                                        </table>
+                                            <table class="table table-bordered" id="dataTable-cell-commu-filter" width="100%" cellspacing="0">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Dataset</th>
+                                                        <th>Source</th>
+                                                        <th>Target</th>
+                                                        <th>Pathway</th>
+                                                        <th>Ligand</th>
+                                                        <th>Receptor</th>
+                                                        <th>Prob</th>
+                                                        <th>P-value</th>
+                                                        <th>External</th>
+                                                    </tr>
+                                                </thead>
+                                                <tfoot>
+                                                    <tr>
+                                                        <th>Dataset</th>
+                                                        <th>Source</th>
+                                                        <th>Target</th>
+                                                        <th>Pathway</th>
+                                                        <th>Ligand</th>
+                                                        <th>Receptor</th>
+                                                        <th>Prob</th>
+                                                        <th>P-value</th>
+                                                        <th>External</th>
+                                                    </tr>
+                                                </tfoot>
+                                                <tbody>
+                                                   {% for row in form_cell_commu_results %}
+                                                    <tr>
+                                                        <td>{{ row.dataset }}</td>
+                                                        <td>{{ row.source }}</td>
+                                                        <td>{{ row.target }}</td>
+                                                        <td>{{ row.pathway }}</td>
+                                                        <td>{{ row.ligand }}</td>
+                                                        <td>{{ row.receptor }}</td>
+                                                        <td>{{ row.prob }}</td>
+                                                        <td>{{ row.pval }}</td>
+                                                        <td>{{ row.evidence }}</td>
+                                                    </tr>
+                                                    {% endfor %}
+                                                </tbody>
+                                            </table>
                                      </div>
                                 </div>
 

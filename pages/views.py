@@ -349,7 +349,14 @@ def process_search_forms(request):
             })
     return render(request, 'search.html')
 
-# def
+def analyze_gene_expr(request):
+    return render(request, 'analyze-gene-expr.html')
+
+def analyze_cell_marker(request):
+    return render(request, 'analyze-cell-marker.html')
+
+def analyze_cell_commu(request):
+    return render(request, 'analyze-cell-commu.html')
 
 # views for goto help page from the sidebar.
 def help(request):

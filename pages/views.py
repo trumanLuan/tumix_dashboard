@@ -8,10 +8,15 @@ from .models import Marker_Celltype
 from .models import LRpairs
 from .models import SingleCell
 from .models import SignalPathway
-from .forms import sampleForm, geneMarkerForm, geneExprForm, cellCommuForm
 
 import numpy as np
-
+import matplotlib.pyplot as plt
+import tempfile
+import os
+import pandas as pd
+import seaborn as sns
+import random
+import string
 
 
 # Create your views here.
@@ -444,10 +449,6 @@ def analyze_cell_marker(request):
         ## for form in tab1.
         if tab1_field_queryTable_checkbox and tab1_field_dataset_checkbox and tab1_field_padj_checkbox:
             tab1_filters = {}
-            # if tab1_field_dataset_checkbox:
-            #     tab1_field_dataset_filter = f'dataset__{tab1_field_dataset_condition}'
-            #     # tab1_filters[tab1_field_dataset_filter] = tab1_field_dataset_value
-
             if tab1_field_dataset_checkbox:
                 tab1_field_dataset_filter = f'dataset__{tab1_field_dataset_condition}'
                 tab1_filters[tab1_field_dataset_filter] = tab1_field_dataset_value
@@ -503,10 +504,31 @@ def analyze_cell_marker(request):
             pct2_summary_stats += f"-- max: {round(np.max(pct2_data_array),2)}"
 
             ## plot.
-            
+            df_data = list(tab1_filter_results.values('cluster', 'gene', 'avg_log2FC') )
+            df = pd.DataFrame(df_data)
+            # Aggregate duplicate values by taking the mean
+            df_agg = df.groupby(['gene', 'cluster'])['avg_log2FC'].mean().reset_index()
+            df_wide = df_agg.pivot(index='gene', columns='cluster', values='avg_log2FC').fillna(0)
+            df_wide = df_wide.astype(float)
 
-            # Clear form data after processing
-            # request.POST = {}
+            plt.figure(figsize=(10, 8))
+            sns.heatmap(df_wide, annot=True, cmap='YlGnBu')
+            plt.title('Heatmap')
+            plt.xlabel('Genes')
+            plt.ylabel('Clusters')
+            # plt.tight_layout()
+
+            # Define a function to generate a random file name:
+            def generate_random_filename(length=10):
+                letters = string.ascii_lowercase + string.ascii_uppercase
+                return ''.join(random.choice(letters) for _ in range(length))
+
+            # current_directory = os.getcwd()
+            temp_file_path = 'static/assets/img/' + generate_random_filename() + '_TMP.png'
+            plt.savefig(temp_file_path)
+
+            print("Temp file path:", temp_file_path)
+
             tab1_context = {
                 'num_distinct_values_of_dataset': num_distinct_values_of_dataset,
                 'dataset_distinct_values': dataset_distinct_values,
@@ -516,9 +538,12 @@ def analyze_cell_marker(request):
                 'pct1_summary_stats': pct1_summary_stats,
                 'pct2_summary_stats': pct2_summary_stats,
                 'tab1_filter_results': tab1_filter_results,
-                'tab1_filters': tab1_filters
+                'tab1_filters': tab1_filters,
+                'temp_file_path': temp_file_path
             }
             return render(request, 'analyze-cell-marker.html', tab1_context)
+            # if os.path.exists(temp_file_path):
+            #     os.remove(temp_file_path)
         else:
             error_message = 'Please fill the Query Form.'
             return render(request, 'analyze-cell-marker.html', {'error_message': error_message})
@@ -532,3 +557,4 @@ def analyze_cell_commu(request):
 # views for goto help page from the sidebar.
 def help(request):
     return render(request, 'help.html')
+

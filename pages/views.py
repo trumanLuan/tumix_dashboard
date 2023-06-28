@@ -9,6 +9,7 @@ from .models import LRpairs
 from .models import SingleCell
 from .models import SignalPathway
 from .forms import sampleForm, geneMarkerForm, geneExprForm, cellCommuForm
+from decimal import Decimal
 
 
 # Create your views here.
@@ -353,6 +354,134 @@ def analyze_gene_expr(request):
     return render(request, 'analyze-gene-expr.html')
 
 def analyze_cell_marker(request):
+    if request.method == 'POST':
+        ## STEP 1. get form values input by users.
+        ## form values of tab1.
+        tab1_field_queryTable_checkbox = request.POST.get('tab1_field_queryTable_checkbox')
+        tab1_field_queryTable_condition = request.POST.get('tab1_field_queryTable_condition')
+
+        tab1_field_dataset_checkbox = request.POST.get('tab1_field_dataset_checkbox')
+        tab1_field_dataset_condition = request.POST.get('tab1_field_dataset_condition')
+        tab1_field_dataset_value = request.POST.get('tab1_field_dataset_value')
+
+        tab1_field_log2fc_checkbox = request.POST.get('tab1_field_log2fc_checkbox')
+        tab1_field_log2fc_condition = request.POST.get('tab1_field_log2fc_condition')
+        tab1_field_log2fc_value = request.POST.get('tab1_field_log2fc_value')
+
+        tab1_field_pct1_checkbox = request.POST.get('tab1_field_pct1_checkbox')
+        tab1_field_pct1_condition = request.POST.get('tab1_field_pct1_condition')
+        tab1_field_pct1_value = request.POST.get('tab1_field_pct1_value')
+
+        tab1_field_pct2_checkbox = request.POST.get('tab1_field_pct2_checkbox')
+        tab1_field_pct2_condition = request.POST.get('tab1_field_pct2_condition')
+        tab1_field_pct2_value = request.POST.get('tab1_field_pct2_value')
+
+        tab1_field_padj_checkbox = request.POST.get('tab1_field_padj_checkbox')
+        tab1_field_padj_condition = request.POST.get('tab1_field_padj_condition')
+        tab1_field_padj_value = request.POST.get('tab1_field_padj_value')
+
+        ## form values of tab2.
+        tab2_field_dataset_checkbox = request.POST.get('tab2_field_dataset_checkbox')
+        tab2_field_dataset_condition = request.POST.get('tab2_field_dataset_condition')
+        tab2_field_dataset_value = request.POST.get('tab2_field_dataset_value')
+
+        tab2_field_cluster_checkbox = request.POST.get('tab2_field_cluster_checkbox')
+        tab2_field_cluster_condition = request.POST.get('tab2_field_cluster_condition')
+        tab2_field_cluster_value = request.POST.get('tab2_field_cluster_value')
+
+        tab2_field_gene_checkbox = request.POST.get('tab2_field_gene_checkbox')
+        tab2_field_gene_condition = request.POST.get('tab2_field_gene_condition')
+        tab2_field_gene_value = request.POST.get('tab2_field_gene_value')
+
+        tab2_field_log2fc_checkbox = request.POST.get('tab2_field_log2fc_checkbox')
+        tab2_field_log2fc_condition = request.POST.get('tab2_field_log2fc_condition')
+        tab2_field_log2fc_value = request.POST.get('tab2_field_log2fc_value')
+
+        tab2_field_pct1_checkbox = request.POST.get('tab2_field_pct1_checkbox')
+        tab2_field_pct1_condition = request.POST.get('tab2_field_pct1_condition')
+        tab2_field_pct1_value = request.POST.get('tab2_field_pct1_value')
+
+        tab2_field_pct2_checkbox = request.POST.get('tab2_field_pct2_checkbox')
+        tab2_field_pct2_condition = request.POST.get('tab2_field_pct2_condition')
+        tab2_field_pct2_value = request.POST.get('tab2_field_pct2_value')
+
+        tab2_field_padj_checkbox = request.POST.get('tab2_field_padj_checkbox')
+        tab2_field_padj_condition = request.POST.get('tab2_field_padj_condition')
+        tab2_field_padj_value = request.POST.get('tab2_field_padj_value')
+
+        ## form values of tab3.
+        tab3_field_dataset_checkbox = request.POST.get('tab3_field_dataset_checkbox')
+        tab3_field_dataset_condition = request.POST.get('tab3_field_dataset_condition')
+        tab3_field_dataset_value = request.POST.get('tab3_field_dataset_value')
+
+        tab3_field_cluster_checkbox = request.POST.get('tab3_field_cluster_checkbox')
+        tab3_field_cluster_condition = request.POST.get('tab3_field_cluster_condition')
+        tab3_field_cluster_value = request.POST.get('tab3_field_cluster_value')
+
+        tab3_field_gene_checkbox = request.POST.get('tab3_field_gene_checkbox')
+        tab3_field_gene_condition = request.POST.get('tab3_field_gene_condition')
+        tab3_field_gene_value = request.POST.get('tab3_field_gene_value')
+
+        tab3_field_log2fc_checkbox = request.POST.get('tab3_field_log2fc_checkbox')
+        tab3_field_log2fc_condition = request.POST.get('tab3_field_log2fc_condition')
+        tab3_field_log2fc_value = request.POST.get('tab3_field_log2fc_value')
+
+        tab3_field_pct1_checkbox = request.POST.get('tab3_field_pct1_checkbox')
+        tab3_field_pct1_condition = request.POST.get('tab3_field_pct1_condition')
+        tab3_field_pct1_value = request.POST.get('tab3_field_pct1_value')
+
+        tab3_field_pct2_checkbox = request.POST.get('tab3_field_pct2_checkbox')
+        tab3_field_pct2_condition = request.POST.get('tab3_field_pct2_condition')
+        tab3_field_pct2_value = request.POST.get('tab3_field_pct2_value')
+
+        tab3_field_padj_checkbox = request.POST.get('tab3_field_padj_checkbox')
+        tab3_field_padj_condition = request.POST.get('tab3_field_padj_condition')
+        tab3_field_padj_value = request.POST.get('tab3_field_padj_value')
+
+        # STEP 2. 构建查询条件
+        ## for form in tab1.
+        if tab1_field_queryTable_checkbox and tab1_field_dataset_checkbox and tab1_field_padj_checkbox:
+            tab1_filters = {}
+            # if tab1_field_dataset_checkbox:
+            #     tab1_field_dataset_filter = f'dataset__{tab1_field_dataset_condition}'
+            #     # tab1_filters[tab1_field_dataset_filter] = tab1_field_dataset_value
+
+            if tab1_field_dataset_checkbox:
+                tab1_field_dataset_filter = f'dataset__{tab1_field_dataset_condition}'
+                tab1_filters[tab1_field_dataset_filter] = tab1_field_dataset_value
+
+            if tab1_field_log2fc_checkbox:
+                tab1_field_log2fc_filter = f'avg_log2FC__{tab1_field_log2fc_condition}'
+                tab1_filters[tab1_field_log2fc_filter] = tab1_field_log2fc_value
+
+            if tab1_field_pct1_checkbox:
+                tab1_field_pct1_filter = f'pct1__{tab1_field_pct1_condition}'
+                tab1_filters[tab1_field_pct1_filter] = tab1_field_pct1_value
+
+            if tab1_field_pct2_checkbox:
+                tab1_field_pct2_filter = f'pct2__{tab1_field_pct2_condition}'
+                tab1_filters[tab1_field_pct2_filter] = tab1_field_pct2_value
+
+            if tab1_field_padj_checkbox:
+                tab1_field_padj_filter = f'padj__{tab1_field_padj_condition}'
+                tab1_filters[tab1_field_padj_filter] = tab1_field_padj_value
+            # 执行数据库查询 and render.
+
+            if tab1_field_queryTable_condition == 'major':
+                tab1_filter_results = Marker_Celltype.objects.filter(**tab1_filters)
+            elif tab1_field_queryTable_condition == 'minor':
+                tab1_filter_results = Marker_Subcluster.objects.filter(**tab1_filters)
+
+            # Clear form data after processing
+            # request.POST = {}
+            tab1_context = {
+                'tab1_filter_results': tab1_filter_results,
+                'tab1_filters': tab1_filters
+            }
+            return render(request, 'analyze-cell-marker.html', tab1_context)
+        else:
+            
+
     return render(request, 'analyze-cell-marker.html')
 
 def analyze_cell_commu(request):

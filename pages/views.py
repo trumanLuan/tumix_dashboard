@@ -9,7 +9,9 @@ from .models import LRpairs
 from .models import SingleCell
 from .models import SignalPathway
 from .forms import sampleForm, geneMarkerForm, geneExprForm, cellCommuForm
-from decimal import Decimal
+
+import numpy as np
+
 
 
 # Create your views here.
@@ -465,22 +467,62 @@ def analyze_cell_marker(request):
             if tab1_field_padj_checkbox:
                 tab1_field_padj_filter = f'padj__{tab1_field_padj_condition}'
                 tab1_filters[tab1_field_padj_filter] = tab1_field_padj_value
-            # 执行数据库查询 and render.
 
+            # 数据库查询 and render.
             if tab1_field_queryTable_condition == 'major':
                 tab1_filter_results = Marker_Celltype.objects.filter(**tab1_filters)
             elif tab1_field_queryTable_condition == 'minor':
                 tab1_filter_results = Marker_Subcluster.objects.filter(**tab1_filters)
 
+            # 数据库查询结果数据集的统计分析。
+            total_records = tab1_filter_results.count()
+            dataset_distinct_values = tab1_filter_results.values_list('dataset', flat=True).distinct()
+            num_distinct_values_of_dataset = len(dataset_distinct_values)
+
+            cluster_distinct_values = tab1_filter_results.values_list('cluster', flat=True).distinct()
+            num_distinct_values_of_cluster = len(cluster_distinct_values)
+
+            gene_distinct_values = tab1_filter_results.values_list('gene', flat=True).distinct()
+            num_distinct_values_of_gene = len(gene_distinct_values)
+
+            pct1_data = tab1_filter_results.values_list('pct1', flat=True)
+            pct1_data_array = np.array(list(pct1_data))
+            pct1_summary_stats = f"pct1 range:\n"
+            pct1_summary_stats += f"-- mean: {round(np.mean(pct1_data_array),2)}\n"
+            pct1_summary_stats += f"-- median: {round(np.median(pct1_data_array),2)}\n"
+            pct1_summary_stats += f"-- min: {round(np.min(pct1_data_array),2)}\n"
+            pct1_summary_stats += f"-- max: {round(np.max(pct1_data_array),2)}"
+
+
+            pct2_data = tab1_filter_results.values_list('pct2', flat=True)
+            pct2_data_array = np.array(list(pct2_data))
+            pct2_summary_stats = f"pct2 range:\n"
+            pct2_summary_stats += f"-- mean: {round(np.mean(pct2_data_array), 2)}\n"
+            pct2_summary_stats += f"-- median: {round(np.median(pct2_data_array),2)}\n"
+            pct2_summary_stats += f"-- min: {round(np.min(pct2_data_array),2)}\n"
+            pct2_summary_stats += f"-- max: {round(np.max(pct2_data_array),2)}"
+
+            ## plot.
+            
+
             # Clear form data after processing
             # request.POST = {}
             tab1_context = {
+                'num_distinct_values_of_dataset': num_distinct_values_of_dataset,
+                'dataset_distinct_values': dataset_distinct_values,
+                'total_records': total_records,
+                'num_distinct_values_of_cluster': num_distinct_values_of_cluster,
+                'num_distinct_values_of_gene': num_distinct_values_of_gene,
+                'pct1_summary_stats': pct1_summary_stats,
+                'pct2_summary_stats': pct2_summary_stats,
                 'tab1_filter_results': tab1_filter_results,
                 'tab1_filters': tab1_filters
             }
             return render(request, 'analyze-cell-marker.html', tab1_context)
         else:
-            
+            error_message = 'Please fill the Query Form.'
+            return render(request, 'analyze-cell-marker.html', {'error_message': error_message})
+
 
     return render(request, 'analyze-cell-marker.html')
 

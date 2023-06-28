@@ -104,6 +104,12 @@
             <div class="card mb-4">
                 <div class="card-header"><i class="fas fa-chart-area mr-1"></i> Current inputs </div>
                 <div class="card-body">
+                    {% if error_message %}
+                        <p style="color: red;"> Error Occured !!! </p>
+                        <p style="color: red;"> One or more required fields are missing.</p>
+                        <p style="color: red;">{{ error_message }}</p>
+                    {% endif %}
+
                     {% if tab1_filters %}
                       <ul>
                         {% for key, value in tab1_filters.items %}
@@ -118,7 +124,12 @@
             <div class="card mb-4">
                 <div class="card-header"><i class="fas fa-chart-area mr-1"></i> Summary of Data Subset </div>
                 <div class="card-body">
-                    this is the results.
+                    <p> Number of total records: {{ total_records }} </p>
+                    <p> num_distinct_values_of_dataset: {{ num_distinct_values_of_dataset }} </p>
+                    <p> dataset_distinct_values: {{ dataset_distinct_values }} </p>
+                    <p> {{ num_distinct_values_of_gene }} gene markers of {{ num_distinct_values_of_cluster }} cell clusters (major cell type or cell subtypes) </p>
+                    <p> {{ pct1_summary_stats }}</p>
+                    <p> {{ pct2_summary_stats }}</p>
                 </div>
             </div>
 

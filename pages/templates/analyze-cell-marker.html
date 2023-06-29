@@ -191,7 +191,7 @@
                       var formData = $(this).serialize();
                       $.ajax({
                         type: 'POST',
-                        url: '{% url 'search' %}',  // 替换为你的视图函数对应的URL
+                        url: '{% url 'analyze-cell-marker' %}',  // 替换为你的视图函数对应的URL
                         data: formData,
                         success: function(response) {
                           $('#filter-tab1-results-container').html(response);
@@ -456,10 +456,6 @@
           $('#dataTable-tab1-filter').dataTable();
           $('#dataTable-tab2-filter').dataTable();
           $('#dataTable-tab3-filter').dataTable();
-          //$('#dataTable-gene-marker-filter').dataTable();
-          // $('#dataTable-gene-expr-filter').dataTable();
-          //$('#dataTable-gene-corr-filter').dataTable();
-          //$('#dataTable-cell-commu-filter').dataTable();
     });
 </script>
 

@@ -512,7 +512,7 @@ def analyze_cell_marker(request):
             df_wide = df_wide.astype(float)
 
             plt.figure(figsize=(10, 8))
-            sns.heatmap(df_wide, annot=True, cmap='YlGnBu')
+            sns.heatmap(df_wide, annot=False, cmap='YlGnBu')
             plt.title('Heatmap')
             plt.xlabel('Genes')
             plt.ylabel('Clusters')
@@ -523,11 +523,12 @@ def analyze_cell_marker(request):
                 letters = string.ascii_lowercase + string.ascii_uppercase
                 return ''.join(random.choice(letters) for _ in range(length))
 
-            # current_directory = os.getcwd()
-            temp_file_path = 'static/assets/img/' + generate_random_filename() + '_TMP.png'
+            current_directory = os.getcwd()
+            temp_file_path = current_directory + "\\" + generate_random_filename() + '_TMP.svg'
             plt.savefig(temp_file_path)
 
-            print("Temp file path:", temp_file_path)
+            if os.path.exists(temp_file_path):
+                print("路径正确:", temp_file_path)
 
             tab1_context = {
                 'num_distinct_values_of_dataset': num_distinct_values_of_dataset,
@@ -542,8 +543,6 @@ def analyze_cell_marker(request):
                 'temp_file_path': temp_file_path
             }
             return render(request, 'analyze-cell-marker.html', tab1_context)
-            # if os.path.exists(temp_file_path):
-            #     os.remove(temp_file_path)
         else:
             error_message = 'Please fill the Query Form.'
             return render(request, 'analyze-cell-marker.html', {'error_message': error_message})

@@ -1,3 +1,6 @@
+import io
+import base64
+
 from django.shortcuts import render
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponse
@@ -18,6 +21,8 @@ import seaborn as sns
 import random
 import string
 
+from scipy.cluster import hierarchy
+import plotly.graph_objects as go
 
 # Create your views here.
 def index(request):
@@ -388,6 +393,9 @@ def analyze_cell_marker(request):
         tab1_field_padj_value = request.POST.get('tab1_field_padj_value')
 
         ## form values of tab2.
+        tab2_field_querytable_checkbox = request.POST.get('tab2_field_querytable_checkbox')
+        tab2_field_querytable_condition = request.POST.get('tab2_field_querytable_condition')
+
         tab2_field_dataset_checkbox = request.POST.get('tab2_field_dataset_checkbox')
         tab2_field_dataset_condition = request.POST.get('tab2_field_dataset_condition')
         tab2_field_dataset_value = request.POST.get('tab2_field_dataset_value')
@@ -503,7 +511,7 @@ def analyze_cell_marker(request):
             pct2_summary_stats += f"-- min: {round(np.min(pct2_data_array),2)}\n"
             pct2_summary_stats += f"-- max: {round(np.max(pct2_data_array),2)}"
 
-            ## plot.
+            ## 构造数据
             df_data = list(tab1_filter_results.values('cluster', 'gene', 'avg_log2FC') )
             df = pd.DataFrame(df_data)
             # Aggregate duplicate values by taking the mean
@@ -511,26 +519,63 @@ def analyze_cell_marker(request):
             df_wide = df_agg.pivot(index='gene', columns='cluster', values='avg_log2FC').fillna(0)
             df_wide = df_wide.astype(float)
 
-            plt.figure(figsize=(10, 8))
-            sns.heatmap(df_wide, annot=False, cmap='YlGnBu')
-            plt.title('Heatmap')
-            plt.xlabel('Genes')
-            plt.ylabel('Clusters')
-            # plt.tight_layout()
+            ## two-way clustering.
+            row_clusters = hierarchy.linkage(df_wide.values, method='average', metric='euclidean')
+            column_clusters = hierarchy.linkage(df_wide.values.T, method='average', metric='euclidean')
+            # 获取行和列的排序索引
+            row_order = hierarchy.leaves_list(row_clusters)
+            column_order = hierarchy.leaves_list(column_clusters)
 
-            # Define a function to generate a random file name:
-            def generate_random_filename(length=10):
-                letters = string.ascii_lowercase + string.ascii_uppercase
-                return ''.join(random.choice(letters) for _ in range(length))
+            # 根据排序索引重新排列数据框
+            df_reordered = df_wide.iloc[row_order, column_order]
 
-            current_directory = os.getcwd()
-            temp_file_path = current_directory + "\\" + generate_random_filename() + '_TMP.svg'
-            plt.savefig(temp_file_path)
+            # 构造热图数据
+            heat_data = df_reordered.values.tolist()
+            x_labels = df_reordered.columns.tolist()
+            y_labels = df_reordered.index.tolist()
 
-            if os.path.exists(temp_file_path):
-                print("路径正确:", temp_file_path)
+            # 绘制交互式热图
+            fig = go.Figure(data=go.Heatmap(
+                z=heat_data,
+                x=x_labels,
+                y=y_labels
+            ))
 
-            tab1_context = {
+            # 设置图表布局
+            fig.update_layout(
+                title={
+                    'text': 'Interactive Heatmap',
+                    'x': 0.5,  # 设置标题居中
+                    'xanchor': 'center',
+                    'yanchor': 'top'
+                },
+                xaxis_title='Cell Clusters',
+                yaxis_title='Gene Markers',
+                width=1000,  # 设置宽度为 800 像素
+                height=1000  # 设置高度为 600 像素
+            )
+
+            # 将图表渲染到网页
+            plot_div = fig.to_html(full_html=False)
+
+            # ## plot with matplotlib and render in html.
+            # plt.figure(figsize=(10, 8))
+            # sns.heatmap(df_wide, annot=False, cmap='YlGnBu')
+            # plt.title('Heatmap')
+            # plt.xlabel('Genes')
+            # plt.ylabel('Clusters')
+            # # plt.tight_layout()
+            #
+            # buffer = io.BytesIO()
+            # plt.savefig(buffer, format='png')
+            # plot_data = buffer.getvalue()
+            # imb = base64.b64encode(plot_data)
+            # ims = imb.decode()
+            # imd = "data:image/png;base64," + ims
+
+            # print("路径正确:", imd)
+
+            result_data = {
                 'num_distinct_values_of_dataset': num_distinct_values_of_dataset,
                 'dataset_distinct_values': dataset_distinct_values,
                 'total_records': total_records,
@@ -538,15 +583,137 @@ def analyze_cell_marker(request):
                 'num_distinct_values_of_gene': num_distinct_values_of_gene,
                 'pct1_summary_stats': pct1_summary_stats,
                 'pct2_summary_stats': pct2_summary_stats,
-                'tab1_filter_results': tab1_filter_results,
-                'tab1_filters': tab1_filters,
-                'temp_file_path': temp_file_path
+                'filter_results': tab1_filter_results,
+                'filters': tab1_filters,
+                'plot_url': plot_div
             }
-            return render(request, 'analyze-cell-marker.html', tab1_context)
+            return render(request, 'analyze-cell-marker.html', result_data)
+        # else:
+        #     error_message = 'Please fill the Query Form.'
+        #     return render(request, 'analyze-cell-marker.html', {'error_message': error_message})
+
+        elif tab2_field_querytable_checkbox and tab2_field_dataset_checkbox and tab2_field_padj_checkbox:
+            tab2_filters = {}
+            if tab2_field_dataset_checkbox:
+                tab2_field_dataset_filter = f'dataset__{tab2_field_dataset_condition}'
+                tab2_filters[tab2_field_dataset_filter] = tab2_field_dataset_value
+
+            if tab2_field_log2fc_checkbox:
+                tab2_field_log2fc_filter = f'avg_log2FC__{tab2_field_log2fc_condition}'
+                tab2_filters[tab2_field_log2fc_filter] = tab2_field_log2fc_value
+
+            if tab2_field_pct1_checkbox:
+                tab2_field_pct1_filter = f'pct1__{tab2_field_pct1_condition}'
+                tab2_filters[tab2_field_pct1_filter] = tab2_field_pct1_value
+
+            if tab2_field_pct2_checkbox:
+                tab2_field_pct2_filter = f'pct2__{tab2_field_pct2_condition}'
+                tab2_filters[tab2_field_pct2_filter] = tab2_field_pct2_value
+
+            if tab2_field_padj_checkbox:
+                tab2_field_padj_filter = f'padj__{tab2_field_padj_condition}'
+                tab2_filters[tab2_field_padj_filter] = tab2_field_padj_value
+
+            # 数据库查询 and render.
+            if tab2_field_querytable_condition == 'major':
+                tab2_filter_results = Marker_Celltype.objects.filter(**tab2_filters)
+            elif tab2_field_querytable_condition == 'minor':
+                tab2_filter_results = Marker_Subcluster.objects.filter(**tab2_filters)
+
+            # 数据库查询结果数据集的统计分析。
+            tab2_total_records = tab2_filter_results.count()
+            tab2_dataset_distinct_values = tab2_filter_results.values_list('dataset', flat=True).distinct()
+            tab2_num_distinct_values_of_dataset = len(tab2_dataset_distinct_values)
+
+            tab2_cluster_distinct_values = tab2_filter_results.values_list('cluster', flat=True).distinct()
+            tab2_num_distinct_values_of_cluster = len(tab2_cluster_distinct_values)
+
+            tab2_gene_distinct_values = tab2_filter_results.values_list('gene', flat=True).distinct()
+            tab2_num_distinct_values_of_gene = len(tab2_gene_distinct_values)
+
+            tab2_pct1_data = tab2_filter_results.values_list('pct1', flat=True)
+            tab2_pct1_data_array = np.array(list(tab2_pct1_data))
+            tab2_pct1_summary_stats = f"pct1 range:\n"
+            tab2_pct1_summary_stats += f"-- mean: {round(np.mean(tab2_pct1_data_array),2)}\n"
+            tab2_pct1_summary_stats += f"-- median: {round(np.median(tab2_pct1_data_array),2)}\n"
+            tab2_pct1_summary_stats += f"-- min: {round(np.min(tab2_pct1_data_array),2)}\n"
+            tab2_pct1_summary_stats += f"-- max: {round(np.max(tab2_pct1_data_array),2)}"
+
+
+            tab2_pct2_data = tab2_filter_results.values_list('pct2', flat=True)
+            tab2_pct2_data_array = np.array(list(tab2_pct2_data))
+            tab2_pct2_summary_stats = f"pct2 range:\n"
+            tab2_pct2_summary_stats += f"-- mean: {round(np.mean(tab2_pct2_data_array), 2)}\n"
+            tab2_pct2_summary_stats += f"-- median: {round(np.median(tab2_pct2_data_array),2)}\n"
+            tab2_pct2_summary_stats += f"-- min: {round(np.min(tab2_pct2_data_array),2)}\n"
+            tab2_pct2_summary_stats += f"-- max: {round(np.max(tab2_pct2_data_array),2)}"
+
+            ## 构造数据
+            df_data = list(tab2_filter_results.values('cluster', 'gene', 'avg_log2FC') )
+            df = pd.DataFrame(df_data)
+            # Aggregate duplicate values by taking the mean
+            df_agg = df.groupby(['gene', 'cluster'])['avg_log2FC'].mean().reset_index()
+            df_wide = df_agg.pivot(index='gene', columns='cluster', values='avg_log2FC').fillna(0)
+            df_wide = df_wide.astype(float)
+
+            ## two-way clustering.
+            row_clusters = hierarchy.linkage(df_wide.values, method='average', metric='euclidean')
+            column_clusters = hierarchy.linkage(df_wide.values.T, method='average', metric='euclidean')
+            # 获取行和列的排序索引
+            row_order = hierarchy.leaves_list(row_clusters)
+            column_order = hierarchy.leaves_list(column_clusters)
+
+            # 根据排序索引重新排列数据框
+            df_reordered = df_wide.iloc[row_order, column_order]
+
+            # 构造热图数据
+            heat_data = df_reordered.values.tolist()
+            x_labels = df_reordered.columns.tolist()
+            y_labels = df_reordered.index.tolist()
+
+            # 绘制交互式热图
+            fig = go.Figure(data=go.Heatmap(
+                z=heat_data,
+                x=x_labels,
+                y=y_labels
+            ))
+
+            # 设置图表布局
+            fig.update_layout(
+                title={
+                    'text': 'Interactive Heatmap',
+                    'x': 0.5,  # 设置标题居中
+                    'xanchor': 'center',
+                    'yanchor': 'top'
+                },
+                xaxis_title='Cell Clusters',
+                yaxis_title='Gene Markers',
+                width=1000,  # 设置宽度为 800 像素
+                height=1000  # 设置高度为 600 像素
+            )
+
+            # 将图表渲染到网页
+            tab2_plot_div = fig.to_html(full_html=False)
+
+            tab2_result_data = {
+                'tab2_num_distinct_values_of_dataset': tab2_num_distinct_values_of_dataset,
+                'tab2_dataset_distinct_values': tab2_dataset_distinct_values,
+                'tab2_total_records': tab2_total_records,
+                'tab2_num_distinct_values_of_cluster': tab2_num_distinct_values_of_cluster,
+                'tab2_num_distinct_values_of_gene': tab2_num_distinct_values_of_gene,
+                'tab2_pct1_summary_stats': tab2_pct1_summary_stats,
+                'tab2_pct2_summary_stats': tab2_pct2_summary_stats,
+                'tab2_filter_results': tab2_filter_results,
+                'tab2_filters': tab2_filters,
+                'tab2_plot_url': tab2_plot_div
+            }
+
+            print('num_distinct_values_of_dataset', tab2_num_distinct_values_of_dataset)
+
+            return render(request, 'analyze-cell-marker.html', tab2_result_data)
         else:
             error_message = 'Please fill the Query Form.'
             return render(request, 'analyze-cell-marker.html', {'error_message': error_message})
-
 
     return render(request, 'analyze-cell-marker.html')
 

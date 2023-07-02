@@ -1,0 +1,489 @@
+{% extends "base.html" %}
+{% load humanize %}
+
+{% block content %}
+
+{% include "navbar-simple.html" %}
+{% include "sidebar.html" %}
+
+<div id="layoutSidenav_content">
+    <main>
+
+    <div class="card mb-4">
+        <div class="card-header"><i class="fas fa-table mr-1"></i> <b>Current Position: Analysis on Cell Markers</b> </div>
+    </div>
+
+    <div class="card mb-4">
+    <ul class="nav nav-tabs">
+        <li class="nav-item">
+            <a class="nav-link active" id="tab1-tab" data-toggle="tab" data-tab='tab1' href="#tab1" >Single-dataset: Global</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="tab2-tab" data-toggle="tab" data-tab='tab2' href="#tab2" >Cross-datasets</a>
+        </li>
+    </ul>
+    </div>
+
+    <div class="tab-content">
+     <!-- 选项卡1 -->
+        <div id="tab1" class="tab-pane active">
+            <div class="card-body">
+                <!-- 可折叠区域 filters of sample table. -->
+                <div class="card mb-4">
+                    <div class="card-header"><i class="fas fa-chart-area mr-1"></i> Filters </div>
+                    <div class="card-body">
+                         <form method="POST" id="form1" data-tab="tab1" action="{% url 'analyze-cell-marker-tab1' %}"> <!-- 这里需要定义 form id -->
+                              {% csrf_token %}
+                              <label for="tab1_field_queryTable">Query Table</label>  <!-- 需要定义 关键变量标签 for -->
+                              <input type="checkbox" id="tab1_field_queryTable" name="tab1_field_queryTable_checkbox" checked> <!-- 需要定义 id和name，id同上一行for -->
+                              <select name="tab1_field_queryTable_condition"> <!-- 需要定义 name -->
+                                    <option value="major"> Major Cell Type </option>
+                                    <option value="minor"> Cell Sub-type </option>
+                              </select> (Required)
+                              <br>
+
+                              <label for="tab1_field_dataset">Dataset</label>  <!-- 需要定义 关键变量标签 for -->
+                              <input type="checkbox" id="tab1_field_dataset" name="tab1_field_dataset_checkbox" checked> <!-- 需要定义 id和name，id同上一行for -->
+                              <select name="tab1_field_dataset_condition"> <!-- 需要定义 name -->
+                                    <option value="eq"> Equal to </option>
+                                    <option value="contains" selected> Contains </option>
+                              </select>
+                              <input type="text" name="tab1_field_dataset_value"> (Required)
+                              <br>
+
+                              <label for="tab1_field_log2fc">Average Log2FC</label>
+                              <input type="checkbox" id="tab1_field_log2fc" name="tab1_field_log2fc_checkbox">
+                              <select name="form_gene_marker_field_log2fc_condition">
+                                    <option value="gt">Greater than</option>
+                                    <option value="lt">Less than</option>
+                                    <option value="eq">Equal to</option>
+                              </select>
+                              <input type="text" name="tab1_field_log2fc_value"> (Optional)
+                              <br>
+
+                              <label for="tab1_field_pct1">Percent 1</label>
+                              <input type="checkbox" id="tab1_field_pct1" name="tab1_field_pct1_checkbox">
+                              <select name="tab1_field_pct1_condition">
+                                    <option value="gt" selected>Greater than</option>
+                                    <option value="lt">Less than</option>
+                                    <option value="eq">Equal to</option>
+                              </select>
+                              <input type="text" name="tab1_field_pct1_value"> (Optional)
+                              <br>
+
+                              <label for="tab1_field_pct2">Percent 2</label>
+                              <input type="checkbox" id="tab1_field_pct2" name="tab1_field_pct2_checkbox">
+                              <select name="tab1_field_pct2_condition">
+                                    <option value="gt" selected>Greater than</option>
+                                    <option value="lt">Less than</option>
+                                    <option value="eq">Equal to</option>
+                              </select>
+                              <input type="text" name="tab1_field_pct2_value"> (Optional)
+                              <br>
+
+                              <label for="tab1_field_padj">Adjusted P </label>
+                              <input type="checkbox" id="tab1_field_padj" name="tab1_field_padj_checkbox" checked>
+                              <select name="tab1_field_padj_condition">
+                                    <option value="gt">Greater than</option>
+                                    <option value="lt" selected>Less than</option>
+                                    <option value="eq">Equal to</option>
+                              </select>
+                              <input type="text" name="tab1_field_padj_value"> (Required)
+                              <br>
+
+
+                              <!-- 其他字段的复选框和查询条件 -->
+                              <input type="submit" value="Submit">
+                         </form>
+                    </div>
+                </div>
+                <div id="result-tab1">
+                    <!-- 显示user提交的form查询条件 -->
+                    <div class="card mb-4" id="result1-form-input">
+                        <div class="card-header"><i class="fas fa-chart-area mr-1"></i> Current inputs </div>
+                        <div class="card-body">
+                            {% if error_message %}
+                                <p style="color: red;"> Error Occured !!! </p>
+                                <p style="color: red;"> One or more required fields are missing.</p>
+                                <p style="color: red;">{{ error_message }}</p>
+                            {% endif %}
+
+                            {% if filters %}
+                              <ul>
+                                {% for key, value in filters.items %}
+                                  <li>{{ key }}: {{ value }}</li>
+                                {% endfor %}
+                              </ul>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- summary of data subset according to the form -->
+                    <div class="card mb-4" id="result1-dataTable-summary">
+                        <div class="card-header"><i class="fas fa-chart-area mr-1"></i> Summary of Data Subset </div>
+                        <div class="card-body">
+                            <p> Number of total records: {{ total_records }} </p>
+                            <p> num_distinct_values_of_dataset: {{ num_distinct_values_of_dataset }} </p>
+                            <p> dataset_distinct_values: {{ dataset_distinct_values }} </p>
+                            <p> {{ num_distinct_values_of_gene }} gene markers of {{ num_distinct_values_of_cluster }} cell clusters (major cell type or cell subtypes) </p>
+                            <p> {{ pct1_summary_stats }}</p>
+                            <p> {{ pct2_summary_stats }}</p>
+                        </div>
+                    </div>
+
+                    <!-- dataTable of data subset -->
+                    <div class="card mb-4" id="result1-dataTable">
+                        <div class="card-header"><i class="fas fa-chart-area mr-1"></i> Filter Results </div>
+                        <div class="card-body" id="filter-tab1-results-container">
+                             <div class="table-responsive">
+                                <table class="table table-bordered" id="dataTable-tab1-filter" width="100%" cellspacing="0">
+                                    <thead>
+                                        <tr>
+                                            <th>Dataset</th>
+                                            <th>Cell Type</th>
+                                            <th>Gene</th>
+                                            <th>Avg_log2FC</th>
+                                            <th>Pct1</th>
+                                            <th>Pct2</th>
+                                            <th>P-value</th>
+                                            <th>Adjusted P</th>
+                                        </tr>
+                                    </thead>
+                                    <tfoot>
+                                        <tr>
+                                            <th>Dataset</th>
+                                            <th>Cell Type</th>
+                                            <th>Gene</th>
+                                            <th>Avg_log2FC</th>
+                                            <th>Pct1</th>
+                                            <th>Pct2</th>
+                                            <th>P-value</th>
+                                            <th>Adjusted P</th>
+                                        </tr>
+                                    </tfoot>
+                                    <tbody>
+                                       {% for row in filter_results %}
+                                        <tr>
+                                            <td>{{ row.dataset }}</td>
+                                            <td>{{ row.cluster }}</td>
+                                            <td>{{ row.gene }}</td>
+                                            <td>{{ row.avg_log2FC }}</td>
+                                            <td>{{ row.pct1 }}</td>
+                                            <td>{{ row.pct2 }}</td>
+                                            <td>{{ row.pval }}</td>
+                                            <td>{{ row.padj }}</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                             </div>
+                        </div>
+                    </div>
+
+                    <!-- plt with data subset -->
+                    <div class="card mb-4" id="result1-plots">
+                    <div class="card-header"><i class="fas fa-chart-area mr-1"></i> Plots </div>
+                    <div class="card-body">
+                        {{ plot_url | safe }}
+                    </div>
+                </div>
+                </div>
+            </div>
+        </div>
+
+         <div id="tab2" class="tab-pane ">
+            <div class="card-body">
+                <!-- 可折叠区域 filters of sample table. -->
+                <div class="card mb-4">
+                    <div class="card-header"><i class="fas fa-chart-area mr-1"></i> Filters </div>
+                    <div class="card-body">
+                         <form method="POST" id="form2" data-tab="tab2" action="{% url 'analyze-cell-marker-tab1' %}"> <!-- 这里需要定义 form id -->
+                             {% csrf_token %}
+                              <label for="tab2_field_querytable">Query Table</label>
+                              <input type="checkbox" id="tab2_field_querytable" name="tab2_field_querytable_checkbox" checked>
+                              <select name="tab2_field_querytable_condition"> <!-- 需要定义 name -->
+                                    <option value="major"> Major Cell Type </option>
+                                    <option value="minor"> Cell Sub-type </option>
+                              </select> (Required)
+                              <br>
+
+                              <label for="tab2_field_dataset">Dataset</label>  <!-- 需要定义 关键变量标签 for -->
+                              <input type="checkbox" id="tab2_field_dataset" name="tab2_field_dataset_checkbox" checked> <!-- 需要定义 id和name，id同上一行for -->
+                              <select name="tab2_field_dataset_condition"> <!-- 需要定义 name -->
+                                    <option value="eq"> Equal to </option>
+                                    <option value="contains" selected> Contains </option>
+                              </select>
+                              <input type="text" name="tab2_field_dataset_value"> (Required)
+                              <br>
+
+                              <label for="tab2_field_cluster">Cell Cluster</label>
+                              <input type="checkbox" id="tab2_field_cluster" name="tab2_field_cluster_checkbox">
+                              <select name="tab2_field_cluster_condition">
+                                    <option value="eq">Equal to</option>
+                                    <option value="contains" selected>Contains</option>
+                              </select>
+                              <input type="text" name="tab2_field_cluster_value"> (Optional)
+                              <br>
+
+                              <label for="tab2_field_gene">Gene</label>
+                              <input type="checkbox" id="tab2_field_gene" name="tab2_field_gene_checkbox">
+                              <select name="tab2_field_gene_condition">
+                                    <option value="eq">Equal to</option>
+                                    <option value="contains" selected>Contains</option>
+                              </select>
+                              <input type="text" name="tab2_field_gene_value"> (Optional)
+                              <br>
+
+                              <label for="tab2_field_log2fc">Average Log2FC</label>
+                              <input type="checkbox" id="tab2_field_log2fc" name="tab2_field_log2fc_checkbox">
+                              <select name="tab2_field_log2fc_condition">
+                                    <option value="gt">Greater than</option>
+                                    <option value="lt">Less than</option>
+                                    <option value="eq">Equal to</option>
+                              </select>
+                              <input type="text" name="tab2_field_log2fc_value"> (Optional)
+                              <br>
+
+                              <label for="tab2_field_pct1">Percent 1</label>
+                              <input type="checkbox" id="tab2_field_pct1" name="tab2_field_pct1_checkbox">
+                              <select name="tab2_field_pct1_condition">
+                                    <option value="gt" selected>Greater than</option>
+                                    <option value="lt">Less than</option>
+                                    <option value="eq">Equal to</option>
+                              </select>
+                              <input type="text" name="tab2_field_pct1_value"> (Optional)
+                              <br>
+
+                              <label for="tab2_field_pct2">Percent 2</label>
+                              <input type="checkbox" id="tab2_field_pct2" name="tab2_field_pct2_checkbox">
+                              <select name="tab2_field_pct2_condition">
+                                    <option value="gt" selected>Greater than</option>
+                                    <option value="lt">Less than</option>
+                                    <option value="eq">Equal to</option>
+                              </select>
+                              <input type="text" name="tab2_field_pct2_value"> (Optional)
+                              <br>
+
+                              <label for="tab2_field_padj">Adjusted P </label>
+                              <input type="checkbox" id="tab2_field_padj" name="tab2_field_padj_checkbox" checked>
+                              <select name="tab2_field_padj_condition">
+                                    <option value="gt">Greater than</option>
+                                    <option value="lt" selected>Less than</option>
+                                    <option value="eq">Equal to</option>
+                              </select>
+                              <input type="text" name="tab2_field_padj_value"> (Required)
+                              <br>
+
+
+                              <!-- 其他字段的复选框和查询条件 -->
+                              <input type="submit" value="Submit">
+                         </form>
+                    </div>
+                </div>
+
+                <div id="result-tab2">
+                    <!-- 显示user提交的form查询条件 -->
+                    <div class="card mb-4" id="result2-form-input">
+                    <div class="card-header"><i class="fas fa-chart-area mr-1"></i> Current inputs </div>
+                    <div class="card-body">
+                        {% if error_message %}
+                                <p style="color: red;"> Error Occured !!! </p>
+                                <p style="color: red;"> One or more required fields are missing.</p>
+                                <p style="color: red;">{{ error_message }}</p>
+                        {% endif %}
+
+                        {% if tab2_filters %}
+                          <ul>
+                            {% for key, value in tab2_filters.items %}
+                              <li>{{ key }}: {{ value }}</li>
+                            {% endfor %}
+                          </ul>
+                        {% endif %}
+                    </div>
+                </div>
+
+                    <!-- summary of data subset according to the form -->
+                    <div class="card mb-4" id="result2-dataTable-summary">
+                        <div class="card-header"><i class="fas fa-chart-area mr-1"></i> Summary of Data Subset </div>
+                        <div class="card-body">
+                            <div class="card-body">
+                            <p> Number of total records: {{ tab2_total_records }} </p>
+                            <p> num_distinct_values_of_dataset: {{ tab2_num_distinct_values_of_dataset }} </p>
+                            <p> dataset_distinct_values: {{ tab2_dataset_distinct_values }} </p>
+                            <p> {{ tab2_num_distinct_values_of_gene }} gene markers of {{ tab2_num_distinct_values_of_cluster }} cell clusters (major cell type or cell subtypes) </p>
+                            <p> {{ tab2_pct1_summary_stats }}</p>
+                            <p> {{ tab2_pct2_summary_stats }}</p>
+                        </div>
+                        </div>
+                    </div>
+
+                    <!-- dataTable of data subset -->
+                    <div class="card mb-4" id="result2-dataTable">
+                        <div class="card-header"><i class="fas fa-chart-area mr-1"></i> Filter Results </div>
+                        <div class="card-body" id="filter-tab2-results-container">
+                             <div class="table-responsive">
+                                <table class="table table-bordered" id="dataTable-tab2-filter" width="100%" cellspacing="0">
+                                    <thead>
+                                        <tr>
+                                            <th>Dataset</th>
+                                            <th>Cell Type</th>
+                                            <th>Gene</th>
+                                            <th>Avg_log2FC</th>
+                                            <th>Pct1</th>
+                                            <th>Pct2</th>
+                                            <th>P-value</th>
+                                            <th>Adjusted P</th>
+                                        </tr>
+                                    </thead>
+                                    <tfoot>
+                                        <tr>
+                                            <th>Dataset</th>
+                                            <th>Cell Type</th>
+                                            <th>Gene</th>
+                                            <th>Avg_log2FC</th>
+                                            <th>Pct1</th>
+                                            <th>Pct2</th>
+                                            <th>P-value</th>
+                                            <th>Adjusted P</th>
+                                        </tr>
+                                    </tfoot>
+                                    <tbody>
+                                       {% for row in tab2_filter_results %}
+                                        <tr>
+                                            <td>{{ row.dataset }}</td>
+                                            <td>{{ row.cluster }}</td>
+                                            <td>{{ row.gene }}</td>
+                                            <td>{{ row.avg_log2FC }}</td>
+                                            <td>{{ row.pct1 }}</td>
+                                            <td>{{ row.pct2 }}</td>
+                                            <td>{{ row.pval }}</td>
+                                            <td>{{ row.padj }}</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                             </div>
+                        </div>
+                    </div>
+
+
+
+                    <!-- plt with data subset -->
+                    <div class="card mb-4" id="result2-plots">
+                        <div class="card-header"><i class="fas fa-chart-area mr-1"></i> Summary of Data Subset </div>
+                        <div class="card-body">
+
+                            <div class="accordion" id="accordionExample">
+                              <div class="card">
+                                <div class="card-header" id="headingOne">
+                                  <h2 class="mb-0">
+                                    <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                      Collapsible Group Item #1
+                                    </button>
+                                  </h2>
+                                </div>
+
+                                <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordionExample">
+                                  <div class="card-body">
+                                    Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.
+                                  </div>
+                                </div>
+                              </div>
+                              <div class="card">
+                                <div class="card-header" id="headingTwo">
+                                  <h2 class="mb-0">
+                                    <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                                      Collapsible Group Item #2
+                                    </button>
+                                  </h2>
+                                </div>
+                                <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionExample">
+                                  <div class="card-body">
+                                    Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.
+                                  </div>
+                                </div>
+                              </div>
+                              <div class="card">
+                                <div class="card-header" id="headingThree">
+                                  <h2 class="mb-0">
+                                    <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                                      Collapsible Group Item #3
+                                    </button>
+                                  </h2>
+                                </div>
+                                <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordionExample">
+                                  <div class="card-body">
+                                    Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+
+                <script>
+                    $('#myCollapsible').collapse({
+                      toggle: false
+                    })
+                </script>
+
+            </div>
+        </div>
+    </div>
+    <script>
+      // 使用jQuery发送异步请
+      $(document).ready(function() {
+        $('form').submit(function(e) {
+          e.preventDefault(); // 阻止表单的默认提交行为
+
+          var form = $(this);
+          var tabId = form.data('tab');
+          var resultContainer = $('#result-' + tabId);
+
+          $.ajax({
+            url: form.attr('action'),
+            type: form.attr('method'),
+            data: form.serialize(),
+            success: function(response) {
+              resultContainer.html(response);
+            },
+            error: function() {
+              resultContainer.html('提交失败');
+            }
+          });
+        });
+      });
+    </script>
+
+
+
+</main>
+
+{% include "footer.html" %}
+</div>
+</div>
+
+<!-- Javascript code. -->
+<script src="https://code.jquery.com/jquery-3.4.1.min.js" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+<script src="../static/js/scripts.js"></script>
+
+<script src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js" crossorigin="anonymous"></script>
+<script src="https://cdn.datatables.net/1.10.20/js/dataTables.bootstrap4.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- for #dataTable functions-->
+<script type="text/javascript">
+    // 用来优化网页表格的显示
+   $(document).ready(function() {
+      $('#dataTable-tab1-filter').dataTable();
+      $('#dataTable-tab2-filter').dataTable();
+    });
+</script>
+
+{% endblock %}

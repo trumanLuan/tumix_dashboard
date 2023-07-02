@@ -13,13 +13,12 @@ from .models import SingleCell
 from .models import SignalPathway
 
 import numpy as np
-import matplotlib.pyplot as plt
-import tempfile
+# import tempfile
 import os
 import pandas as pd
-import seaborn as sns
-import random
-import string
+# import seaborn as sns
+# import random
+# import string
 
 from scipy.cluster import hierarchy
 import plotly.graph_objects as go
@@ -365,7 +364,7 @@ def process_search_forms(request):
 def analyze_gene_expr(request):
     return render(request, 'analyze-gene-expr.html')
 
-def analyze_cell_marker(request):
+def analyze_cell_marker_tab1_view(request):
     if request.method == 'POST':
         ## STEP 1. get form values input by users.
         ## form values of tab1.
@@ -392,7 +391,6 @@ def analyze_cell_marker(request):
         tab1_field_padj_condition = request.POST.get('tab1_field_padj_condition')
         tab1_field_padj_value = request.POST.get('tab1_field_padj_value')
 
-        ## form values of tab2.
         tab2_field_querytable_checkbox = request.POST.get('tab2_field_querytable_checkbox')
         tab2_field_querytable_condition = request.POST.get('tab2_field_querytable_condition')
 
@@ -424,38 +422,39 @@ def analyze_cell_marker(request):
         tab2_field_padj_condition = request.POST.get('tab2_field_padj_condition')
         tab2_field_padj_value = request.POST.get('tab2_field_padj_value')
 
-        ## form values of tab3.
-        tab3_field_dataset_checkbox = request.POST.get('tab3_field_dataset_checkbox')
-        tab3_field_dataset_condition = request.POST.get('tab3_field_dataset_condition')
-        tab3_field_dataset_value = request.POST.get('tab3_field_dataset_value')
-
-        tab3_field_cluster_checkbox = request.POST.get('tab3_field_cluster_checkbox')
-        tab3_field_cluster_condition = request.POST.get('tab3_field_cluster_condition')
-        tab3_field_cluster_value = request.POST.get('tab3_field_cluster_value')
-
-        tab3_field_gene_checkbox = request.POST.get('tab3_field_gene_checkbox')
-        tab3_field_gene_condition = request.POST.get('tab3_field_gene_condition')
-        tab3_field_gene_value = request.POST.get('tab3_field_gene_value')
-
-        tab3_field_log2fc_checkbox = request.POST.get('tab3_field_log2fc_checkbox')
-        tab3_field_log2fc_condition = request.POST.get('tab3_field_log2fc_condition')
-        tab3_field_log2fc_value = request.POST.get('tab3_field_log2fc_value')
-
-        tab3_field_pct1_checkbox = request.POST.get('tab3_field_pct1_checkbox')
-        tab3_field_pct1_condition = request.POST.get('tab3_field_pct1_condition')
-        tab3_field_pct1_value = request.POST.get('tab3_field_pct1_value')
-
-        tab3_field_pct2_checkbox = request.POST.get('tab3_field_pct2_checkbox')
-        tab3_field_pct2_condition = request.POST.get('tab3_field_pct2_condition')
-        tab3_field_pct2_value = request.POST.get('tab3_field_pct2_value')
-
-        tab3_field_padj_checkbox = request.POST.get('tab3_field_padj_checkbox')
-        tab3_field_padj_condition = request.POST.get('tab3_field_padj_condition')
-        tab3_field_padj_value = request.POST.get('tab3_field_padj_value')
+        # ## form values of tab3.
+        # tab3_field_dataset_checkbox = request.POST.get('tab3_field_dataset_checkbox')
+        # tab3_field_dataset_condition = request.POST.get('tab3_field_dataset_condition')
+        # tab3_field_dataset_value = request.POST.get('tab3_field_dataset_value')
+        #
+        # tab3_field_cluster_checkbox = request.POST.get('tab3_field_cluster_checkbox')
+        # tab3_field_cluster_condition = request.POST.get('tab3_field_cluster_condition')
+        # tab3_field_cluster_value = request.POST.get('tab3_field_cluster_value')
+        #
+        # tab3_field_gene_checkbox = request.POST.get('tab3_field_gene_checkbox')
+        # tab3_field_gene_condition = request.POST.get('tab3_field_gene_condition')
+        # tab3_field_gene_value = request.POST.get('tab3_field_gene_value')
+        #
+        # tab3_field_log2fc_checkbox = request.POST.get('tab3_field_log2fc_checkbox')
+        # tab3_field_log2fc_condition = request.POST.get('tab3_field_log2fc_condition')
+        # tab3_field_log2fc_value = request.POST.get('tab3_field_log2fc_value')
+        #
+        # tab3_field_pct1_checkbox = request.POST.get('tab3_field_pct1_checkbox')
+        # tab3_field_pct1_condition = request.POST.get('tab3_field_pct1_condition')
+        # tab3_field_pct1_value = request.POST.get('tab3_field_pct1_value')
+        #
+        # tab3_field_pct2_checkbox = request.POST.get('tab3_field_pct2_checkbox')
+        # tab3_field_pct2_condition = request.POST.get('tab3_field_pct2_condition')
+        # tab3_field_pct2_value = request.POST.get('tab3_field_pct2_value')
+        #
+        # tab3_field_padj_checkbox = request.POST.get('tab3_field_padj_checkbox')
+        # tab3_field_padj_condition = request.POST.get('tab3_field_padj_condition')
+        # tab3_field_padj_value = request.POST.get('tab3_field_padj_value')
 
         # STEP 2. 构建查询条件
         ## for form in tab1.
         if tab1_field_queryTable_checkbox and tab1_field_dataset_checkbox and tab1_field_padj_checkbox:
+            # if tab1_field_dataset_value and tab1_field_padj_value:
             tab1_filters = {}
             if tab1_field_dataset_checkbox:
                 tab1_field_dataset_filter = f'dataset__{tab1_field_dataset_condition}'
@@ -501,7 +500,6 @@ def analyze_cell_marker(request):
             pct1_summary_stats += f"-- median: {round(np.median(pct1_data_array),2)}\n"
             pct1_summary_stats += f"-- min: {round(np.min(pct1_data_array),2)}\n"
             pct1_summary_stats += f"-- max: {round(np.max(pct1_data_array),2)}"
-
 
             pct2_data = tab1_filter_results.values_list('pct2', flat=True)
             pct2_data_array = np.array(list(pct2_data))
@@ -558,23 +556,6 @@ def analyze_cell_marker(request):
             # 将图表渲染到网页
             plot_div = fig.to_html(full_html=False)
 
-            # ## plot with matplotlib and render in html.
-            # plt.figure(figsize=(10, 8))
-            # sns.heatmap(df_wide, annot=False, cmap='YlGnBu')
-            # plt.title('Heatmap')
-            # plt.xlabel('Genes')
-            # plt.ylabel('Clusters')
-            # # plt.tight_layout()
-            #
-            # buffer = io.BytesIO()
-            # plt.savefig(buffer, format='png')
-            # plot_data = buffer.getvalue()
-            # imb = base64.b64encode(plot_data)
-            # ims = imb.decode()
-            # imd = "data:image/png;base64," + ims
-
-            # print("路径正确:", imd)
-
             result_data = {
                 'num_distinct_values_of_dataset': num_distinct_values_of_dataset,
                 'dataset_distinct_values': dataset_distinct_values,
@@ -587,16 +568,25 @@ def analyze_cell_marker(request):
                 'filters': tab1_filters,
                 'plot_url': plot_div
             }
-            return render(request, 'analyze-cell-marker.html', result_data)
-        # else:
-        #     error_message = 'Please fill the Query Form.'
-        #     return render(request, 'analyze-cell-marker.html', {'error_message': error_message})
+            return render(request, 'analyze-cell-marker-tab1.html', result_data)
 
+            # if tab1_field_dataset_value == '' or tab1_field_padj_value == '':
+            #     error_message = 'Please fill the Query Form.'
+            #     return render(request, 'analyze-cell-marker-tab1.html', {'error_message': error_message})
         elif tab2_field_querytable_checkbox and tab2_field_dataset_checkbox and tab2_field_padj_checkbox:
+            # if tab2_field_dataset_value and tab2_field_padj_value:
             tab2_filters = {}
             if tab2_field_dataset_checkbox:
                 tab2_field_dataset_filter = f'dataset__{tab2_field_dataset_condition}'
                 tab2_filters[tab2_field_dataset_filter] = tab2_field_dataset_value
+
+            if tab2_field_cluster_checkbox:
+                tab2_field_cluster_filter = f'cluster__{tab2_field_dataset_condition}'
+                tab2_filters[tab2_field_cluster_filter] = tab2_field_cluster_value
+
+            if tab2_field_gene_checkbox:
+                tab2_field_gene_filter = f'gene__{tab2_field_gene_condition}'
+                tab2_filters[tab2_field_gene_filter] = tab2_field_gene_value
 
             if tab2_field_log2fc_checkbox:
                 tab2_field_log2fc_filter = f'avg_log2FC__{tab2_field_log2fc_condition}'
@@ -634,22 +624,21 @@ def analyze_cell_marker(request):
             tab2_pct1_data = tab2_filter_results.values_list('pct1', flat=True)
             tab2_pct1_data_array = np.array(list(tab2_pct1_data))
             tab2_pct1_summary_stats = f"pct1 range:\n"
-            tab2_pct1_summary_stats += f"-- mean: {round(np.mean(tab2_pct1_data_array),2)}\n"
-            tab2_pct1_summary_stats += f"-- median: {round(np.median(tab2_pct1_data_array),2)}\n"
-            tab2_pct1_summary_stats += f"-- min: {round(np.min(tab2_pct1_data_array),2)}\n"
-            tab2_pct1_summary_stats += f"-- max: {round(np.max(tab2_pct1_data_array),2)}"
-
+            tab2_pct1_summary_stats += f"-- mean: {round(np.mean(tab2_pct1_data_array), 2)}\n"
+            tab2_pct1_summary_stats += f"-- median: {round(np.median(tab2_pct1_data_array), 2)}\n"
+            tab2_pct1_summary_stats += f"-- min: {round(np.min(tab2_pct1_data_array), 2)}\n"
+            tab2_pct1_summary_stats += f"-- max: {round(np.max(tab2_pct1_data_array), 2)}"
 
             tab2_pct2_data = tab2_filter_results.values_list('pct2', flat=True)
             tab2_pct2_data_array = np.array(list(tab2_pct2_data))
             tab2_pct2_summary_stats = f"pct2 range:\n"
             tab2_pct2_summary_stats += f"-- mean: {round(np.mean(tab2_pct2_data_array), 2)}\n"
-            tab2_pct2_summary_stats += f"-- median: {round(np.median(tab2_pct2_data_array),2)}\n"
-            tab2_pct2_summary_stats += f"-- min: {round(np.min(tab2_pct2_data_array),2)}\n"
-            tab2_pct2_summary_stats += f"-- max: {round(np.max(tab2_pct2_data_array),2)}"
+            tab2_pct2_summary_stats += f"-- median: {round(np.median(tab2_pct2_data_array), 2)}\n"
+            tab2_pct2_summary_stats += f"-- min: {round(np.min(tab2_pct2_data_array), 2)}\n"
+            tab2_pct2_summary_stats += f"-- max: {round(np.max(tab2_pct2_data_array), 2)}"
 
             ## 构造数据
-            df_data = list(tab2_filter_results.values('cluster', 'gene', 'avg_log2FC') )
+            df_data = list(tab2_filter_results.values('cluster', 'gene', 'avg_log2FC'))
             df = pd.DataFrame(df_data)
             # Aggregate duplicate values by taking the mean
             df_agg = df.groupby(['gene', 'cluster'])['avg_log2FC'].mean().reset_index()
@@ -709,13 +698,14 @@ def analyze_cell_marker(request):
             }
 
             print('num_distinct_values_of_dataset', tab2_num_distinct_values_of_dataset)
+            return render(request, 'analyze-cell-marker-tab1.html', tab2_result_data)
 
-            return render(request, 'analyze-cell-marker.html', tab2_result_data)
         else:
             error_message = 'Please fill the Query Form.'
-            return render(request, 'analyze-cell-marker.html', {'error_message': error_message})
+            return render(request, 'analyze-cell-marker-tab1.html', {'error_message': error_message})
 
-    return render(request, 'analyze-cell-marker.html')
+    return render(request, 'analyze-cell-marker-tab1.html')
+
 
 def analyze_cell_commu(request):
     return render(request, 'analyze-cell-commu.html')

@@ -9,7 +9,8 @@ urlpatterns = [
     re_path(r"browse_results$", views.browse_results, name='browse_results'),
     re_path(r"search$", views.process_search_forms, name='search'),
     re_path(r"analyze-gene-expr$", views.analyze_gene_expr, name='analyze-gene-expr'),
-    re_path(r"analyze-cell-marker$", views.analyze_gene_expr, name='analyze-cell-marker'),
+    re_path(r"analyze-cell-marker-tab1$", views.analyze_cell_marker_tab1_view, name='analyze-cell-marker-tab1'),
+    # re_path(r"analyze-cell-marker-tab2$", views.analyze_cell_marker_tab2_view, name='analyze-cell-marker-tab2'),
     re_path(r"analyze-cell-commu$", views.analyze_gene_expr, name='analyze-cell-commu'),
     re_path(r"help$", views.help, name='help')
 ]

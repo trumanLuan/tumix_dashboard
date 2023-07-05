@@ -112,15 +112,15 @@
                 <p style="color: red;">{{ error_message }}</p>
         {% endif %}
 
-<!--        <div class="message">{{ error_message }}</div>-->
-
-        {% if tab2_filters %}
-          <ul>
-            {% for key, value in tab2_filters.items %}
-              <li>{{ key }}: {{ value }}</li>
-            {% endfor %}
-          </ul>
-        {% endif %}
+        {% if filter_querytable_checkbox %}
+            <p></p>
+<!--        {% if tab2_filters %}-->
+<!--          <ul>-->
+<!--            {% for key, value in tab2_filters.items %}-->
+<!--              <li>{{ key }}: {{ value }}</li>-->
+<!--            {% endfor %}-->
+<!--          </ul>-->
+<!--        {% endif %}-->
     </div>
 </div>
 

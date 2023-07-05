@@ -11,6 +11,7 @@ from .models import Marker_Celltype
 from .models import LRpairs
 from .models import SingleCell
 from .models import SignalPathway
+from django.db.models import Q
 
 import numpy as np
 # import tempfile
@@ -583,44 +584,74 @@ def analyze_cell_marker_cross(request):
 
         elif tab2_field_querytable_checkbox and tab2_field_dataset_checkbox and tab2_field_padj_checkbox and \
                 tab2_field_dataset_value is not None and tab2_field_padj_value is not None:
-            tab2_filters = {}
-            # filter_dataset = {} # if multiple datasets input.
-            if tab2_field_dataset_checkbox:
-                tab2_field_dataset_filter = f'dataset__{tab2_field_dataset_condition}'
-                tab2_filters[tab2_field_dataset_filter] = tab2_field_dataset_value
 
-            # filter_cluster = {} # if multiple cell type input.
-            if tab2_field_cluster_checkbox:
-                tab2_field_cluster_filter = f'cluster__{tab2_field_cluster_condition}'
-                tab2_filters[tab2_field_cluster_filter] = tab2_field_cluster_value
-
-            # filter_gene = {} # if multiple genes input.
-            if tab2_field_gene_checkbox:
-                tab2_field_gene_filter = f'gene__{tab2_field_gene_condition}'
-                tab2_filters[tab2_field_gene_filter] = tab2_field_gene_value
-
+            filter_dataset = {} # if multiple datasets input.
+            filter_cluster = {} # if multiple cell type input.
+            filter_gene = {} # if multiple genes input.
             filter_others = {}
+            filter_dataset_combined = Q()
+            filter_cluster_combined = Q()
+            filter_gene_combined = Q()
+            filter_others_combined = Q()
+
+            if tab2_field_dataset_checkbox:
+                split_words = tab2_field_dataset_value.split(';') # split the words into single word;
+                for single_word in split_words:
+                    single_word_ok = single_word.strip() # Remove spaces at both ends of the valid characters
+                    filter_now = f'dataset__{tab2_field_dataset_condition}'
+                    filter_dataset[filter_now] = single_word_ok
+                    filter_dataset_combined |= Q(**{filter_now: single_word_ok})
+
+            if tab2_field_cluster_checkbox:
+                split_words = tab2_field_cluster_value.split(';') # split the words into single word;
+                for single_word in split_words:
+                    single_word_ok = single_word.strip() # Remove spaces at both ends of the valid characters
+                    filter_now = f'cluster__{tab2_field_cluster_condition}'
+                    filter_cluster[filter_now] = single_word_ok
+                    filter_cluster_combined |= Q(**{filter_now: single_word_ok})
+                # tab2_field_cluster_filter = f'cluster__{tab2_field_cluster_condition}'
+                # tab2_filters[tab2_field_cluster_filter] = tab2_field_cluster_value
+
+            if tab2_field_gene_checkbox:
+                split_words = tab2_field_gene_value.split(';')  # split the words into single word;
+                for single_word in split_words:
+                    single_word_ok = single_word.strip()  # Remove spaces at both ends of the valid characters
+                    filter_now = f'gene__{tab2_field_cluster_condition}'
+                    filter_gene[filter_now] = single_word_ok
+                    filter_gene_combined |= Q(**{filter_now: single_word_ok})
+                # tab2_field_gene_filter = f'gene__{tab2_field_gene_condition}'
+                # tab2_filters[tab2_field_gene_filter] = tab2_field_gene_value
+
+
             if tab2_field_log2fc_checkbox:
                 tab2_field_log2fc_filter = f'avg_log2FC__{tab2_field_log2fc_condition}'
-                tab2_filters[tab2_field_log2fc_filter] = tab2_field_log2fc_value
+                filter_others[tab2_field_log2fc_filter] = tab2_field_log2fc_value
 
             if tab2_field_pct1_checkbox:
                 tab2_field_pct1_filter = f'pct1__{tab2_field_pct1_condition}'
-                tab2_filters[tab2_field_pct1_filter] = tab2_field_pct1_value
+                filter_others[tab2_field_pct1_filter] = tab2_field_pct1_value
 
             if tab2_field_pct2_checkbox:
                 tab2_field_pct2_filter = f'pct2__{tab2_field_pct2_condition}'
-                tab2_filters[tab2_field_pct2_filter] = tab2_field_pct2_value
+                filter_others[tab2_field_pct2_filter] = tab2_field_pct2_value
 
             if tab2_field_padj_checkbox:
                 tab2_field_padj_filter = f'padj__{tab2_field_padj_condition}'
-                tab2_filters[tab2_field_padj_filter] = tab2_field_padj_value
+                filter_others[tab2_field_padj_filter] = tab2_field_padj_value
+
+            if filter_others:
+                for key, value in filter_others.items():
+                    filter_others_combined &= Q(**{key: value})
+
+            combined_filters = filter_dataset_combined & filter_cluster_combined & filter_gene_combined & filter_others_combined
 
             # 数据库查询 and render.
             if tab2_field_querytable_condition == 'major':
-                tab2_filter_results = Marker_Celltype.objects.filter(**tab2_filters)
+                # tab2_filter_results = Marker_Celltype.objects.filter(**tab2_filters)
+                tab2_filter_results = Marker_Celltype.objects.filter(combined_filters)
             elif tab2_field_querytable_condition == 'minor':
-                tab2_filter_results = Marker_Subcluster.objects.filter(**tab2_filters)
+                # tab2_filter_results = Marker_Subcluster.objects.filter(**tab2_filters)
+                tab2_filter_results = Marker_Subcluster.objects.filter(combined_filters)
 
             # 数据库查询结果数据集的统计分析。
             tab2_total_records = tab2_filter_results.count()
@@ -696,7 +727,7 @@ def analyze_cell_marker_cross(request):
             # 将图表渲染到网页
             tab2_plot_div = fig.to_html(full_html=False)
 
-            tab2_result_data = {
+            tab2_context = {
                 'tab2_num_distinct_values_of_dataset': tab2_num_distinct_values_of_dataset,
                 'tab2_dataset_distinct_values': tab2_dataset_distinct_values,
                 'tab2_total_records': tab2_total_records,
@@ -704,13 +735,47 @@ def analyze_cell_marker_cross(request):
                 'tab2_num_distinct_values_of_gene': tab2_num_distinct_values_of_gene,
                 'tab2_pct1_summary_stats': tab2_pct1_summary_stats,
                 'tab2_pct2_summary_stats': tab2_pct2_summary_stats,
-                'tab2_filter_results': tab2_filter_results,
-                'tab2_filters': tab2_filters,
-                'global_plot_url': tab2_plot_div
+
+                # for print form_data in html.
+                'tab2_filter_results': tab2_filter_results, # data tables extracted from database
+                'tab2_filters': combined_filters, # for print current inputs
+                'filter_dataset_checkbox': tab2_field_dataset_checkbox,
+                'filter_dataset_condition': tab2_field_dataset_condition,
+                'filter_dataset_value': tab2_field_dataset_value,
+
+                'filter_querytable_checkbox': tab2_field_querytable_checkbox,
+                'filter_querytable_condition': tab2_field_querytable_condition,
+
+                'filter_cluster_checkbox': tab2_field_cluster_checkbox,
+                'filter_cluster_condition': tab2_field_cluster_condition,
+                'filter_cluster_value': tab2_field_cluster_value,
+
+                'filter_gene_checkbox': tab2_field_gene_checkbox,
+                'filter_gene_condition': tab2_field_gene_condition,
+                'filter_gene_value': tab2_field_gene_value,
+
+                'filter_fc_checkbox': tab2_field_log2fc_checkbox,
+                'filter_fc_condition': tab2_field_log2fc_condition,
+                'filter_fc_value': tab2_field_log2fc_value,
+
+                'filter_pct1_checkbox': tab2_field_pct1_checkbox,
+                'filter_pct1_condition': tab2_field_pct1_condition,
+                'filter_pct1_value': tab2_field_pct1_value,
+
+                'filter_pct2_checkbox': tab2_field_pct2_checkbox,
+                'filter_pct2_checkbox': tab2_field_pct2_checkbox,
+                'filter_pct2_checkbox': tab2_field_pct2_checkbox,
+
+                'filter_padj_checkbox': tab2_field_padj_checkbox,
+                'filter_padj_checkbox': tab2_field_padj_checkbox,
+                'filter_padj_checkbox': tab2_field_padj_checkbox,
+
+                # for plots region in html.
+                'global_plot_url': tab2_plot_div # for global map between genes and cell types
             }
 
-            print('num_distinct_values_of_dataset', tab2_num_distinct_values_of_dataset)
-            return render(request, 'analyze-cell-marker-cross.html', tab2_result_data)
+            # print('num_distinct_values_of_dataset', tab2_num_distinct_values_of_dataset)
+            return render(request, 'analyze-cell-marker-cross.html', tab2_context)
 
     return render(request, 'analyze-cell-marker-cross.html')
 

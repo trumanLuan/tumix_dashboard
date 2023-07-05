@@ -43,18 +43,48 @@
                             </a>
 
                             <!-- Analysis page 菜单 -->
-                            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseLayouts" aria-expanded="false" aria-controls="collapseLayouts"
+                            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseAnalyze" aria-expanded="false" aria-controls="collapseAnalyze"
                                 ><div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
                                 Analyze
                                 <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
                             </a>
 
                             <!-- analysis 子功能页面入口 -->
-                            <div class="collapse" id="collapseLayouts" aria-labelledby="headingOne" data-parent="#sidenavAccordion">
-                                <nav class="sb-sidenav-menu-nested nav">
-                                    <a class="nav-link" href="{% url 'analyze-gene-expr' %}">gene expression</a>
-                                    <a class="nav-link" href="{% url 'analyze-cell-marker-tab1' %}">cell markers</a>
-                                    <a class="nav-link" href="{% url 'analyze-cell-commu' %}">cell communication</a>
+                            <div class="collapse" id="collapseAnalyze" aria-labelledby="headingTwo" data-parent="#sidenavAccordion">
+                                <nav class="sb-sidenav-menu-nested nav" id="sidenavAccordionAnalyze">
+                                    <a class="nav-link collapsed" data-toggle="collapse" data-target="#pagesCollapseAnaGeneExpr" href="{% url 'analyze-gene-expr' %}">
+                                        gene expression
+                                        <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                                    </a>
+                                    <div class="collapse" id="pagesCollapseAnaGeneExpr" aria-labelledby="headingOne" data-parent="#sidenavAccordionAnalyze">
+                                        <nav class="sb-sidenav-menu-nested nav" >
+                                            <a class="nav-link" href="{% url 'analyze-gene-expr-single' %}"> Single Dataset </a>
+                                            <a class="nav-link" href="{% url 'analyze-gene-expr-cross' %}"> Cross Dataset </a>
+                                        </nav>
+                                    </div>
+
+                                    <a class="nav-link collapsed" data-toggle="collapse" data-target="#pagesCollapseAnaCellMarker" href="#">
+                                        cell markers
+                                        <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                                    </a>
+                                    <div class="collapse" id="pagesCollapseAnaCellMarker" aria-labelledby="headingOne" data-parent="#sidenavAccordionAnalyze">
+                                        <nav class="sb-sidenav-menu-nested nav" >
+                                            <a class="nav-link" href="{% url 'analyze-cell-marker-single' %}"> Single Dataset</a>
+                                            <a class="nav-link" href="{% url 'analyze-cell-marker-cross' %}"> Cross Dataset</a>
+                                        </nav>
+                                    </div>
+
+                                    <a class="nav-link collapsed" data-toggle="collapse" data-target="#pagesCollapseAnaCellCommu" href="{% url 'analyze-cell-commu' %}">
+                                        cell communication
+                                        <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                                    </a>
+                                    <div class="collapse" id="pagesCollapseAnaCellCommu" aria-labelledby="headingOne" data-parent="#sidenavAccordionAnalyze">
+                                        <nav class="sb-sidenav-menu-nested nav" >
+                                            <a class="nav-link" href="{% url 'analyze-cell-commu-single' %}"> Single Dataset </a>
+                                            <a class="nav-link" href="{% url 'analyze-cell-commu-cross' %}"> Cross Dataset </a>
+                                        </nav>
+                                    </div>
+
                                 </nav>
                             </div>
 

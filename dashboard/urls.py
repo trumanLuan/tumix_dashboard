@@ -30,8 +30,8 @@ urlpatterns = [
     re_path(r"search$", views.process_search_forms, name='search'),
     re_path(r"analyze-gene-expr$", views.analyze_gene_expr, name='analyze-gene-expr'),
     # re_path(r"analyze-cell-marker$", views.analyze_cell_marker, name='analyze-cell-marker'),
-    re_path(r"analyze-cell-marker-tab1$", views.analyze_cell_marker_tab1_view, name='analyze-cell-marker-tab1'),
-    # re_path(r"analyze-cell-marker-tab2$", views.analyze_cell_marker_tab2_view, name='analyze-cell-marker-tab2'),
+    re_path(r"analyze-cell-marker-single$", views.analyze_cell_marker_single, name='analyze-cell-marker-single'),
+    re_path(r"analyze-cell-marker-cross$", views.analyze_cell_marker_cross, name='analyze-cell-marker-cross'),
     re_path(r"analyze-cell-commu$", views.analyze_cell_commu, name='analyze-cell-commu'),
     re_path(r"help$", views.help, name='help')
 ]

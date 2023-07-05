@@ -1,7 +1,7 @@
 import io
 import base64
 
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponse
 from .models import Employee
@@ -42,26 +42,26 @@ def browse_results(request):
     dataset_row = get_object_or_404(Study, dataset=get_datasetindex)
 
     ## brow_by_sample, UMI counts of single cells.
-    umi_count_by_sample_svg_path = 'static/assets/img/browse_results/' + get_datasetindex + "_umi_count_by_sample.svg"
+    umi_count_by_sample_svg_path = '/pages/static/assets/img/browse_results/' + get_datasetindex + "_umi_count_by_sample.svg"
 
     ## brow_by_sample, feature counts of single cells.
-    feature_count_by_sample_svg_path = 'static/assets/img/browse_results/' + get_datasetindex + "_feature_count_by_sample.svg"
+    feature_count_by_sample_svg_path = '/pages/static/assets/img/browse_results/' + get_datasetindex + "_feature_count_by_sample.svg"
 
     ## brow_by_sample,singlecell counts by samples.
-    singlecell_count_by_sample_svg_path = 'static/assets/img/browse_results/' + get_datasetindex + "_singlecell_count_by_sample.svg"
+    singlecell_count_by_sample_svg_path = '/pages/static/assets/img/browse_results/' + get_datasetindex + "_singlecell_count_by_sample.svg"
 
     ## brow_by_sample, cell clustering results by sample.
-    cell_clust_vis_by_sample = 'static/assets/img/browse_results/' + get_datasetindex + "_vis_tsne_by_sample.svg"
+    cell_clust_vis_by_sample = '/pages/static/assets/img/browse_results/' + get_datasetindex + "_vis_tsne_by_sample.svg"
 
 
     ## brow_by_celltype, cell stat by cell types.
-    singlecell_count_by_celltype_svg = 'static/assets/img/browse_results/' + get_datasetindex + "_singlecell_count_by_celltype.svg"
+    singlecell_count_by_celltype_svg = '/pages/static/assets/img/browse_results/' + get_datasetindex + "_singlecell_count_by_celltype.svg"
 
     ## brow_by_celltype, cell clustering results by cell type.
-    cell_clust_vis_by_celltype = 'static/assets/img/browse_results/' + get_datasetindex + "_vis_tsne_by_celltype.svg"
+    cell_clust_vis_by_celltype = '/pages/static/assets/img/browse_results/' + get_datasetindex + "_vis_tsne_by_celltype.svg"
 
     ## brow_by_ccc, cell_commu_vis.
-    cell_commu_vis_svg_path = 'static/assets/img/browse_results/' + get_datasetindex + "_ccc_network_weighted.svg"
+    cell_commu_vis_svg_path = '/pages/static/assets/img/browse_results/' + get_datasetindex + "_ccc_network_weighted.svg"
 
 
     # subset rows from pages_marker_celltype table.
@@ -364,7 +364,354 @@ def process_search_forms(request):
 def analyze_gene_expr(request):
     return render(request, 'analyze-gene-expr.html')
 
-def analyze_cell_marker_tab1_view(request):
+
+def analyze_cell_marker_single(request):
+    if request.method == 'POST':
+        ## STEP 1. get form values input by users.
+        ## form values of tab1.
+        tab1_field_queryTable_checkbox = request.POST.get('tab1_field_queryTable_checkbox')
+        tab1_field_queryTable_condition = request.POST.get('tab1_field_queryTable_condition')
+
+        tab1_field_dataset_checkbox = request.POST.get('tab1_field_dataset_checkbox')
+        tab1_field_dataset_condition = request.POST.get('tab1_field_dataset_condition')
+        tab1_field_dataset_value = request.POST.get('tab1_field_dataset_value')
+
+        tab1_field_log2fc_checkbox = request.POST.get('tab1_field_log2fc_checkbox')
+        tab1_field_log2fc_condition = request.POST.get('tab1_field_log2fc_condition')
+        tab1_field_log2fc_value = request.POST.get('tab1_field_log2fc_value')
+
+        tab1_field_pct1_checkbox = request.POST.get('tab1_field_pct1_checkbox')
+        tab1_field_pct1_condition = request.POST.get('tab1_field_pct1_condition')
+        tab1_field_pct1_value = request.POST.get('tab1_field_pct1_value')
+
+        tab1_field_pct2_checkbox = request.POST.get('tab1_field_pct2_checkbox')
+        tab1_field_pct2_condition = request.POST.get('tab1_field_pct2_condition')
+        tab1_field_pct2_value = request.POST.get('tab1_field_pct2_value')
+
+        tab1_field_padj_checkbox = request.POST.get('tab1_field_padj_checkbox')
+        tab1_field_padj_condition = request.POST.get('tab1_field_padj_condition')
+        tab1_field_padj_value = request.POST.get('tab1_field_padj_value')
+
+       # STEP 2. 构建查询条件
+        ## for form in tab1.
+        if tab1_field_queryTable_checkbox != 'on':
+            error_message = 'One or more required fields are missing. Please fill the Query Form.'
+            return render(request, 'analyze-cell-marker-cross.html', {'error_message': error_message})
+
+        elif tab1_field_dataset_checkbox != 'on' or tab1_field_dataset_value == '':
+            error_message = 'One or more required fields are missing. Please fill the Query Form.'
+            return render(request, 'analyze-cell-marker-cross.html', {'error_message': error_message})
+
+        elif tab1_field_padj_checkbox != 'on' or tab1_field_padj_value == '':
+            error_message = 'One or more required fields are missing.Please fill the Query Form.'
+            return render(request, 'analyze-cell-marker-cross.html', {'error_message': error_message})
+
+        elif tab1_field_queryTable_checkbox and tab1_field_dataset_checkbox and tab1_field_padj_checkbox and \
+                tab1_field_dataset_value is not None and tab1_field_padj_value is not None:
+            # if tab1_field_dataset_value and tab1_field_padj_value:
+            tab1_filters = {}
+            if tab1_field_dataset_checkbox:
+                tab1_field_dataset_filter = f'dataset__{tab1_field_dataset_condition}'
+                tab1_filters[tab1_field_dataset_filter] = tab1_field_dataset_value
+
+            if tab1_field_log2fc_checkbox:
+                tab1_field_log2fc_filter = f'avg_log2FC__{tab1_field_log2fc_condition}'
+                tab1_filters[tab1_field_log2fc_filter] = tab1_field_log2fc_value
+
+            if tab1_field_pct1_checkbox:
+                tab1_field_pct1_filter = f'pct1__{tab1_field_pct1_condition}'
+                tab1_filters[tab1_field_pct1_filter] = tab1_field_pct1_value
+
+            if tab1_field_pct2_checkbox:
+                tab1_field_pct2_filter = f'pct2__{tab1_field_pct2_condition}'
+                tab1_filters[tab1_field_pct2_filter] = tab1_field_pct2_value
+
+            if tab1_field_padj_checkbox:
+                tab1_field_padj_filter = f'padj__{tab1_field_padj_condition}'
+                tab1_filters[tab1_field_padj_filter] = tab1_field_padj_value
+
+            # 数据库查询 and render.
+            if tab1_field_queryTable_condition == 'major':
+                tab1_filter_results = Marker_Celltype.objects.filter(**tab1_filters)
+            elif tab1_field_queryTable_condition == 'minor':
+                tab1_filter_results = Marker_Subcluster.objects.filter(**tab1_filters)
+
+            # 数据库查询结果数据集的统计分析。
+            total_records = tab1_filter_results.count()
+            dataset_distinct_values = tab1_filter_results.values_list('dataset', flat=True).distinct()
+            num_distinct_values_of_dataset = len(dataset_distinct_values)
+
+            if num_distinct_values_of_dataset > 1:
+                error_message = 'This analysis only allows for 1 dataset. You are attempting to extract multiple sets of data.'
+                return render(request, 'analyze-cell-marker-cross.html', {'error_message': error_message})
+
+            cluster_distinct_values = tab1_filter_results.values_list('cluster', flat=True).distinct()
+            num_distinct_values_of_cluster = len(cluster_distinct_values)
+
+            gene_distinct_values = tab1_filter_results.values_list('gene', flat=True).distinct()
+            num_distinct_values_of_gene = len(gene_distinct_values)
+
+            pct1_data = tab1_filter_results.values_list('pct1', flat=True)
+            pct1_data_array = np.array(list(pct1_data))
+            pct1_summary_stats = f"pct1 range:\n"
+            pct1_summary_stats += f"-- mean: {round(np.mean(pct1_data_array),2)}\n"
+            pct1_summary_stats += f"-- median: {round(np.median(pct1_data_array),2)}\n"
+            pct1_summary_stats += f"-- min: {round(np.min(pct1_data_array),2)}\n"
+            pct1_summary_stats += f"-- max: {round(np.max(pct1_data_array),2)}"
+
+            pct2_data = tab1_filter_results.values_list('pct2', flat=True)
+            pct2_data_array = np.array(list(pct2_data))
+            pct2_summary_stats = f"pct2 range:\n"
+            pct2_summary_stats += f"-- mean: {round(np.mean(pct2_data_array), 2)}\n"
+            pct2_summary_stats += f"-- median: {round(np.median(pct2_data_array),2)}\n"
+            pct2_summary_stats += f"-- min: {round(np.min(pct2_data_array),2)}\n"
+            pct2_summary_stats += f"-- max: {round(np.max(pct2_data_array),2)}"
+
+            ## 构造数据
+            df_data = list(tab1_filter_results.values('cluster', 'gene', 'avg_log2FC') )
+            df = pd.DataFrame(df_data)
+            # Aggregate duplicate values by taking the mean
+            df_agg = df.groupby(['gene', 'cluster'])['avg_log2FC'].mean().reset_index()
+            df_wide = df_agg.pivot(index='gene', columns='cluster', values='avg_log2FC').fillna(0)
+            df_wide = df_wide.astype(float)
+
+            ## two-way clustering.
+            row_clusters = hierarchy.linkage(df_wide.values, method='average', metric='euclidean')
+            column_clusters = hierarchy.linkage(df_wide.values.T, method='average', metric='euclidean')
+            # 获取行和列的排序索引
+            row_order = hierarchy.leaves_list(row_clusters)
+            column_order = hierarchy.leaves_list(column_clusters)
+
+            # 根据排序索引重新排列数据框
+            df_reordered = df_wide.iloc[row_order, column_order]
+
+            # 构造热图数据
+            heat_data = df_reordered.values.tolist()
+            x_labels = df_reordered.columns.tolist()
+            y_labels = df_reordered.index.tolist()
+
+            # 绘制交互式热图
+            fig = go.Figure(data=go.Heatmap(
+                z=heat_data,
+                x=x_labels,
+                y=y_labels
+            ))
+
+            # 设置图表布局
+            fig.update_layout(
+                title={
+                    'text': 'Interactive Heatmap',
+                    'x': 0.5,  # 设置标题居中
+                    'xanchor': 'center',
+                    'yanchor': 'top'
+                },
+                xaxis_title='Cell Clusters',
+                yaxis_title='Gene Markers',
+                width=1000,  # 设置宽度为 800 像素
+                height=1000  # 设置高度为 600 像素
+            )
+
+            # 将图表渲染到网页
+            plot_div = fig.to_html(full_html=False)
+
+            result_data = {
+                'num_distinct_values_of_dataset': num_distinct_values_of_dataset,
+                'dataset_distinct_values': dataset_distinct_values,
+                'total_records': total_records,
+                'num_distinct_values_of_cluster': num_distinct_values_of_cluster,
+                'num_distinct_values_of_gene': num_distinct_values_of_gene,
+                'pct1_summary_stats': pct1_summary_stats,
+                'pct2_summary_stats': pct2_summary_stats,
+                'filter_results': tab1_filter_results,
+                'filters': tab1_filters,
+                'plot_url': plot_div
+            }
+            return render(request, 'analyze-cell-marker-single.html', result_data)
+
+        else:
+            error_message = 'Please fill the Query Form.'
+            print(error_message)
+            return render(request, 'analyze-cell-marker-single.html', {'error_message': error_message})
+
+    return render(request, 'analyze-cell-marker-single.html')
+
+def analyze_cell_marker_cross(request):
+    if request.method == 'POST':
+
+        tab2_field_querytable_checkbox = request.POST.get('tab2_field_querytable_checkbox')
+        tab2_field_querytable_condition = request.POST.get('tab2_field_querytable_condition')
+
+        tab2_field_dataset_checkbox = request.POST.get('tab2_field_dataset_checkbox')
+        tab2_field_dataset_condition = request.POST.get('tab2_field_dataset_condition')
+        tab2_field_dataset_value = request.POST.get('tab2_field_dataset_value')
+
+        tab2_field_cluster_checkbox = request.POST.get('tab2_field_cluster_checkbox')
+        tab2_field_cluster_condition = request.POST.get('tab2_field_cluster_condition')
+        tab2_field_cluster_value = request.POST.get('tab2_field_cluster_value')
+
+        tab2_field_gene_checkbox = request.POST.get('tab2_field_gene_checkbox')
+        tab2_field_gene_condition = request.POST.get('tab2_field_gene_condition')
+        tab2_field_gene_value = request.POST.get('tab2_field_gene_value')
+
+        tab2_field_log2fc_checkbox = request.POST.get('tab2_field_log2fc_checkbox')
+        tab2_field_log2fc_condition = request.POST.get('tab2_field_log2fc_condition')
+        tab2_field_log2fc_value = request.POST.get('tab2_field_log2fc_value')
+
+        tab2_field_pct1_checkbox = request.POST.get('tab2_field_pct1_checkbox')
+        tab2_field_pct1_condition = request.POST.get('tab2_field_pct1_condition')
+        tab2_field_pct1_value = request.POST.get('tab2_field_pct1_value')
+
+        tab2_field_pct2_checkbox = request.POST.get('tab2_field_pct2_checkbox')
+        tab2_field_pct2_condition = request.POST.get('tab2_field_pct2_condition')
+        tab2_field_pct2_value = request.POST.get('tab2_field_pct2_value')
+
+        tab2_field_padj_checkbox = request.POST.get('tab2_field_padj_checkbox')
+        tab2_field_padj_condition = request.POST.get('tab2_field_padj_condition')
+        tab2_field_padj_value = request.POST.get('tab2_field_padj_value')
+
+        # STEP 2. 构建查询条件
+        if tab2_field_querytable_checkbox != 'on':
+            error_message = 'One or more required fields are missing. Please fill the Query Form.'
+            return render(request, 'analyze-cell-marker-cross.html', {'error_message': error_message})
+
+        elif tab2_field_dataset_checkbox != 'on' or tab2_field_dataset_value == '':
+            error_message = 'One or more required fields are missing. Please fill the Query Form.'
+            return render(request, 'analyze-cell-marker-cross.html', {'error_message': error_message})
+
+        elif tab2_field_padj_checkbox != 'on' or tab2_field_padj_value == '':
+            error_message = 'One or more required fields are missing. Please fill the Query Form.'
+            return render(request, 'analyze-cell-marker-cross.html', {'error_message': error_message})
+
+        elif tab2_field_querytable_checkbox and tab2_field_dataset_checkbox and tab2_field_padj_checkbox and \
+                tab2_field_dataset_value is not None and tab2_field_padj_value is not None:
+            tab2_filters = {}
+            if tab2_field_dataset_checkbox:
+                tab2_field_dataset_filter = f'dataset__{tab2_field_dataset_condition}'
+                tab2_filters[tab2_field_dataset_filter] = tab2_field_dataset_value
+
+            if tab2_field_cluster_checkbox:
+                tab2_field_cluster_filter = f'cluster__{tab2_field_cluster_condition}'
+                tab2_filters[tab2_field_cluster_filter] = tab2_field_cluster_value
+
+            if tab2_field_gene_checkbox:
+                tab2_field_gene_filter = f'gene__{tab2_field_gene_condition}'
+                tab2_filters[tab2_field_gene_filter] = tab2_field_gene_value
+
+            if tab2_field_log2fc_checkbox:
+                tab2_field_log2fc_filter = f'avg_log2FC__{tab2_field_log2fc_condition}'
+                tab2_filters[tab2_field_log2fc_filter] = tab2_field_log2fc_value
+
+            if tab2_field_pct1_checkbox:
+                tab2_field_pct1_filter = f'pct1__{tab2_field_pct1_condition}'
+                tab2_filters[tab2_field_pct1_filter] = tab2_field_pct1_value
+
+            if tab2_field_pct2_checkbox:
+                tab2_field_pct2_filter = f'pct2__{tab2_field_pct2_condition}'
+                tab2_filters[tab2_field_pct2_filter] = tab2_field_pct2_value
+
+            if tab2_field_padj_checkbox:
+                tab2_field_padj_filter = f'padj__{tab2_field_padj_condition}'
+                tab2_filters[tab2_field_padj_filter] = tab2_field_padj_value
+
+            # 数据库查询 and render.
+            if tab2_field_querytable_condition == 'major':
+                tab2_filter_results = Marker_Celltype.objects.filter(**tab2_filters)
+            elif tab2_field_querytable_condition == 'minor':
+                tab2_filter_results = Marker_Subcluster.objects.filter(**tab2_filters)
+
+            # 数据库查询结果数据集的统计分析。
+            tab2_total_records = tab2_filter_results.count()
+            tab2_dataset_distinct_values = tab2_filter_results.values_list('dataset', flat=True).distinct()
+            tab2_num_distinct_values_of_dataset = len(tab2_dataset_distinct_values)
+
+            tab2_cluster_distinct_values = tab2_filter_results.values_list('cluster', flat=True).distinct()
+            tab2_num_distinct_values_of_cluster = len(tab2_cluster_distinct_values)
+
+            tab2_gene_distinct_values = tab2_filter_results.values_list('gene', flat=True).distinct()
+            tab2_num_distinct_values_of_gene = len(tab2_gene_distinct_values)
+
+            tab2_pct1_data = tab2_filter_results.values_list('pct1', flat=True)
+            tab2_pct1_data_array = np.array(list(tab2_pct1_data))
+            tab2_pct1_summary_stats = f"pct1 range:\n"
+            tab2_pct1_summary_stats += f"-- mean: {round(np.mean(tab2_pct1_data_array), 2)}\n"
+            tab2_pct1_summary_stats += f"-- median: {round(np.median(tab2_pct1_data_array), 2)}\n"
+            tab2_pct1_summary_stats += f"-- min: {round(np.min(tab2_pct1_data_array), 2)}\n"
+            tab2_pct1_summary_stats += f"-- max: {round(np.max(tab2_pct1_data_array), 2)}"
+
+            tab2_pct2_data = tab2_filter_results.values_list('pct2', flat=True)
+            tab2_pct2_data_array = np.array(list(tab2_pct2_data))
+            tab2_pct2_summary_stats = f"pct2 range:\n"
+            tab2_pct2_summary_stats += f"-- mean: {round(np.mean(tab2_pct2_data_array), 2)}\n"
+            tab2_pct2_summary_stats += f"-- median: {round(np.median(tab2_pct2_data_array), 2)}\n"
+            tab2_pct2_summary_stats += f"-- min: {round(np.min(tab2_pct2_data_array), 2)}\n"
+            tab2_pct2_summary_stats += f"-- max: {round(np.max(tab2_pct2_data_array), 2)}"
+
+            ## 构造数据
+            df_data = list(tab2_filter_results.values('cluster', 'gene', 'avg_log2FC'))
+            df = pd.DataFrame(df_data)
+            # Aggregate duplicate values by taking the mean
+            df_agg = df.groupby(['gene', 'cluster'])['avg_log2FC'].mean().reset_index()
+            df_wide = df_agg.pivot(index='gene', columns='cluster', values='avg_log2FC').fillna(0)
+            df_wide = df_wide.astype(float)
+
+            ## two-way clustering.
+            row_clusters = hierarchy.linkage(df_wide.values, method='average', metric='euclidean')
+            column_clusters = hierarchy.linkage(df_wide.values.T, method='average', metric='euclidean')
+            # 获取行和列的排序索引
+            row_order = hierarchy.leaves_list(row_clusters)
+            column_order = hierarchy.leaves_list(column_clusters)
+
+            # 根据排序索引重新排列数据框
+            df_reordered = df_wide.iloc[row_order, column_order]
+
+            # 构造热图数据
+            heat_data = df_reordered.values.tolist()
+            x_labels = df_reordered.columns.tolist()
+            y_labels = df_reordered.index.tolist()
+
+            # 绘制交互式热图
+            fig = go.Figure(data=go.Heatmap(
+                z=heat_data,
+                x=x_labels,
+                y=y_labels
+            ))
+
+            # 设置图表布局
+            fig.update_layout(
+                title={
+                    'text': 'Interactive Heatmap',
+                    'x': 0.5,  # 设置标题居中
+                    'xanchor': 'center',
+                    'yanchor': 'top'
+                },
+                xaxis_title='Cell Clusters',
+                yaxis_title='Gene Markers',
+                width=1000,  # 设置宽度为 800 像素
+                height=1000  # 设置高度为 600 像素
+            )
+
+            # 将图表渲染到网页
+            tab2_plot_div = fig.to_html(full_html=False)
+
+            tab2_result_data = {
+                'tab2_num_distinct_values_of_dataset': tab2_num_distinct_values_of_dataset,
+                'tab2_dataset_distinct_values': tab2_dataset_distinct_values,
+                'tab2_total_records': tab2_total_records,
+                'tab2_num_distinct_values_of_cluster': tab2_num_distinct_values_of_cluster,
+                'tab2_num_distinct_values_of_gene': tab2_num_distinct_values_of_gene,
+                'tab2_pct1_summary_stats': tab2_pct1_summary_stats,
+                'tab2_pct2_summary_stats': tab2_pct2_summary_stats,
+                'tab2_filter_results': tab2_filter_results,
+                'tab2_filters': tab2_filters,
+                'tab2_plot_url': tab2_plot_div
+            }
+
+            print('num_distinct_values_of_dataset', tab2_num_distinct_values_of_dataset)
+            return render(request, 'analyze-cell-marker-cross.html', tab2_result_data)
+
+    return render(request, 'analyze-cell-marker-cross.html')
+
+def analyze_cell_commu(request):
     if request.method == 'POST':
         ## STEP 1. get form values input by users.
         ## form values of tab1.
@@ -496,21 +843,21 @@ def analyze_cell_marker_tab1_view(request):
             pct1_data = tab1_filter_results.values_list('pct1', flat=True)
             pct1_data_array = np.array(list(pct1_data))
             pct1_summary_stats = f"pct1 range:\n"
-            pct1_summary_stats += f"-- mean: {round(np.mean(pct1_data_array),2)}\n"
-            pct1_summary_stats += f"-- median: {round(np.median(pct1_data_array),2)}\n"
-            pct1_summary_stats += f"-- min: {round(np.min(pct1_data_array),2)}\n"
-            pct1_summary_stats += f"-- max: {round(np.max(pct1_data_array),2)}"
+            pct1_summary_stats += f"-- mean: {round(np.mean(pct1_data_array), 2)}\n"
+            pct1_summary_stats += f"-- median: {round(np.median(pct1_data_array), 2)}\n"
+            pct1_summary_stats += f"-- min: {round(np.min(pct1_data_array), 2)}\n"
+            pct1_summary_stats += f"-- max: {round(np.max(pct1_data_array), 2)}"
 
             pct2_data = tab1_filter_results.values_list('pct2', flat=True)
             pct2_data_array = np.array(list(pct2_data))
             pct2_summary_stats = f"pct2 range:\n"
             pct2_summary_stats += f"-- mean: {round(np.mean(pct2_data_array), 2)}\n"
-            pct2_summary_stats += f"-- median: {round(np.median(pct2_data_array),2)}\n"
-            pct2_summary_stats += f"-- min: {round(np.min(pct2_data_array),2)}\n"
-            pct2_summary_stats += f"-- max: {round(np.max(pct2_data_array),2)}"
+            pct2_summary_stats += f"-- median: {round(np.median(pct2_data_array), 2)}\n"
+            pct2_summary_stats += f"-- min: {round(np.min(pct2_data_array), 2)}\n"
+            pct2_summary_stats += f"-- max: {round(np.max(pct2_data_array), 2)}"
 
             ## 构造数据
-            df_data = list(tab1_filter_results.values('cluster', 'gene', 'avg_log2FC') )
+            df_data = list(tab1_filter_results.values('cluster', 'gene', 'avg_log2FC'))
             df = pd.DataFrame(df_data)
             # Aggregate duplicate values by taking the mean
             df_agg = df.groupby(['gene', 'cluster'])['avg_log2FC'].mean().reset_index()
@@ -697,17 +1044,13 @@ def analyze_cell_marker_tab1_view(request):
                 'tab2_plot_url': tab2_plot_div
             }
 
-            print('num_distinct_values_of_dataset', tab2_num_distinct_values_of_dataset)
-            return render(request, 'analyze-cell-marker-tab1.html', tab2_result_data)
+            #print('num_distinct_values_of_dataset', tab2_num_distinct_values_of_dataset)
+            return render(request, 'analyze-cell-commu.html', tab2_result_data)
 
         else:
             error_message = 'Please fill the Query Form.'
-            return render(request, 'analyze-cell-marker-tab1.html', {'error_message': error_message})
+            return render(request, 'analyze-cell-commu.html', {'error_message': error_message})
 
-    return render(request, 'analyze-cell-marker-tab1.html')
-
-
-def analyze_cell_commu(request):
     return render(request, 'analyze-cell-commu.html')
 
 # views for goto help page from the sidebar.

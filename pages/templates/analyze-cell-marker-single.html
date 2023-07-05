@@ -105,7 +105,7 @@
     </div>
 
     <!-- summary of data subset according to the form -->
-    <div class="card mb-4" id="result1-dataTable-summary">
+    <div class="card mb-4" id="result-dataTable-summary">
         <div class="card-header"><i class="fas fa-chart-area mr-1"></i> Summary of Data Subset </div>
         <div class="card-body">
             <p> Number of total records: {{ total_records }} </p>
@@ -118,7 +118,7 @@
     </div>
 
     <!-- dataTable of data subset -->
-    <div class="card mb-4" id="result1-dataTable">
+    <div class="card mb-4" id="result-dataTable">
         <div class="card-header"><i class="fas fa-chart-area mr-1"></i> Filter Results </div>
         <div class="card-body" id="filter-tab1-results-container">
              <div class="table-responsive">
@@ -167,38 +167,12 @@
     </div>
 
     <!-- plt with data subset -->
-    <div class="card mb-4" id="result1-plots">
+    <div class="card mb-4" id="result-plots">
     <div class="card-header"><i class="fas fa-chart-area mr-1"></i> Plots </div>
     <div class="card-body">
         {{ plot_url | safe }}
     </div>
 </div>
-
-
-<!--    <script>-->
-<!--      // 使用jQuery发送异步请-->
-<!--      $(document).ready(function() {-->
-<!--        $('form').submit(function(e) {-->
-<!--          e.preventDefault(); // 阻止表单的默认提交行为-->
-
-<!--          var form = $(this);-->
-<!--          var tabId = form.data('tab');-->
-<!--          var resultContainer = $('#result-' + tabId);-->
-
-<!--          $.ajax({-->
-<!--            url: form.attr('action'),-->
-<!--            type: form.attr('method'),-->
-<!--            data: form.serialize(),-->
-<!--            success: function(response) {-->
-<!--              resultContainer.html(response);-->
-<!--            },-->
-<!--            error: function() {-->
-<!--              resultContainer.html('提交失败');-->
-<!--            }-->
-<!--          });-->
-<!--        });-->
-<!--      });-->
-<!--    </script>-->
 
 </main>
 

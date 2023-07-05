@@ -537,7 +537,6 @@ def analyze_cell_marker_single(request):
 
 def analyze_cell_marker_cross(request):
     if request.method == 'POST':
-
         tab2_field_querytable_checkbox = request.POST.get('tab2_field_querytable_checkbox')
         tab2_field_querytable_condition = request.POST.get('tab2_field_querytable_condition')
 
@@ -569,7 +568,7 @@ def analyze_cell_marker_cross(request):
         tab2_field_padj_condition = request.POST.get('tab2_field_padj_condition')
         tab2_field_padj_value = request.POST.get('tab2_field_padj_value')
 
-        # STEP 2. 构建查询条件
+        # STEP 2. 构建查询条件,使用字符串插值法构建，格式为 f'dataset__{tab2_field_dataset_condition}'
         if tab2_field_querytable_checkbox != 'on':
             error_message = 'One or more required fields are missing. Please fill the Query Form.'
             return render(request, 'analyze-cell-marker-cross.html', {'error_message': error_message})
@@ -585,18 +584,22 @@ def analyze_cell_marker_cross(request):
         elif tab2_field_querytable_checkbox and tab2_field_dataset_checkbox and tab2_field_padj_checkbox and \
                 tab2_field_dataset_value is not None and tab2_field_padj_value is not None:
             tab2_filters = {}
+            # filter_dataset = {} # if multiple datasets input.
             if tab2_field_dataset_checkbox:
                 tab2_field_dataset_filter = f'dataset__{tab2_field_dataset_condition}'
                 tab2_filters[tab2_field_dataset_filter] = tab2_field_dataset_value
 
+            # filter_cluster = {} # if multiple cell type input.
             if tab2_field_cluster_checkbox:
                 tab2_field_cluster_filter = f'cluster__{tab2_field_cluster_condition}'
                 tab2_filters[tab2_field_cluster_filter] = tab2_field_cluster_value
 
+            # filter_gene = {} # if multiple genes input.
             if tab2_field_gene_checkbox:
                 tab2_field_gene_filter = f'gene__{tab2_field_gene_condition}'
                 tab2_filters[tab2_field_gene_filter] = tab2_field_gene_value
 
+            filter_others = {}
             if tab2_field_log2fc_checkbox:
                 tab2_field_log2fc_filter = f'avg_log2FC__{tab2_field_log2fc_condition}'
                 tab2_filters[tab2_field_log2fc_filter] = tab2_field_log2fc_value
@@ -703,7 +706,7 @@ def analyze_cell_marker_cross(request):
                 'tab2_pct2_summary_stats': tab2_pct2_summary_stats,
                 'tab2_filter_results': tab2_filter_results,
                 'tab2_filters': tab2_filters,
-                'tab2_plot_url': tab2_plot_div
+                'global_plot_url': tab2_plot_div
             }
 
             print('num_distinct_values_of_dataset', tab2_num_distinct_values_of_dataset)

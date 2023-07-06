@@ -106,21 +106,57 @@
     <div class="card mb-4" id="result2-form-input">
     <div class="card-header"><i class="fas fa-chart-area mr-1"></i> Current inputs </div>
     <div class="card-body">
-        {% if error_message %}
+         {% if error_message %}
                 <p style="color: red;"> Error Occured !!! </p>
 <!--                <p style="color: red;"> One or more required fields are missing.</p>-->
                 <p style="color: red;">{{ error_message }}</p>
-        {% endif %}
+            {% endif %}
+<!--        print the input data in the forms. -->
+        <ul>
+            {% if filter_querytable_checkbox %}
+                <li> database tables: {{ filter_querytable_condition }} cell types were used.</li>
+            {% endif %}
 
-        {% if filter_querytable_checkbox %}
-            <p></p>
-<!--        {% if tab2_filters %}-->
-<!--          <ul>-->
-<!--            {% for key, value in tab2_filters.items %}-->
-<!--              <li>{{ key }}: {{ value }}</li>-->
-<!--            {% endfor %}-->
-<!--          </ul>-->
-<!--        {% endif %}-->
+            {% if filter_dataset_checkbox %}
+                <li> dataset: {{ filter_dataset_value }} </li>
+            {% endif %}
+
+            {% if filter_cluster_checkbox %}
+                <li> cell cluster: {{ filter_cluster_value }} </li>
+            {% else %}
+                <li> cell cluster: None </li>
+            {% endif %}
+
+            {% if filter_gene_checkbox %}
+                <li> gene: {{ filter_gene_value }} </li>
+            {% else %}
+                <li> gene: None </li>
+            {% endif %}
+
+             {% if filter_fc_checkbox %}
+                <li> Average Log2FC: {{ filter_fc_condition }}, {{ filter_fc_value }} </li>
+            {% else %}
+                <li> Average Log2FC: None </li>
+            {% endif %}
+
+            {% if filter_pct1_checkbox %}
+                <li> Percent 1: {{ filter_pct1_condition }}, {{ filter_pct1_value }} </li>
+            {% else %}
+                <li> Percent 1: None </li>
+            {% endif %}
+
+            {% if filter_pct2_checkbox %}
+                <li> Percent 2: {{ filter_pct2_condition }}, {{ filter_pct2_value }} </li>
+            {% else %}
+                <li> Percent 2: None </li>
+            {% endif %}
+
+            {% if filter_padj_checkbox %}
+                <li> Adjusted P: {{ filter_padj_condition }}, {{ filter_padj_value }} </li>
+            {% else %}
+                <li> Adjusted P: None </li>
+            {% endif %}
+        </ul>
     </div>
 </div>
 
@@ -129,13 +165,20 @@
         <div class="card-header"><i class="fas fa-chart-area mr-1"></i> Summary of Data Subset </div>
         <div class="card-body">
             <div class="card-body">
-            <p> Number of total records: {{ tab2_total_records }} </p>
-            <p> num_distinct_values_of_dataset: {{ tab2_num_distinct_values_of_dataset }} </p>
-            <p> dataset_distinct_values: {{ tab2_dataset_distinct_values }} </p>
-            <p> {{ tab2_num_distinct_values_of_gene }} gene markers of {{ tab2_num_distinct_values_of_cluster }} cell clusters (major cell type or cell subtypes) </p>
-            <p> {{ tab2_pct1_summary_stats }}</p>
-            <p> {{ tab2_pct2_summary_stats }}</p>
-        </div>
+                <ul>
+                    {% if tab2_filter_results %}
+                        <li> Number of total records: {{ tab2_total_records }} </li>
+                        <li> num_distinct_values_of_dataset: {{ tab2_num_distinct_values_of_dataset }} </li>
+                        <li> dataset_distinct_values: {{ tab2_dataset_distinct_values }} </li>
+                        <li> {{ tab2_num_distinct_values_of_gene }} gene markers of {{ tab2_num_distinct_values_of_cluster }} cell clusters (major cell type or cell subtypes) </li>
+                        <li> {{ tab2_pct1_summary_stats }}</li>
+                        <li> {{ tab2_pct2_summary_stats }}</li>
+                    {% else %}
+                        <p> No input was detected. </p>
+                    {% endif %}
+                </ul>
+
+            </div>
         </div>
     </div>
 
@@ -205,7 +248,17 @@
                     </div>
                     <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordionExample">
                     <div class="card-body">
-                      {{ global_plot_url | safe}}
+                        {% if tab2_filter_results %}
+                            {% if global_plot_url %}
+                                {{ global_plot_url | safe}}
+                                <p> Note: Average log2-fold change values of gene markers in all the included datasets were used. </p>
+                            {% else %}
+                                <p> only one cell type were detected. </p>
+                                <p> See the following section. <span>&#8595;</span> </p>
+                            {% endif %}
+                        {% else %}
+                            <p> No input was detected. </p>
+                        {% endif %}
                     </div>
                 </div>
               </div>
@@ -220,7 +273,19 @@
                     </div>
                     <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionExample">
                           <div class="card-body">
-                            Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. ruck ident. Ad vegas occaecat craft.
+                              {% if tab2_filter_results %}
+                                  {% if compr_plot_url %}
+                                  <!-- Code to be executed if both condition1 and condition2 are true -->
+                                        {{ compr_plot_url | safe }}
+                                  {% else %}
+                                      <p> No input detected or more than 2 cell types were detected in "cell cluster" field. </p>
+                                      <p> See the section "Global map between gene markers and cell types". <span>&#8593;</span> </p>
+                                  {% endif %}
+                              {% else %}
+                                  <!-- Code to be executed if either condition1 or condition2 is false -->
+                                  <p> No input detected. </p>
+                              {% endif %}
+                              <p>test </p>
                           </div>
                     </div>
               </div>

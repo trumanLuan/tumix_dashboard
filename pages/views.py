@@ -860,8 +860,25 @@ def analyze_cell_marker_cross(request):
 
     return render(request, 'analyze-cell-marker-cross.html')
 
-def analyze_cell_commu(request):
-    return render(request, 'analyze-cell-commu.html')
+def analyze_cell_commu_singledataset(request):
+    if request.method == 'POST':
+        # 处理表单提交：判断当前提交的是哪个表单
+        option = request.POST.get('option', None)
+        if option == 'option1':
+            
+        elif option == 'option2':
+
+        else:
+            filters = None
+            data = None
+
+        # 打印filters
+
+        # 数据库查询结果表格Summary
+
+        # plots
+
+    return render(request, 'analyze-cell-commu-single.html')
 
 # views for goto help page from the sidebar.
 def help(request):

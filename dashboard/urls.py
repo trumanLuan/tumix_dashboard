@@ -32,6 +32,6 @@ urlpatterns = [
     # re_path(r"analyze-cell-marker$", views.analyze_cell_marker, name='analyze-cell-marker'),
     re_path(r"analyze-cell-marker-single$", views.analyze_cell_marker_single, name='analyze-cell-marker-single'),
     re_path(r"analyze-cell-marker-cross$", views.analyze_cell_marker_cross, name='analyze-cell-marker-cross'),
-    re_path(r"analyze-cell-commu$", views.analyze_cell_commu, name='analyze-cell-commu'),
+    re_path(r"analyze-cell-commu-single$", views.analyze_cell_commu_singledataset, name='analyze-cell-commu-single'),
     re_path(r"help$", views.help, name='help')
 ]

@@ -11,7 +11,10 @@ from .models import Marker_Celltype
 from .models import LRpairs
 from .models import SingleCell
 from .models import SignalPathway
-from django.db.models import Q
+
+from django.db.models import Q, Count
+from scipy.cluster import hierarchy
+import plotly.graph_objects as go
 
 import numpy as np
 # import tempfile
@@ -21,8 +24,7 @@ import pandas as pd
 # import random
 # import string
 
-from scipy.cluster import hierarchy
-import plotly.graph_objects as go
+
 
 # Create your views here.
 def index(request):
@@ -780,8 +782,29 @@ def analyze_cell_marker_cross(request):
                 )
 
                 compr_plot_div = fig.to_html(full_html=False)
+
+                ## for ploting ranked genes according to frequency
+                gene_count_df = tab2_filter_results.values('gene').annotate(count=Count('gene')).order_by('-count')
+                genes = [item['gene'] for item in gene_count_df]
+                gene_freq = [item['count'] / tab2_num_distinct_values_of_dataset for item in gene_count_df]
+
+                    # 创建ranked dot plot
+                fig = go.Figure()
+                fig.add_trace(go.Scatter(x=genes, y=gene_freq, mode='markers', marker=dict(size=8)))
+                    # 自定义图形的布局和样式
+                fig.update_layout(title={
+                                        'text': 'Ranked Dot Plot',
+                                        'x': 0.5,  # 设置标题居中
+                                        'xanchor': 'center',
+                                        'yanchor': 'top'
+                                    },
+                                  xaxis_title="Ranked genes",
+                                  yaxis_title='Normalized Frequency <br> Gene Counts / dataset counts')
+                gene_rank_plot_div = fig.to_html(full_html=False)
+
             else:
                 compr_plot_div = ""
+                gene_rank_plot_div = ""
 
             tab2_context = {
                 'tab2_num_distinct_values_of_dataset': tab2_num_distinct_values_of_dataset,
@@ -828,7 +851,8 @@ def analyze_cell_marker_cross(request):
 
                 # for plots region in html.
                 'global_plot_url': global_plot_div, # for global map between genes and cell types
-                'compr_plot_url': compr_plot_div # for compar gene markers of selected cell type between datasets.
+                'compr_plot_url': compr_plot_div, # for compar gene markers of selected cell type between datasets.
+                'gene_rank_plot_div': gene_rank_plot_div
             }
 
             # print('num_distinct_values_of_dataset', tab2_num_distinct_values_of_dataset)

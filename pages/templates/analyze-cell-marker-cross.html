@@ -285,7 +285,6 @@
                                   <!-- Code to be executed if either condition1 or condition2 is false -->
                                   <p> No input detected. </p>
                               {% endif %}
-                              <p>test </p>
                           </div>
                     </div>
               </div>
@@ -300,7 +299,18 @@
                     </div>
                     <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordionExample">
                           <div class="card-body">
-                            Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 woltempor anf them accusamus labore sustainable VHS.
+                              {% if tab2_filter_results %}
+                                  {% if gene_rank_plot_div %}
+                                  <!-- Code to be executed if both condition1 and condition2 are true -->
+                                        {{ gene_rank_plot_div | safe }}
+                                  {% else %}
+                                      <p> No input detected or more than 2 cell types were detected in "cell cluster" field. </p>
+                                      <p> See the section "Global map between gene markers and cell types". <span>&#8593;</span> </p>
+                                  {% endif %}
+                              {% else %}
+                                  <!-- Code to be executed if either condition1 or condition2 is false -->
+                                  <p> No input detected. </p>
+                              {% endif %}
                           </div>
                     </div>
               </div>

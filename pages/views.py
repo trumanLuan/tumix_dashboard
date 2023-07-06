@@ -865,8 +865,42 @@ def analyze_cell_commu_singledataset(request):
         # 处理表单提交：判断当前提交的是哪个表单
         option = request.POST.get('option', None)
         if option == 'option1':
-            
+            f_dataset_check =
+            f_dataset_value
+
+            f_pathway_check
+            f_pathway_value
+
+            f_source_check
+            f_source_value
+
+            f_target_check
+            f_target_value
+
+            f_ligand_check
+            f_ligand_value
+
+            f_receptor_check
+            f_receptor_value
+
+            f_pval_check
+            f_pval_value
+
         elif option == 'option2':
+            f_dataset_check
+            f_dataset_value
+
+            f_pathway_check
+            f_pathway_value
+
+            f_source_check
+            f_source_value
+
+            f_target_check
+            f_target_value
+
+            f_pval_check
+            f_pval_value
 
         else:
             filters = None

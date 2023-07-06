@@ -34,7 +34,7 @@
                   <label for="f_dataset">Dataset</label>  <!-- 需要定义 关键变量标签 for -->
                   <input type="checkbox" id="f_dataset" name="f_dataset_checkbox" checked> <!-- 需要定义 id和name，id同上一行for -->
                   <select name="f_dataset_condition"> <!-- 需要定义 name -->
-                        <option value="eq"> Equal to </option>
+                        
                         <option value="contains" selected> Contains </option>
                   </select>
                   <input type="text" name="f_dataset_value"> (Required)
@@ -43,7 +43,7 @@
                   <label for="f_pathway">Signal Pathway</label>
                   <input type="checkbox" id="f_pathway" name="f_pathway_checkbox">
                   <select name="f_pathway_condition">
-                        <option value="eq">Equal to</option>
+                        
                         <option value="contains" selected> Contains </option>
                   </select>
                   <input type="text" name="f_pathway_value"> (Optional)
@@ -53,7 +53,7 @@
                   <input type="checkbox" id="f_source" name="f_source_checkbox">
                   <select name="f_source_condition">
                         <option value="contains" selected> Contains </option>
-                        <option value="eq">Equal to</option>
+                        
                   </select>
                   <input type="text" name="f_source_value"> (Optional)
                   <br>
@@ -62,7 +62,7 @@
                   <input type="checkbox" id="f_target" name="f_target_checkbox">
                   <select name="f_target_condition">
                         <option value="contains" selected> Contains </option>
-                        <option value="eq">Equal to</option>
+                        
                   </select>
                   <input type="text" name="f_target_value"> (Optional)
                   <br>
@@ -71,7 +71,7 @@
                   <input type="checkbox" id="f_ligand" name="f_ligand_checkbox" checked>
                   <select name="f_ligand_condition">
                         <option value="contains" selected> Contains </option>
-                        <option value="eq">Equal to</option>
+                        
                   </select>
                   <input type="text" name="f_ligand_value"> (Required)
                   <br>
@@ -80,7 +80,7 @@
                   <input type="checkbox" id="f_receptor" name="f_receptor_checkbox" checked>
                   <select name="f_receptor_condition">
                         <option value="contains" selected> Contains </option>
-                        <option value="eq">Equal to</option>
+                       
                   </select>
                   <input type="text" name="f_receptor_value"> (Required)
                   <br>
@@ -88,9 +88,9 @@
                   <label for="f_pval">Permutation Pe-value </label>
                   <input type="checkbox" id="f_pval" name="f_pval_checkbox" >
                   <select name="f_pval_condition">
-                        <option value="gt">Greater than</option>
+                        
                         <option value="lt" selected>Less than</option>
-                        <option value="eq">Equal to</option>
+                        
                   </select>
                   <input type="text" name="f_pval_value"> (Optional)
                   <br>

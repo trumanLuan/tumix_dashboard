@@ -1026,24 +1026,20 @@ def analyze_cell_commu_singledataset(request):
                     'n_uniq_LR': n_uniq_LR,
                     'filters':filters,
                     'filter_results': filter_results,
-                    'ccc_prob_plot_url': ccc_prob_plot_div
+                    'plot_url1': ccc_prob_plot_div
                 }
                 return render(request, 'analyze-cell-commu-single.html', result)
 
         elif option == 'option2':
-            f_dataset_check = request.POST.get('f2_dataset_checkbox', None)
+            # f_dataset_check = request.POST.get('f2_dataset_checkbox', None)
             f_dataset_value = request.POST.get('f2_dataset_value', None)
-
-            f_pathway_check = request.POST.get('f2_pathway_checkbox', None)
+            # f_pathway_check = request.POST.get('f2_pathway_checkbox', None)
             f_pathway_value = request.POST.get('f2_pathway_value', None)
-
-            f_source_check = request.POST.get('f2_source_checkbox', None)
+            # f_source_check = request.POST.get('f2_source_checkbox', None)
             f_source_value = request.POST.get('f2_source_value', None)
-
-            f_target_check = request.POST.get('f2_target_checkbox', None)
+            # f_target_check = request.POST.get('f2_target_checkbox', None)
             f_target_value = request.POST.get('f2_target_value', None)
-
-            f_pval_check = request.POST.get('f2_pval_checkbox', None)
+            # f_pval_check = request.POST.get('f2_pval_checkbox', None)
             f_pval_value = request.POST.get('f2_pval_value', None)
 
             if f_dataset_value == '' and f_pathway_value == "" and f_source_value == ''\
@@ -1052,15 +1048,206 @@ def analyze_cell_commu_singledataset(request):
                 result = {'error_message': error_message}
                 return render(request, 'analyze-cell-commu-single.html', result)
 
+            elif f_dataset_value == '':
+                error_message = "Dataset field in the form is required. Please fill out the form."
+                result = {'error_message': error_message}
+                return render(request, 'analyze-cell-commu-single.html', result)
+
+            elif f_dataset_value:
+                filters = {} # construct filters.
+
+                f_dataset_filter = f'dataset__contains'
+                filters[f_dataset_filter] = f_dataset_value
+
+                if f_pathway_value:
+                    f_pathway_filter = f'pathway__contains'
+                    filters[f_pathway_filter] = f_pathway_value
+
+                if f_source_value:
+                    f_source_filter = f'source__contains'
+                    filters[f_source_filter] = f_source_value
+
+                if f_target_value:
+                    f_target_filter = f'target__contains'
+                    filters[f_target_filter] = f_target_value
+
+                if f_pval_value:
+                    f_pval_filter = f'pval__lt'
+                    filters[f_pval_filter] = f_pval_value
+                else:
+                    f_pval_filter = f'pval__lt'
+                    filters[f_pval_filter] = 0.05
+
+                filter_results = SignalPathway.objects.filter(**filters)
+
+                # ---------------------------------
+                ## 数据库查询结果数据集的统计分析。
+                row_count = filter_results.count()  # total counts of rows.
+                dataset_uniq_value = filter_results.values_list('dataset', flat=True).distinct()
+                n_dataset = len(dataset_uniq_value)
+
+                if n_dataset > 1:
+                    error_message = 'This analysis only allows for 1 dataset. You are attempting to extract multiple sets of data.'
+                    return render(request, 'analyze-cell-commu-single.html', {'error_message': error_message})
+
+                # how many cell types in source and target cells.
+                ## number of minor cell types.
+                source_minor_uniq_value = filter_results.values_list('source', flat=True).distinct()
+                target_minor_uniq_value = filter_results.values_list('target', flat=True).distinct()
+                n_minor_source = len(source_minor_uniq_value)
+                n_minor_target = len(target_minor_uniq_value)
+
+                ## number of major cell types.
+                source_split_values = [i.split('_')[1] for i in source_minor_uniq_value]
+                source_split_uniq = list(set(source_split_values))
+                n_major_source = len(source_split_uniq)
+
+                target_split_values = [i.split('_')[1] for i in target_minor_uniq_value]
+                target_split_uniq = list(set(target_split_values))
+                n_major_target = len(target_split_uniq)
+
+                # how many signal pathways.
+                pathway_uniq_value = filter_results.values_list('pathway', flat=True).distinct()
+                n_pathway = len(pathway_uniq_value)
+                #
+                # # how many ligand-receptor paires.
+                # n_uniq_LR = filter_results.values('ligand', 'receptor').distinct().count()
+
+                # how many source-target paires.
+                n_uniq_source_target = filter_results.values('source', 'target').distinct().count()
+
+                # ---------------------------------
+                # plots
+                ## cell-cell interaction measured by probability of LR pairs.
+                ## construct data objects for plotting.
+                df_data = list(filter_results.values('source', 'target', 'pathway', 'prob'))
+                df = pd.DataFrame(df_data)
+
+                df['cell_pair'] = df['source'] + '=>' + df['target']
+                df_plt = pd.pivot_table(df, values='prob', index='pathway', columns='cell_pair').fillna(0)
+
+                ## two-way clustering in heatmap
+                row_clusters = hierarchy.linkage(df_plt.values, method='average', metric='euclidean')
+                column_clusters = hierarchy.linkage(df_plt.values.T, method='average', metric='euclidean')
+                # 获取行和列的排序索引
+                row_order = hierarchy.leaves_list(row_clusters)
+                column_order = hierarchy.leaves_list(column_clusters)
+
+                # 根据排序索引重新排列数据框
+                df_reordered = df_plt.iloc[row_order, column_order]
+
+                # 构造热图数据
+                heat_data = df_reordered.values.tolist()
+                x_labels = df_reordered.columns.tolist()
+                y_labels = df_reordered.index.tolist()
+
+                # 绘制交互式热图
+                fig = go.Figure(data=go.Heatmap(
+                    z=heat_data,
+                    x=x_labels,
+                    y=y_labels
+                ))
+
+                # 设置图表布局
+                fig.update_layout(
+                    title={
+                        'text': 'Interactive Heatmap',
+                        'x': 0.5,  # 设置标题居中
+                        'xanchor': 'center',
+                        'yanchor': 'top'
+                    },
+                    xaxis_title='Source=>Target cell interaction',
+                    yaxis_title='Signal pathway',
+                    width=1000,  # 设置宽度为 800 像素
+                    height=1000  # 设置高度为 600 像素
+                )
+
+                # 将图表渲染到网页
+                prob_plot_div = fig.to_html(full_html=False)
+
+                # ---------------------------------
+                # plots 2
+                ## number of ligand-receptor pairs in query pathway.
+                filter_results_lrpair = LRpairs.objects.filter(**filters)
+                df_data = list(filter_results_lrpair.values('source', 'target', 'ligand', 'target', 'pathway'))
+                df = pd.DataFrame(df_data)
+
+                df['cell_pair'] = df['source'] + '=>' + df['target']
+                df_new = df.groupby(['cell_pair', 'pathway']).size().reset_index(name="count")
+                df_plt = pd.pivot_table(df_new, values='count', index='pathway', columns='cell_pair').fillna(0)
+
+                ## two-way clustering in heatmap
+                row_clusters = hierarchy.linkage(df_plt.values, method='average', metric='euclidean')
+                column_clusters = hierarchy.linkage(df_plt.values.T, method='average', metric='euclidean')
+                # 获取行和列的排序索引
+                row_order = hierarchy.leaves_list(row_clusters)
+                column_order = hierarchy.leaves_list(column_clusters)
+
+                # 根据排序索引重新排列数据框
+                df_reordered = df_plt.iloc[row_order, column_order]
+
+                # 构造热图数据
+                heat_data = df_reordered.values.tolist()
+                x_labels = df_reordered.columns.tolist()
+                y_labels = df_reordered.index.tolist()
+
+                # 绘制交互式热图
+                fig = go.Figure(data=go.Heatmap(
+                    z=heat_data,
+                    x=x_labels,
+                    y=y_labels
+                ))
+
+                # 设置图表布局
+                fig.update_layout(
+                    title={
+                        'text': 'Counting Ligand-receptor pairs in Selected Pathways',
+                        'x': 0.5,  # 设置标题居中
+                        'xanchor': 'center',
+                        'yanchor': 'top'
+                    },
+                    xaxis_title='Source=>Target cell interaction',
+                    yaxis_title='Signal pathway',
+                    width=1000,  # 设置宽度为 800 像素
+                    height=1000  # 设置高度为 600 像素
+                )
+
+                # 将图表渲染到网页
+                number_plot_div = fig.to_html(full_html=False)
+
+                # 构建render字典
+                result = {
+                    'total_records': row_count,
+                    'n_dataset': n_dataset,
+                    'n_minor_source': n_minor_source,
+                    'n_minor_target': n_minor_target,
+                    'n_major_source': n_major_source,
+                    'n_major_target': n_major_target,
+                    'n_uniq_source_target': n_uniq_source_target,
+                    "n_pathway": n_pathway,
+                    'filters': filters,
+                    'filter_results': filter_results,
+                    'plot_url2': prob_plot_div,
+                    'plot_url3': number_plot_div
+                }
+                return render(request, 'analyze-cell-commu-single.html', result)
+
         else:
             filters = None
-            data = None
+            filter_results = None
+            plot_url1 = None
+            plot_url2 = None
+            plot_url3 = None
 
-        # 打印filters
+            results = {
+                'filters': filters,
+                'filter_results': filter_results,
+                'plot_url1': plot_url1,
+                'plot_url2': plot_url2,
+                'plot_url3': plot_url3
+            }
 
-        # 数据库查询结果表格Summary
-
-        # plots
+            return render(request, 'analyze-cell-commu-single.html', results)
 
     return render(request, 'analyze-cell-commu-single.html')
 

@@ -18,23 +18,20 @@
     <div class="card mb-4">
         <div class="card-header"><i class="fas fa-chart-area mr-1"></i> Filters </div>
         <div class="card-body">
-             <form method="POST">
+             <form method="POST" action="{% url 'analyze-cell-commu-single' %}" id="myForm">
+                  {% csrf_token %}
                 <input type="radio" name="option" value="option1" id="option1" onclick="toggleForm(this)">
                 <label for="option1"> Ligand–receptor (LR) network </label>
 
                 <input type="radio" name="option" value="option2" id="option2" onclick="toggleForm(this)">
                 <label for="option2"> Signaling pathway </label>
                  (Required; Choices are mutually exclusive.)
-             </form>
+                 <br>
 
-            <div id="form-group1" style="display: none;">
-                <form method="POST"  action="{% url 'analyze-cell-commu-single' %}"> <!-- 这里需要定义 form id -->
-                  {% csrf_token %}
-
+                 <div id="form-group1" style="display: none;">
                   <label for="f_dataset">Dataset</label>  <!-- 需要定义 关键变量标签 for -->
                   <input type="checkbox" id="f_dataset" name="f_dataset_checkbox" checked> <!-- 需要定义 id和name，id同上一行for -->
                   <select name="f_dataset_condition"> <!-- 需要定义 name -->
-                        
                         <option value="contains" selected> Contains </option>
                   </select>
                   <input type="text" name="f_dataset_value"> (Required)
@@ -43,7 +40,6 @@
                   <label for="f_pathway">Signal Pathway</label>
                   <input type="checkbox" id="f_pathway" name="f_pathway_checkbox">
                   <select name="f_pathway_condition">
-                        
                         <option value="contains" selected> Contains </option>
                   </select>
                   <input type="text" name="f_pathway_value"> (Optional)
@@ -53,7 +49,6 @@
                   <input type="checkbox" id="f_source" name="f_source_checkbox">
                   <select name="f_source_condition">
                         <option value="contains" selected> Contains </option>
-                        
                   </select>
                   <input type="text" name="f_source_value"> (Optional)
                   <br>
@@ -62,7 +57,6 @@
                   <input type="checkbox" id="f_target" name="f_target_checkbox">
                   <select name="f_target_condition">
                         <option value="contains" selected> Contains </option>
-                        
                   </select>
                   <input type="text" name="f_target_value"> (Optional)
                   <br>
@@ -71,7 +65,6 @@
                   <input type="checkbox" id="f_ligand" name="f_ligand_checkbox" checked>
                   <select name="f_ligand_condition">
                         <option value="contains" selected> Contains </option>
-                        
                   </select>
                   <input type="text" name="f_ligand_value"> (Required)
                   <br>
@@ -80,7 +73,6 @@
                   <input type="checkbox" id="f_receptor" name="f_receptor_checkbox" checked>
                   <select name="f_receptor_condition">
                         <option value="contains" selected> Contains </option>
-                       
                   </select>
                   <input type="text" name="f_receptor_value"> (Required)
                   <br>
@@ -88,179 +80,253 @@
                   <label for="f_pval">Permutation Pe-value </label>
                   <input type="checkbox" id="f_pval" name="f_pval_checkbox" >
                   <select name="f_pval_condition">
-                        
                         <option value="lt" selected>Less than</option>
-                        
                   </select>
                   <input type="text" name="f_pval_value"> (Optional)
                   <br>
-
-                  <input type="submit" value="Submit">
-             </form>
             </div>
 
-            <div id="form-group2" style="display: none;">
-                <form method="POST" action="{% url 'analyze-cell-commu-single' %}">
-                    {% csrf_token %}
-
-                    <label for="f_dataset">Dataset</label>  <!-- 需要定义 关键变量标签 for -->
-                    <input type="checkbox" id="f_dataset" name="f_dataset_checkbox" checked> <!-- 需要定义 id和name，id同上一行for -->
-                    <select name="f_dataset_condition"> <!-- 需要定义 name -->
-                        <option value="eq"> Equal to </option>
+                 <div id="form-group2" style="display: none;">
+                    <label for="f2_dataset">Dataset</label>  <!-- 需要定义 关键变量标签 for -->
+                    <input type="checkbox" id="f2_dataset" name="f2_dataset_checkbox" checked> <!-- 需要定义 id和name，id同上一行for -->
+                    <select name="f2_dataset_condition"> <!-- 需要定义 name -->
                         <option value="contains" selected> Contains </option>
                     </select>
-                    <input type="text" name="f_dataset_value"> (Required)
+                    <input type="text" name="f2_dataset_value"> (Required)
                     <br>
 
-                    <label for="f_pathway">Signal Pathway</label>
-                    <input type="checkbox" id="f_pathway" name="f_pathway_checkbox">
-                    <select name="f_pathway_condition">
-                        <option value="eq">Equal to</option>
+                    <label for="f2_pathway">Signal Pathway</label>
+                    <input type="checkbox" id="f2_pathway" name="f2_pathway_checkbox">
+                    <select name="f2_pathway_condition">
                         <option value="contains" selected> Contains </option>
                     </select>
-                    <input type="text" name="f_pathway_value"> (Optional)
+                    <input type="text" name="f2_pathway_value"> (Optional)
                     <br>
 
-                    <label for="f_source">Source Cells</label>
-                    <input type="checkbox" id="f_source" name="f_source_checkbox">
-                    <select name="f_source_condition">
+                    <label for="f2_source">Source Cells</label>
+                    <input type="checkbox" id="f2_source" name="f2_source_checkbox">
+                    <select name="f2_source_condition">
                         <option value="contains" selected> Contains </option>
-                        <option value="eq">Equal to</option>
                     </select>
-                    <input type="text" name="f_source_value"> (Optional)
+                    <input type="text" name="f2_source_value"> (Optional)
                     <br>
 
-                    <label for="f_target">Target Cells</label>
-                    <input type="checkbox" id="f_target" name="f_target_checkbox">
-                    <select name="f_target_condition">
+                    <label for="f2_target">Target Cells</label>
+                    <input type="checkbox" id="f2_target" name="f2_target_checkbox">
+                    <select name="f2_target_condition">
                         <option value="contains" selected> Contains </option>
-                        <option value="eq">Equal to</option>
                     </select>
-                    <input type="text" name="f_target_value"> (Optional)
+                    <input type="text" name="f2_target_value"> (Optional)
                     <br>
 
-                    <label for="f_pval">Permutation Pe-value </label>
-                    <input type="checkbox" id="f_pval" name="f_pval_checkbox" >
-                    <select name="f_pval_condition">
-                        <option value="gt">Greater than</option>
+                    <label for="f2_pval">Permutation Pe-value </label>
+                    <input type="checkbox" id="f2_pval" name="f2_pval_checkbox" >
+                    <select name="f2_pval_condition">
                         <option value="lt" selected>Less than</option>
-                        <option value="eq">Equal to</option>
                     </select>
-                    <input type="text" name="f_pval_value"> (Optional)
+                    <input type="text" name="f2_pval_value"> (Optional)
                     <br>
+                 </div>
 
-                  <!-- 其他字段的复选框和查询条件 -->
-                    <input type="submit" value="Submit">
-                </form>
+                 <input type="submit" value="Submit">
+             </form>
+
+             <script>
+                function toggleForm(radio) {
+                  var formGroup1 = document.getElementById('form-group1');
+                  var formGroup2 = document.getElementById('form-group2');
+
+                  if (radio.value === 'option1') {
+                    formGroup1.style.display = 'block';
+                    formGroup2.style.display = 'none';
+                  } else if (radio.value === 'option2') {
+                    formGroup1.style.display = 'none';
+                    formGroup2.style.display = 'block';
+                  }
+                }
+             </script>
+        </div>
+
+    </div>
+
+    <div id="resultContainer">
+        <!-- 显示user提交的form查询条件 -->
+        <div class="card mb-4" id="result-form-input">
+            <div class="card-header"><i class="fas fa-chart-area mr-1"></i> Current inputs </div>
+            <div class="card-body">
+                {% if error_message %}
+                    <p style="color: red;"> Error Occured !!! </p>
+    <!--                <p style="color: red;"> One or more required fields are missing.</p>-->
+                    <p style="color: red;">{{ error_message }}</p>
+                {% endif %}
+
+                <ur>
+                    {% if filters %}
+                        {% for key, value in filters.items %}
+                            <li> {{ key }}: {{ value }}<br></li>
+                        {% endfor %}
+                    {% else %}
+                        <p> No input was detected. </p>
+                    {% endif %}
+                </ur>
             </div>
         </div>
 
         <script>
-            function toggleForm(radio) {
-              var formGroup1 = document.getElementById('form-group1');
-              var formGroup2 = document.getElementById('form-group2');
+          // 使用jQuery发送异步请求
+          $(document).ready(function() {
+            $('#myForm').submit(function(e) {
+              e.preventDefault();
+              var formData = $(this).serialize();
+              $.ajax({
+                type: 'POST',
+                url: '{% url 'analyze-cell-commu-single' %}',  // 替换为你的视图函数对应的URL
+                data: formData,
+                success: function(response) {
+                  $('#result-form-input').html(response);
+                },
+                error: function(xhr, textStatus, error) {
+                  console.log(error);
+                }
+              });
+            });
+          });
+        </script>
 
-              if (radio.value === 'option1') {
-                formGroup1.style.display = 'block';
-                formGroup2.style.display = 'none';
-              } else if (radio.value === 'option2') {
-                formGroup1.style.display = 'none';
-                formGroup2.style.display = 'block';
-              }
-            }
-            </script>
+        <!-- summary of data subset according to the form -->
+        <div class="card mb-4" id="result-dataTable-summary">
+            <div class="card-header"><i class="fas fa-chart-area mr-1"></i> Summary of Data Subset </div>
+            <div class="card-body">
+                <ur>
+                    {% if filter_results %}
+                        <li> Number of total records: {{ total_records }} </li>
+                        <li> Number of unique datasets: {{ n_dataset }} </li>
+                        <li> Number of unique minor and major cell types in source cells: {{ n_minor_source }}; {{ n_major_source }} </li>
+                        <li> Number of unique minor and major cell types in target cells: {{ n_minor_target }}; {{ n_major_target }} </li>
+                        <li> Number of unique source-target pairs of cell-cell interactions: {{ n_uniq_source_target }} </li>
+                        <li> Number of signal pathways: {{ n_pathway }} </li>
+                        <li> Number of unique ligand-receptor pairs: {{ n_uniq_LR }} </li>
+                    {% else %}
+                        <p> No input was detected. </p>
+                    {% endif %}
+                </ur>
+            </div>
+        </div>
 
-    </div>
+        <!-- dataTable of data subset -->
+        <div class="card mb-4" id="result-dataTable">
+            <div class="card-header"><i class="fas fa-chart-area mr-1"></i> Filter Results </div>
+            <div class="card-body" id="filter-tab1-results-container">
+                 <div class="table-responsive">
+                    <table class="table table-bordered" id="dataTable-filter" width="100%" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th>Dataset</th>
+                                <th>Source</th>
+                                <th>Target</th>
+                                <th>Pathway</th>
+                                <th>Ligand</th>
+                                <th>Receptor</th>
+                                <th>Prob</th>
+                                <th>P-value</th>
+                                <th>External</th>
+                            </tr>
+                        </thead>
+                        <tfoot>
+                            <tr>
+                                <th>Dataset</th>
+                                <th>Source</th>
+                                <th>Target</th>
+                                <th>Pathway</th>
+                                <th>Ligand</th>
+                                <th>Receptor</th>
+                                <th>Prob</th>
+                                <th>P-value</th>
+                                <th>External</th>
+                            </tr>
+                        </tfoot>
+                        <tbody>
+                           {% for row in filter_results %}
+                            <tr>
+                                <td>{{ row.dataset }}</td>
+                                <td>{{ row.source }}</td>
+                                <td>{{ row.target }}</td>
+                                <td>{{ row.pathway }}</td>
+                                <td>{{ row.ligand }}</td>
+                                <td>{{ row.receptor }}</td>
+                                <td>{{ row.prob }}</td>
+                                <td>{{ row.pval }}</td>
+                                <td>{{ row.evidence }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                 </div>
+            </div>
+        </div>
 
-    <!-- 显示user提交的form查询条件 -->
-    <div class="card mb-4" id="result-form-input">
-        <div class="card-header"><i class="fas fa-chart-area mr-1"></i> Current inputs </div>
-        <div class="card-body">
-            {% if error_message %}
-                <p style="color: red;"> Error Occured !!! </p>
-<!--                <p style="color: red;"> One or more required fields are missing.</p>-->
-                <p style="color: red;">{{ error_message }}</p>
-            {% endif %}
+        <!-- plt with data subset -->
+        <div class="card mb-4" id="result-plots">
+            <div class="card-header"><i class="fas fa-chart-area mr-1"></i> Plots </div>
+            <div class="card-body">
+                 <div class="accordion" id="accordionExample">
+<!--                      <div class="card">-->
+<!--                            <div class="card-header" id="headingOne">-->
+<!--                                <h2 class="mb-0">-->
+<!--                                  <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">-->
+<!--                                    &rarr;  Global map of cell-cell interactions measured by the number of significant Ligand-receptor pairs-->
+<!--                                  </button>-->
+<!--                                </h2>-->
+<!--                            </div>-->
 
-            {% if filters %}
-              <ul>
-                {% for key, value in filters.items %}
-                  <li>{{ key }}: {{ value }}</li>
-                {% endfor %}
-              </ul>
-            {% endif %}
+<!--                            <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordionExample">-->
+<!--                            <div class="card-body">-->
+<!--                                {% if filter_results %}-->
+<!--                                    {% if global_plot_url %}-->
+<!--                                        {{ global_plot_url | safe}}-->
+<!--                                        <p> Note: Average log2-fold change values of gene markers in all the included datasets were used. </p>-->
+<!--                                    {% else %}-->
+<!--                                        <p> only one cell type were detected. </p>-->
+<!--                                        <p> See the following section. <span>&#8595;</span> </p>-->
+<!--                                    {% endif %}-->
+<!--                                {% else %}-->
+<!--                                    <p> No input was detected. </p>-->
+<!--                                {% endif %}-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                      </div>-->
+
+                      <div class="card">
+                            <div class="card-header" id="headingTwo">
+                                  <h2 class="mb-0">
+                                        <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                                          &rarr;  Global map of cell-cell interactions measured by the probability of significant Ligand-receptor pairs
+                                        </button>
+                                  </h2>
+                            </div>
+                            <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionExample">
+                                  <div class="card-body">
+                                      {% if filter_results %}
+                                          {% if ccc_prob_plot_url %}
+                                          <!-- Code to be executed if both condition1 and condition2 are true -->
+                                                {{ ccc_prob_plot_url | safe }}
+                                          {% else %}
+                                              <p> No input detected or more than 2 cell types were detected in "cell cluster" field. </p>
+<!--                                              <p> See the section "Global map between gene markers and cell types". <span>&#8593;</span> </p>-->
+                                          {% endif %}
+                                      {% else %}
+                                          <!-- Code to be executed if either condition1 or condition2 is false -->
+                                          <p> No input detected. </p>
+                                      {% endif %}
+                                  </div>
+                            </div>
+                      </div>
+
+                 </div>
+            </div>
         </div>
     </div>
 
-    <!-- summary of data subset according to the form -->
-    <div class="card mb-4" id="result-dataTable-summary">
-        <div class="card-header"><i class="fas fa-chart-area mr-1"></i> Summary of Data Subset </div>
-        <div class="card-body">
-            <p> Number of total records: {{ total_records }} </p>
-            <p> num_distinct_values_of_dataset: {{ num_distinct_values_of_dataset }} </p>
-            <p> dataset_distinct_values: {{ dataset_distinct_values }} </p>
-            <p> {{ num_distinct_values_of_gene }} gene markers of {{ num_distinct_values_of_cluster }} cell clusters (major cell type or cell subtypes) </p>
-            <p> {{ pct1_summary_stats }}</p>
-            <p> {{ pct2_summary_stats }}</p>
-        </div>
-    </div>
-
-    <!-- dataTable of data subset -->
-    <div class="card mb-4" id="result-dataTable">
-        <div class="card-header"><i class="fas fa-chart-area mr-1"></i> Filter Results </div>
-        <div class="card-body" id="filter-tab1-results-container">
-             <div class="table-responsive">
-                <table class="table table-bordered" id="dataTable-filter" width="100%" cellspacing="0">
-                    <thead>
-                        <tr>
-                            <th>Dataset</th>
-                            <th>Cell Type</th>
-                            <th>Gene</th>
-                            <th>Avg_log2FC</th>
-                            <th>Pct1</th>
-                            <th>Pct2</th>
-                            <th>P-value</th>
-                            <th>Adjusted P</th>
-                        </tr>
-                    </thead>
-                    <tfoot>
-                        <tr>
-                            <th>Dataset</th>
-                            <th>Cell Type</th>
-                            <th>Gene</th>
-                            <th>Avg_log2FC</th>
-                            <th>Pct1</th>
-                            <th>Pct2</th>
-                            <th>P-value</th>
-                            <th>Adjusted P</th>
-                        </tr>
-                    </tfoot>
-                    <tbody>
-                       {% for row in filter_results %}
-                        <tr>
-                            <td>{{ row.dataset }}</td>
-                            <td>{{ row.cluster }}</td>
-                            <td>{{ row.gene }}</td>
-                            <td>{{ row.avg_log2FC }}</td>
-                            <td>{{ row.pct1 }}</td>
-                            <td>{{ row.pct2 }}</td>
-                            <td>{{ row.pval }}</td>
-                            <td>{{ row.padj }}</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-             </div>
-        </div>
-    </div>
-
-    <!-- plt with data subset -->
-    <div class="card mb-4" id="result-plots">
-    <div class="card-header"><i class="fas fa-chart-area mr-1"></i> Plots </div>
-    <div class="card-body">
-        {{ plot_url | safe }}
-    </div>
-</div>
 
 </main>
 
@@ -276,6 +342,8 @@
 <script src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js" crossorigin="anonymous"></script>
 <script src="https://cdn.datatables.net/1.10.20/js/dataTables.bootstrap4.min.js" crossorigin="anonymous"></script>
 
+<!--<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>-->
+
 
 <!-- for #dataTable functions-->
 <script type="text/javascript">
@@ -284,5 +352,7 @@
       $('#dataTable-filter').dataTable();
     });
 </script>
+
+
 
 {% endblock %}

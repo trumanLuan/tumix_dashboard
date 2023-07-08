@@ -112,7 +112,7 @@
                 <p style="color: red;">{{ error_message }}</p>
             {% endif %}
 <!--        print the input data in the forms. -->
-        <ul>
+        <ur>
             {% if filter_querytable_checkbox %}
                 <li> database tables: {{ filter_querytable_condition }} cell types were used.</li>
             {% endif %}
@@ -156,7 +156,7 @@
             {% else %}
                 <li> Adjusted P: None </li>
             {% endif %}
-        </ul>
+        </ur>
     </div>
 </div>
 
@@ -165,7 +165,7 @@
         <div class="card-header"><i class="fas fa-chart-area mr-1"></i> Summary of Data Subset </div>
         <div class="card-body">
             <div class="card-body">
-                <ul>
+                <ur>
                     {% if tab2_filter_results %}
                         <li> Number of total records: {{ tab2_total_records }} </li>
                         <li> num_distinct_values_of_dataset: {{ tab2_num_distinct_values_of_dataset }} </li>
@@ -176,7 +176,7 @@
                     {% else %}
                         <p> No input was detected. </p>
                     {% endif %}
-                </ul>
+                </ur>
 
             </div>
         </div>

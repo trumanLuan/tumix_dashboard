@@ -865,42 +865,192 @@ def analyze_cell_commu_singledataset(request):
         # 处理表单提交：判断当前提交的是哪个表单
         option = request.POST.get('option', None)
         if option == 'option1':
-            f_dataset_check =
-            f_dataset_value
+            # f_dataset_check = request.POST.get('f_dataset_checkbox', None)
+            f_dataset_value = request.POST.get('f_dataset_value', None)
+            # f_pathway_check = request.POST.get('f_pathway_checkbox', None)
+            f_pathway_value = request.POST.get('f_pathway_value', None)
+            # f_source_check = request.POST.get('f_source_checkbox', None)
+            f_source_value = request.POST.get('f_source_value', None)
+            # f_target_check = request.POST.get('f_target_checkbox', None)
+            f_target_value = request.POST.get('f_target_value', None)
+            # f_ligand_check = request.POST.get('f_ligand_checkbox', None)
+            f_ligand_value = request.POST.get('f_ligand_value', None)
+            # f_receptor_check = request.POST.get('f_receptor_checkbox', None)
+            f_receptor_value = request.POST.get('f_receptor_value', None)
+            # f_pval_check = request.POST.get('f_pval_checkbox', None)
+            f_pval_value = request.POST.get('f_pval_value', None)
 
-            f_pathway_check
-            f_pathway_value
+            if f_dataset_value == '' and f_pathway_value == '' and f_source_value == '' and f_target_value == ''\
+                and f_ligand_value == '' and f_receptor_value == '' and f_pval_value == '':
+                error_message = "The form is empty. Please fill out the form."
+                result = {'error_message': error_message}
+                return render(request, 'analyze-cell-commu-single.html', result)
+            # //
 
-            f_source_check
-            f_source_value
+            filters = {}
+            if f_dataset_value == '':
+                error_message = "The form is empty. Please fill out the form."
+                result = {'error_message': error_message}
+                return render(request, 'analyze-cell-commu-single.html', result)
 
-            f_target_check
-            f_target_value
+            elif f_dataset_value:
+                f_dataset_filter = f'dataset__contains'
+                filters[f_dataset_filter] = f_dataset_value
 
-            f_ligand_check
-            f_ligand_value
+                if f_pathway_value:
+                    f_pathway_filter = f'pathway__contains'
+                    filters[f_pathway_filter] = f_pathway_value
 
-            f_receptor_check
-            f_receptor_value
+                if f_source_value:
+                    f_source_filter = f'source__contains'
+                    filters[f_source_filter] = f_source_value
 
-            f_pval_check
-            f_pval_value
+                if f_target_value:
+                    f_target_filter = f'target__contains'
+                    filters[f_target_filter] = f_target_value
+
+                if f_ligand_value:
+                    f_ligand_filter = f'ligand__contains'
+                    filters[f_ligand_filter] = f_ligand_value
+
+                if f_receptor_value:
+                    f_receptor_filter = f'receptor__contains'
+                    filters[f_receptor_filter] = f_receptor_value
+
+                if f_pval_value:
+                    f_pval_filter = f'pval__lt'
+                    filters[f_pval_filter] = f_pval_value
+                else:
+                    f_pval_filter = f'pval__lt'
+                    filters[f_pval_filter] = 0.05
+
+                filter_results = LRpairs.objects.filter(**filters)
+
+                # ---------------------------------
+                ## 数据库查询结果数据集的统计分析。
+                row_count = filter_results.count() # total counts of rows.
+                dataset_uniq_value = filter_results.values_list('dataset', flat=True).distinct()
+                n_dataset = len(dataset_uniq_value)
+
+                if n_dataset > 1:
+                    error_message = 'This analysis only allows for 1 dataset. You are attempting to extract multiple sets of data.'
+                    return render(request, 'analyze-cell-commu-single.html', {'error_message': error_message})
+
+                # how many cell types in source and target cells.
+                ## number of minor cell types.
+                source_minor_uniq_value = filter_results.values_list('source', flat=True).distinct()
+                target_minor_uniq_value = filter_results.values_list('target', flat=True).distinct()
+                n_minor_source = len(source_minor_uniq_value)
+                n_minor_target = len(target_minor_uniq_value)
+
+                ## number of major cell types.
+                source_split_values = [i.split('_')[1] for i in source_minor_uniq_value]
+                source_split_uniq = list(set(source_split_values))
+                n_major_source = len(source_split_uniq)
+
+                target_split_values = [i.split('_')[1] for i in target_minor_uniq_value]
+                target_split_uniq = list(set(target_split_values))
+                n_major_target = len(target_split_uniq)
+
+                # how many signal pathways.
+                pathway_uniq_value = filter_results.values_list('pathway', flat=True).distinct()
+                n_pathway = len(pathway_uniq_value)
+
+                # how many ligand-receptor paires.
+                n_uniq_LR = filter_results.values('ligand', 'receptor').distinct().count()
+
+                # how many source-target paires.
+                n_uniq_source_target = filter_results.values('source', 'target').distinct().count()
+
+
+                # ---------------------------------
+                # plots
+                ## cell-cell interaction measured by probability of LR pairs.
+                ## construct data objects for plotting.
+                df_data = list(filter_results.values('source', 'target', 'ligand', 'receptor', 'prob'))
+                df = pd.DataFrame(df_data)
+
+                df['cell_pair'] = df['source'] + '=>' + df['target']
+                df['LR_pair'] = df['ligand'] + ':' + df['receptor']
+                df_plt = pd.pivot_table(df, values='prob', index='LR_pair', columns='cell_pair').fillna(0)
+
+                ## two-way clustering in heatmap
+                row_clusters = hierarchy.linkage(df_plt.values, method='average', metric='euclidean')
+                column_clusters = hierarchy.linkage(df_plt.values.T, method='average', metric='euclidean')
+                # 获取行和列的排序索引
+                row_order = hierarchy.leaves_list(row_clusters)
+                column_order = hierarchy.leaves_list(column_clusters)
+
+                # 根据排序索引重新排列数据框
+                df_reordered = df_plt.iloc[row_order, column_order]
+
+                # 构造热图数据
+                heat_data = df_reordered.values.tolist()
+                x_labels = df_reordered.columns.tolist()
+                y_labels = df_reordered.index.tolist()
+
+                # 绘制交互式热图
+                fig = go.Figure(data=go.Heatmap(
+                    z=heat_data,
+                    x=x_labels,
+                    y=y_labels
+                ))
+
+                # 设置图表布局
+                fig.update_layout(
+                    title={
+                        'text': 'Interactive Heatmap',
+                        'x': 0.5,  # 设置标题居中
+                        'xanchor': 'center',
+                        'yanchor': 'top'
+                    },
+                    xaxis_title='Source=>Target cell interaction',
+                    yaxis_title='Ligand-receptor pairs',
+                    width=1000,  # 设置宽度为 800 像素
+                    height=1000  # 设置高度为 600 像素
+                )
+
+                # 将图表渲染到网页
+                ccc_prob_plot_div = fig.to_html(full_html=False)
+
+                # 构建render字典
+                result = {
+                    'total_records': row_count,
+                    'n_dataset': n_dataset,
+                    'n_minor_source': n_minor_source,
+                    'n_minor_target': n_minor_target,
+                    'n_major_source': n_major_source,
+                    'n_major_target': n_major_target,
+                    'n_uniq_source_target': n_uniq_source_target,
+                    "n_pathway": n_pathway,
+                    'n_uniq_LR': n_uniq_LR,
+                    'filters':filters,
+                    'filter_results': filter_results,
+                    'ccc_prob_plot_url': ccc_prob_plot_div
+                }
+                return render(request, 'analyze-cell-commu-single.html', result)
 
         elif option == 'option2':
-            f_dataset_check
-            f_dataset_value
+            f_dataset_check = request.POST.get('f2_dataset_checkbox', None)
+            f_dataset_value = request.POST.get('f2_dataset_value', None)
 
-            f_pathway_check
-            f_pathway_value
+            f_pathway_check = request.POST.get('f2_pathway_checkbox', None)
+            f_pathway_value = request.POST.get('f2_pathway_value', None)
 
-            f_source_check
-            f_source_value
+            f_source_check = request.POST.get('f2_source_checkbox', None)
+            f_source_value = request.POST.get('f2_source_value', None)
 
-            f_target_check
-            f_target_value
+            f_target_check = request.POST.get('f2_target_checkbox', None)
+            f_target_value = request.POST.get('f2_target_value', None)
 
-            f_pval_check
-            f_pval_value
+            f_pval_check = request.POST.get('f2_pval_checkbox', None)
+            f_pval_value = request.POST.get('f2_pval_value', None)
+
+            if f_dataset_value == '' and f_pathway_value == "" and f_source_value == ''\
+                and f_target_value == '' and f_pval_value == '':
+                error_message = "The form is empty. Please fill out the form."
+                result = {'error_message': error_message}
+                return render(request, 'analyze-cell-commu-single.html', result)
 
         else:
             filters = None

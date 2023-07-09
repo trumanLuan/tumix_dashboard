@@ -12,5 +12,6 @@ urlpatterns = [
     re_path(r"analyze-cell-marker-single$", views.analyze_cell_marker_single, name='analyze-cell-marker-single'),
     re_path(r"analyze-cell-marker-cross$", views.analyze_cell_marker_cross, name='analyze-cell-marker-cross'),
     re_path(r"analyze-cell-commu-single$", views.analyze_cell_commu_singledataset, name='analyze-cell-commu-single'),
+    re_path(r"analyze-cell-commu-cross$", views.analyze_cell_commu_crossdataset, name='analyze-cell-commu-cross'),
     re_path(r"help$", views.help, name='help')
 ]

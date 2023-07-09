@@ -1414,8 +1414,8 @@ def analyze_cell_commu_crossdataset(request):
             df['cell_pair'] = df['source_new'] + ':' + df['target_new']
             df['LR_pair'] = df['ligand'] + ':' + df['receptor']
             df['combine_index'] = df['cell_pair'] + '__' + df['LR_pair']
-
-            count_df = df['combine_index'].value_counts()
+            uniq_rows = df.drop_duplicates(subset=['combine_index', 'dataset'])
+            count_df = uniq_rows['combine_index'].value_counts()
 
             # 创建ranked dot plot
             fig = go.Figure()
@@ -1445,9 +1445,8 @@ def analyze_cell_commu_crossdataset(request):
             df['cell_pair'] = df['source_new'] + ':' + df['target_new']
             df['combine_index'] = df['cell_pair'] + '__' + df['pathway']
 
-            
-
-            count_df = df['combine_index'].value_counts()
+            uniq_rows = df.drop_duplicates(subset=['combine_index', 'dataset'])
+            count_df = uniq_rows['combine_index'].value_counts()
 
             # 创建ranked dot plot
             fig = go.Figure()

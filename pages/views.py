@@ -365,8 +365,11 @@ def process_search_forms(request):
             })
     return render(request, 'search.html')
 
-def analyze_gene_expr(request):
-    return render(request, 'analyze-gene-expr.html')
+def analyze_gene_expr_single(request):
+    return render(request, 'analyze-gene-expr-single.html')
+
+def analyze_gene_expr_cross(request):
+    return render(request, 'analyze-gene-expr-cross.html')
 
 
 def analyze_cell_marker_single(request):
@@ -1427,8 +1430,8 @@ def analyze_cell_commu_crossdataset(request):
                 'xanchor': 'center',
                 'yanchor': 'top'
             },
-                xaxis_title="Ranked genes",
-                yaxis_title='Counts of LR pairs + source-target cell pairs')
+                xaxis_title="Ranked LR pairs + source-target cell pairs",
+                yaxis_title='Counts')
             LRpair_cellpair_plot_div = fig.to_html(full_html=False)
 
             # ---------------------------------
@@ -1458,8 +1461,8 @@ def analyze_cell_commu_crossdataset(request):
                 'xanchor': 'center',
                 'yanchor': 'top'
             },
-                xaxis_title="Ranked genes",
-                yaxis_title='Counts of Pathway + source-target cell pairs')
+                xaxis_title="Ranked Pathway + source-target cell pairs",
+                yaxis_title='Counts')
             pathway_cellpair_plot_div = fig.to_html(full_html=False)
 
             # 构建render字典

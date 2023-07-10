@@ -1,0 +1,317 @@
+{% extends "base.html" %}
+{% load static %}
+{% load humanize %}
+
+{% block content %}
+
+{% include "navbar-simple.html" %}
+{% include "sidebar.html" %}
+
+<div id="layoutSidenav_content">
+<main>
+
+    <div class="card mb-4">
+        <div class="card-header"><i class="fas fa-table mr-1"></i> <b>Current Position: Analyzing Gene Expression Cross Datasets </b> </div>
+    </div>
+
+    <!-- form. -->
+    <div class="card mb-4">
+        <div class="card-header"><i class="fas fa-chart-area mr-1"></i> Filters </div>
+        <div class="card-body">
+             <form method="POST" action="{% url 'analyze-cell-commu-cross' %}" id="myForm">
+                  {% csrf_token %}
+                  <label for="f_dataset">Dataset</label>  <!-- 需要定义 关键变量标签 for -->
+<!--                  <input type="checkbox" id="f_dataset" name="f_dataset_checkbox" checked> &lt;!&ndash; 需要定义 id和name，id同上一行for &ndash;&gt;-->
+                  <select name="f_dataset_condition"> <!-- 需要定义 name -->
+                        <option value="contains" selected> Contains </option>
+                  </select>
+                  <input type="text" name="f_dataset_value" id="f_dataset"> (Required)
+                  <br>
+
+                  <label for="f_pathway">Signal Pathway</label>
+<!--                  <input type="checkbox" id="f_pathway" name="f_pathway_checkbox">-->
+                  <select name="f_pathway_condition">
+                        <option value="contains" selected> Contains </option>
+                  </select>
+                  <input type="text" name="f_pathway_value" id="f_pathway"> (Optional)
+                  <br>
+
+                  <label for="f_source">Source Cells</label>
+<!--                  <input type="checkbox" id="f_source" name="f_source_checkbox">-->
+                  <select name="f_source_condition">
+                        <option value="contains" selected> Contains </option>
+                  </select>
+                  <input type="text" name="f_source_value" id="f_source"> (Optional)
+                  <br>
+
+                  <label for="f_target">Target Cells</label>
+<!--                  <input type="checkbox" id="f_target" name="f_target_checkbox">-->
+                  <select name="f_target_condition">
+                        <option value="contains" selected> Contains </option>
+                  </select>
+                  <input type="text" name="f_target_value" id="f_target"> (Optional)
+                  <br>
+
+                  <label for="f_ligand">Ligand </label>
+<!--                  <input type="checkbox" id="f_ligand" name="f_ligand_checkbox" checked>-->
+                  <select name="f_ligand_condition">
+                        <option value="contains" selected> Contains </option>
+                  </select>
+                  <input type="text" id='f_ligand' name="f_ligand_value"> (Required)
+                  <br>
+
+                  <label for="f_receptor">Receptor </label>
+<!--                  <input type="checkbox" id="f_receptor" name="f_receptor_checkbox" checked>-->
+                  <select name="f_receptor_condition">
+                        <option value="contains" selected> Contains </option>
+                  </select>
+                  <input type="text" id='f_receptor' name="f_receptor_value"> (Required)
+                  <br>
+
+                  <label for="f_pval">Permutation Pe-value </label>
+<!--                  <input type="checkbox" id="f_pval" name="f_pval_checkbox" >-->
+                  <select name="f_pval_condition">
+                        <option value="lt" selected>Less than</option>
+                  </select>
+                  <input type="text" id="f_pval" name="f_pval_value"> (Optional)
+                  <br>
+
+                 <input type="submit" value="Submit">
+             </form>
+
+        </div>
+
+    </div>
+
+    <div id="resultContainer">
+        <!-- 显示user提交的form查询条件 -->
+        <div class="card mb-4" id="result-form-input">
+            <div class="card-header"><i class="fas fa-chart-area mr-1"></i> Current inputs </div>
+            <div class="card-body">
+                <ur>
+                     {% if error_message %}
+                    <p style="color: red;"> Error Occured !!! </p>
+                    <p style="color: red;">{{ error_message }}</p>
+
+                    {% elif filters %}
+                        {% for key, value in filters.items %}
+                            <li> {{ key }}: {{ value }}<br></li>
+                        {% endfor %}
+                    {% else %}
+                        <p> No input was detected. </p>
+                    {% endif %}
+                </ur>
+            </div>
+        </div>
+
+        <script>
+          // 使用jQuery发送异步请求
+          $(document).ready(function() {
+            $('#myForm').submit(function(e) {
+              e.preventDefault();
+              var formData = $(this).serialize();
+              $.ajax({
+                type: 'POST',
+                url: '{% url 'analyze-cell-commu-cross' %}',  // 替换为你的视图函数对应的URL
+                data: formData,
+                success: function(response) {
+                  $('#result-form-input').html(response);
+                },
+                error: function(xhr, textStatus, error) {
+                  console.log(error);
+                }
+              });
+            });
+          });
+        </script>
+
+        <!-- summary of data subset according to the form -->
+        <div class="card mb-4" id="result-dataTable-summary">
+            <div class="card-header"><i class="fas fa-chart-area mr-1"></i> Summary of Data Subset </div>
+            <div class="card-body">
+                <ur>
+                    {% if filter_results %}
+                        <li> Number of total records: {{ total_records }} </li>
+                        <li> Number of unique datasets: {{ n_dataset }} </li>
+                        <li> Number of unique minor and major cell types in source cells: {{ n_minor_source }}; {{ n_major_source }} </li>
+                        <li> Number of unique minor and major cell types in target cells: {{ n_minor_target }}; {{ n_major_target }} </li>
+                        <li> Number of unique source-target pairs of cell-cell interactions: {{ n_uniq_source_target }} </li>
+                        <li> Number of signal pathways: {{ n_pathway }} </li>
+                        <li> Number of unique ligand-receptor pairs: {{ n_uniq_LR }} </li>
+                    {% else %}
+                        <p> No input was detected. </p>
+                    {% endif %}
+                </ur>
+            </div>
+        </div>
+
+        <!-- dataTable of data subset -->
+        <div class="card mb-4" id="result-dataTable">
+            <div class="card-header"><i class="fas fa-chart-area mr-1"></i> Filter Results </div>
+            <div class="card-body" id="filter-tab1-results-container">
+                 <div class="table-responsive">
+                    <table class="table table-bordered" id="dataTable-filter" width="100%" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th>Dataset</th>
+                                <th>Source</th>
+                                <th>Target</th>
+                                <th>Pathway</th>
+                                <th>Ligand</th>
+                                <th>Receptor</th>
+                                <th>Prob</th>
+                                <th>P-value</th>
+                                <th>External</th>
+                            </tr>
+                        </thead>
+                        <tfoot>
+                            <tr>
+                                <th>Dataset</th>
+                                <th>Source</th>
+                                <th>Target</th>
+                                <th>Pathway</th>
+                                <th>Ligand</th>
+                                <th>Receptor</th>
+                                <th>Prob</th>
+                                <th>P-value</th>
+                                <th>External</th>
+                            </tr>
+                        </tfoot>
+                        <tbody>
+                           {% for row in filter_results %}
+                            <tr>
+                                <td>{{ row.dataset }}</td>
+                                <td>{{ row.source }}</td>
+                                <td>{{ row.target }}</td>
+                                <td>{{ row.pathway }}</td>
+                                <td>{{ row.ligand }}</td>
+                                <td>{{ row.receptor }}</td>
+                                <td>{{ row.prob }}</td>
+                                <td>{{ row.pval }}</td>
+                                <td>{{ row.evidence }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                 </div>
+            </div>
+        </div>
+
+        <!-- plt with data subset -->
+        <div class="card mb-4" id="result-plots">
+            <div class="card-header"><i class="fas fa-chart-area mr-1"></i> Plots </div>
+            <div class="card-body">
+                 <div class="accordion" id="accordionExample">
+<!--plot region 1-->
+                      <div class="card">
+                            <div class="card-header" id="headingTwo">
+                                  <h2 class="mb-0">
+                                        <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                                          &rarr;  Global map of cell-cell interactions measured by the probability of significant Ligand-receptor pairs
+                                        </button>
+                                  </h2>
+                            </div>
+                            <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionExample">
+                                  <div class="card-body">
+                                      {% if filter_results %}
+                                          {% if plot_url1 %}
+                                          <!-- Code to be executed if both condition1 and condition2 are true -->
+                                                {{ plot_url1 | safe }}
+                                          {% else %}
+                                              <p> Not available. </p>
+<!--                                              <p> See the section "Global map between gene markers and cell types". <span>&#8593;</span> </p>-->
+                                          {% endif %}
+                                      {% else %}
+                                          <!-- Code to be executed if either condition1 or condition2 is false -->
+                                          <p> No input detected. </p>
+                                      {% endif %}
+                                  </div>
+                            </div>
+                      </div>
+<!--plot region 2-->
+                     <div class="card">
+                            <div class="card-header" id="headingOne">
+                                <h2 class="mb-0">
+                                  <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                    &rarr;  Overview of the number of significant Ligand-receptor pairs for signaling pathways
+                                  </button>
+                                </h2>
+                            </div>
+                            <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordionExample">
+                            <div class="card-body">
+                                {% if filter_results %}
+                                    {% if plot_url2 %}
+                                        {{ plot_url2 | safe}}
+                                        <p> Note: XXX. </p>
+                                    {% else %}
+                                        <p> Not Available. </p>
+                                        <p> See the other sections. <span>&#8595;</span> </p>
+                                    {% endif %}
+                                {% else %}
+                                    <p> No input was detected. </p>
+                                {% endif %}
+                            </div>
+                        </div>
+                      </div>
+<!--plot region 3-->
+                     <div class="card">
+                            <div class="card-header" id="heading3">
+                                <h2 class="mb-0">
+                                  <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                    &rarr;  Overview of the summarized probability of significant signaling pathways
+                                  </button>
+                                </h2>
+                            </div>
+
+                            <div id="collapse3" class="collapse show" aria-labelledby="heading3" data-parent="#accordionExample">
+                                <div class="card-body">
+                                    {% if filter_results %}
+                                        {% if plot_url3 %}
+                                            {{ plot_url3 | safe}}
+                                            <p> Note: XXX. </p>
+                                        {% else %}
+                                            <p>Not Available. </p>
+                                            <p> See the other sections. <span>&#8595;</span> </p>
+                                        {% endif %}
+                                    {% else %}
+                                        <p> No input was detected. </p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                      </div>
+
+                 </div>
+            </div>
+        </div>
+    </div>
+
+
+</main>
+
+{% include "footer.html" %}
+</div>
+</div>
+
+<!-- Javascript code. -->
+<script src="https://code.jquery.com/jquery-3.4.1.min.js" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+<!--<script src="../static/js/scripts.js"></script>-->
+<script src="{% static 'js/scripts.js' %}"></script>
+<script src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js" crossorigin="anonymous"></script>
+<script src="https://cdn.datatables.net/1.10.20/js/dataTables.bootstrap4.min.js" crossorigin="anonymous"></script>
+
+<!--<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>-->
+
+<!-- for #dataTable functions-->
+<script type="text/javascript">
+    // 用来优化网页表格的显示
+   $(document).ready(function() {
+      $('#dataTable-filter').dataTable();
+    });
+</script>
+
+
+
+
+
+{% endblock %}

@@ -116,10 +116,10 @@ class SignalPathway(models.Model):
     def __str__(self):
         return self.dataset
 
-Class GeneExpr(models.Model):
+class GeneExpr(models.Model):
     id = models.AutoField(primary_key=True)
     dataset = models.CharField(max_length=200)
-    
+
     def __str__(self):
         return self.dataset
 

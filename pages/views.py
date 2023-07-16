@@ -26,7 +26,6 @@ import pandas as pd
 # import string
 
 
-
 # Create your views here.
 def index(request):
     return render(request, "index.html", {"employees": Employee.objects.all()})
@@ -366,6 +365,7 @@ def process_search_forms(request):
     return render(request, 'search.html')
 
 def analyze_gene_expr_single(request):
+
     return render(request, 'analyze-gene-expr-single.html')
 
 def analyze_gene_expr_cross(request):

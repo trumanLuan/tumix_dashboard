@@ -18,62 +18,34 @@
     <div class="card mb-4">
         <div class="card-header"><i class="fas fa-chart-area mr-1"></i> Filters </div>
         <div class="card-body">
-             <form method="POST" action="{% url 'analyze-cell-commu-cross' %}" id="myForm">
+             <form method="POST" action="{% url 'analyze-gene-expr-single' %}" id="myForm">
                   {% csrf_token %}
                   <label for="f_dataset">Dataset</label>  <!-- 需要定义 关键变量标签 for -->
-<!--                  <input type="checkbox" id="f_dataset" name="f_dataset_checkbox" checked> &lt;!&ndash; 需要定义 id和name，id同上一行for &ndash;&gt;-->
                   <select name="f_dataset_condition"> <!-- 需要定义 name -->
                         <option value="contains" selected> Contains </option>
                   </select>
                   <input type="text" name="f_dataset_value" id="f_dataset"> (Required)
                   <br>
 
-                  <label for="f_pathway">Signal Pathway</label>
-<!--                  <input type="checkbox" id="f_pathway" name="f_pathway_checkbox">-->
-                  <select name="f_pathway_condition">
+                  <label for="f_cluster">Cell Cluster</label>
+                  <select name="f_cluster_condition">
                         <option value="contains" selected> Contains </option>
                   </select>
-                  <input type="text" name="f_pathway_value" id="f_pathway"> (Optional)
+                  <input type="text" name="f_cluster_value" id="f_cluster"> (Required)
                   <br>
 
-                  <label for="f_source">Source Cells</label>
-<!--                  <input type="checkbox" id="f_source" name="f_source_checkbox">-->
-                  <select name="f_source_condition">
+                 <label for="f_gene">Gene Name</label>
+                  <select name="f_gene_condition">
                         <option value="contains" selected> Contains </option>
                   </select>
-                  <input type="text" name="f_source_value" id="f_source"> (Optional)
+                  <input type="text" name="f_gene_value" id="f_gene"> (Required)
                   <br>
 
-                  <label for="f_target">Target Cells</label>
-<!--                  <input type="checkbox" id="f_target" name="f_target_checkbox">-->
-                  <select name="f_target_condition">
+                 <label for="f_exprratio">Expression Ratio</label>
+                  <select name="f_exprratio_condition">
                         <option value="contains" selected> Contains </option>
                   </select>
-                  <input type="text" name="f_target_value" id="f_target"> (Optional)
-                  <br>
-
-                  <label for="f_ligand">Ligand </label>
-<!--                  <input type="checkbox" id="f_ligand" name="f_ligand_checkbox" checked>-->
-                  <select name="f_ligand_condition">
-                        <option value="contains" selected> Contains </option>
-                  </select>
-                  <input type="text" id='f_ligand' name="f_ligand_value"> (Required)
-                  <br>
-
-                  <label for="f_receptor">Receptor </label>
-<!--                  <input type="checkbox" id="f_receptor" name="f_receptor_checkbox" checked>-->
-                  <select name="f_receptor_condition">
-                        <option value="contains" selected> Contains </option>
-                  </select>
-                  <input type="text" id='f_receptor' name="f_receptor_value"> (Required)
-                  <br>
-
-                  <label for="f_pval">Permutation Pe-value </label>
-<!--                  <input type="checkbox" id="f_pval" name="f_pval_checkbox" >-->
-                  <select name="f_pval_condition">
-                        <option value="lt" selected>Less than</option>
-                  </select>
-                  <input type="text" id="f_pval" name="f_pval_value"> (Optional)
+                  <input type="text" name="f_exprratio_value" id="f_exprratio"> (Optional)
                   <br>
 
                  <input type="submit" value="Submit">

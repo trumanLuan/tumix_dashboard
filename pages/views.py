@@ -13,7 +13,7 @@ from .models import GeneExprCorr
 from django.db.models import Q, Count
 from scipy.cluster import hierarchy
 import plotly.graph_objects as go
-# import plotly.express as px
+import plotly.express as px
 
 import numpy as np
 # import tempfile
@@ -379,7 +379,7 @@ def analyze_gene_expr_single(request):
                 f_cluster_filter = f'cluster__contains'
                 filters[f_cluster_filter] = f_cluster_value
             if f_gene_value:
-                f_gene_filter = f'gene__contains'
+                f_gene_filter = f'gene__iexact'
                 filters[f_gene_filter] = f_gene_value
             if f_exprratio_value:
                 f_exprratio_filter = f'expr_ratio__gt'
@@ -389,110 +389,61 @@ def analyze_gene_expr_single(request):
 
             # ---------------------------------
             ## 数据库查询结果数据集的统计分析。
-            row_count = filter_results.count()  # total counts of rows.
+            row_count = filter_results.count()  # total counts of rows; to render.
             dataset_uniq_value = filter_results.values_list('dataset', flat=True).distinct()
             n_dataset = len(dataset_uniq_value)
             if n_dataset > 1:
                 error_message = 'This analysis only allows for 1 dataset. You are attempting to extract multiple sets of data.'
                 return render(request, 'analyze-gene-expr-single.html', {'error_message': error_message})
 
-            # how many cell types in source and target cells.
             ## number of minor cell types.
-            source_minor_uniq_value = filter_results.values_list('source', flat=True).distinct()
-            target_minor_uniq_value = filter_results.values_list('target', flat=True).distinct()
-            n_minor_source = len(source_minor_uniq_value)
-            n_minor_target = len(target_minor_uniq_value)
+            cluster_uniq_value = filter_results.values_list('cluster', flat=True).distinct()
+            n_cluster = len(cluster_uniq_value)
 
-            ## number of major cell types.
-            source_split_values = [i.split('_')[1] for i in source_minor_uniq_value]
-            source_split_uniq = list(set(source_split_values))
-            n_major_source = len(source_split_uniq)
+            ## major cell clusters.
+            cluster_uniq_major = set(s.split("_")[1] for s in cluster_uniq_value)
 
-            target_split_values = [i.split('_')[1] for i in target_minor_uniq_value]
-            target_split_uniq = list(set(target_split_values))
-            n_major_target = len(target_split_uniq)
-
-            # how many signal pathways.
-            pathway_uniq_value = filter_results.values_list('pathway', flat=True).distinct()
-            n_pathway = len(pathway_uniq_value)
-
-            # how many ligand-receptor paires.
-            n_uniq_LR = filter_results.values('ligand', 'receptor').distinct().count()
-
-            # how many source-target paires.
-            n_uniq_source_target = filter_results.values('source', 'target').distinct().count()
+            ## number of genes.
+            gene_uniq_value = filter_results.values_list('gene', flat=True).distinct()  # to render
+            n_gene = len(gene_uniq_value)
 
             # ---------------------------------
-            # plots
-            ## cell-cell interaction measured by probability of LR pairs.
             ## construct data objects for plotting.
-            df_data = list(filter_results.values('source', 'target', 'ligand', 'receptor', 'prob'))
+            df_data = list(filter_results.values('cluster', 'gene', 'expr_mean'))
             df = pd.DataFrame(df_data)
 
-            df['cell_pair'] = df['source'] + '=>' + df['target']
-            df['LR_pair'] = df['ligand'] + ':' + df['receptor']
-            df_plt = pd.pivot_table(df, values='prob', index='LR_pair', columns='cell_pair').fillna(0)
+            ## bar plot
+            if n_gene == 1:
+                df_groups = df['cluster']
+                df_values = df['expr_mean']
+                fig = go.Figure(data=[go.Bar(x=df_groups, y=df_values)])
+                fig.update_layout(title={
+                            'text': 'Interactive Bar',
+                            'x': 0.5,  # 设置标题居中
+                            'xanchor': 'center',
+                            'yanchor': 'top'
+                        },
+                        xaxis_title='Cell Clusters', yaxis_title='Gene Expression Level (Mean)' )
+                gene_expr_plt_bar = fig.to_html(full_html=False)
+            else:
+                gene_expr_plt_bar = "Number of query gene > 1. <br> Please see plot region for \"Many genes in single dataset\". "
 
-            ## two-way clustering in heatmap
-            row_clusters = hierarchy.linkage(df_plt.values, method='average', metric='euclidean')
-            column_clusters = hierarchy.linkage(df_plt.values.T, method='average', metric='euclidean')
-            # 获取行和列的排序索引
-            row_order = hierarchy.leaves_list(row_clusters)
-            column_order = hierarchy.leaves_list(column_clusters)
+            ## heatmap for many genes in single dataset.
 
-            # 根据排序索引重新排列数据框
-            df_reordered = df_plt.iloc[row_order, column_order]
-
-            # 构造热图数据
-            heat_data = df_reordered.values.tolist()
-            x_labels = df_reordered.columns.tolist()
-            y_labels = df_reordered.index.tolist()
-
-            # 绘制交互式热图
-            fig = go.Figure(data=go.Heatmap(
-                z=heat_data,
-                x=x_labels,
-                y=y_labels
-            ))
-
-            # 设置图表布局
-            fig.update_layout(
-                title={
-                    'text': 'Interactive Heatmap',
-                    'x': 0.5,  # 设置标题居中
-                    'xanchor': 'center',
-                    'yanchor': 'top'
-                },
-                xaxis_title='Source=>Target cell interaction',
-                yaxis_title='Ligand-receptor pairs',
-                width=1000,  # 设置宽度为 800 像素
-                height=1000  # 设置高度为 600 像素
-            )
-
-            # 将图表渲染到网页
-            ccc_prob_plot_div = fig.to_html(full_html=False)
 
             # 构建render字典
             result = {
-                'total_records': row_count,
-                'n_dataset': n_dataset,
-                'n_minor_source': n_minor_source,
-                'n_minor_target': n_minor_target,
-                'n_major_source': n_major_source,
-                'n_major_target': n_major_target,
-                'n_uniq_source_target': n_uniq_source_target,
-                "n_pathway": n_pathway,
-                'n_uniq_LR': n_uniq_LR,
-                'filters': filters,
-                'filter_results': filter_results,
-                'plot_url1': ccc_prob_plot_div
+                'total_records': row_count, 'n_dataset': n_dataset, 'n_cluster': n_cluster, 'n_gene': n_gene,
+                'cluster_uniq_major': cluster_uniq_major,
+                'filters': filters, 'filter_results': filter_results,
+                'plot_url1': gene_expr_plt_bar
             }
-            return render(request, 'analyze-cell-commu-single.html', result)
+            return render(request, 'analyze-gene-expr-single.html', result)
 
         else:
             error_message = 'Please fill the Query Form.'
             print(error_message)
-            return render(request, 'analyze-cell-marker-single.html', {'error_message': error_message})
+            return render(request, 'analyze-gene-expr-single.html', {'error_message': error_message})
     return render(request, 'analyze-gene-expr-single.html')
 
 def analyze_gene_expr_cross(request):
